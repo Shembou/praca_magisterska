@@ -1,0 +1,125 @@
+\documentclass[xodstep]{wnspt}
+
+% --- kodowanie i język ---
+\usepackage[utf8]{inputenc}     % dla pdflatex
+\usepackage{babel}
+% UWAGA: fontenc T1 jest ładowany przez klasę wnspt przy tgpagella lub tgtermes
+
+% --- matematyka ---
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+% --- narzędzia ---
+\usepackage{csquotes}
+\usepackage{colortbl}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{indentfirst}
+
+% --- listingi ---
+\usepackage{listings}
+\usepackage{beramono}
+
+% --- bibliografia ---
+\usepackage[
+backend=biber,
+refsegment=section,
+defernumbers=true
+]{biblatex}
+\addbibresource{literatura.bib}
+
+% --- opcje ---
+\lstset{
+	language=Java,
+	basicstyle=\ttfamily,
+	numbers=left,
+	numberstyle=\footnotesize,
+	stepnumber=1,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	frame=single,
+	tabsize=4,
+	captionpos=b,
+	breaklines=true,
+	escapeinside={\%*}{*)}
+}
+
+\newtheorem{lemat}{Lemat}
+\newtheorem{twierdzenie}{Twierdzenie}
+
+\renewcommand{\lstlistingname}{Listing}
+\renewcommand{\lstlistlistingname}{Spis listingów}
+
+% --- autor ---
+\author   {Przemysław Kamiński}
+\nralbumu {88751}
+\kierunek {Informatyka}
+\specjalnosc {Programowanie gier komputerowych}
+\date     {2025}
+\miejsce  {Częstochowa}
+\opiekun  {dr hab. Bożeny Woźnej-Szcześniak, prof. UJD}
+
+\title{Sposoby optymalizacji aplikacji internetowych\ Ways to optimize web applications}
+
+\frenchspacing
+
+\begin{document}
+\begin{abstract}
+	Celem pracy jest porównanie metod serializacji i deserializacji danych oraz ocena efektywności wybranych mechanizmów komunikacji we współczesnych systemach informatycznych. Analiza obejmuje różnice w reprezentacji danych, ich rozmiarze, kosztach przetwarzania oraz wpływie tych czynników na wydajność komunikacji między usługami. Dodatkowo badane jest wykorzystanie WebAssembly do przyspieszania obliczeń po stronie klienta. Wyniki, uzyskane z użyciem aplikacji testowej, pozwalają określić zależności między wyborem technologii a osiąganą wydajnością systemu oraz stanowią podstawę praktycznych rekomendacji dla projektowania nowoczesnych architektur rozproszonych.
+
+\keywords{Java, Rust, Golang, WebAssembly, Javascript, Sieci, Optymalizacja, Serializacja, Deserializacja, Klient, Serwer}
+	The thesis compares methods of data serialization and deserialization and evaluates the efficiency of selected communication mechanisms in modern information systems. The analysis focuses on data representation, size, processing cost, and their impact on service-to-service communication performance. Additionally, the study examines the use of WebAssembly to accelerate client-side computations. Results obtained using a dedicated test application allow identifying relationships between technology choices and system performance, providing practical recommendations for designing modern distributed architectures.
+\end{abstract}
+
+
+\maketitle
+\onehalfspacing
+%\setlength{\footskip}{20pt}
+
+\introduction
+
+Celem niniejszej pracy jest zaprojektowanie oraz zaimplementowanie systemu testowego umożliwiającego porównanie różnych metod serializacji i deserializacji danych oraz ocenę efektywności wybranych mechanizmów komunikacji w nowoczesnych systemach rozproszonych. W pracy szczególną uwagę poświęcono analizie wpływu reprezentacji danych, ich rozmiaru oraz kosztów przetwarzania na wydajność komunikacji między usługami. Dodatkowo badane jest zastosowanie technologii WebAssembly w celu przyspieszenia obliczeń po stronie klienta, co pozwala na ocenę korzyści wynikających z wykorzystania tej technologii w praktyce.
+
+Praca została podzielona na cztery główne rozdziały.  
+
+W pierwszym rozdziale przedstawiono podstawowe informacje na temat wybranych języków programowania użytych w pracy, w tym Java, Rust i Golang, ze szczególnym uwzględnieniem mechanizmów serializacji i obsługi komunikacji między usługami. Omówiono również podstawowe koncepcje architektury klient-serwer oraz wybrane wzorce projektowe ułatwiające implementację rozproszonych systemów.  
+
+Rozdział drugi poświęcono szczegółowej analizie metod serializacji i deserializacji danych. Przedstawiono różnice w formatach danych, takich jak JSON, XML, Protobuf czy MessagePack, a także omówiono ich wpływ na rozmiar przesyłanych danych, czas przetwarzania oraz kompatybilność między systemami.  
+
+W rozdziale trzecim opisano implementację systemu testowego. Zawarto w nim strukturę aplikacji, wybrane technologie oraz sposób pomiaru wydajności poszczególnych mechanizmów. Omówiono również integrację WebAssembly z aplikacją kliencką i sposób, w jaki testy zostały przeprowadzone w celu rzetelnej oceny wpływu różnych podejść na wydajność systemu.  
+
+Rozdział czwarty przedstawia wyniki przeprowadzonych eksperymentów. Zaprezentowano analizę zebranych danych, porównano wydajność różnych metod serializacji oraz mechanizmów komunikacji, a także oceniono efektywność zastosowania WebAssembly. Na tej podstawie sformułowano praktyczne rekomendacje dotyczące wyboru technologii w projektowaniu nowoczesnych architektur rozproszonych.  
+
+Podsumowując, celem pracy jest nie tylko teoretyczne porównanie technologii, ale także dostarczenie praktycznych wniosków, które mogą być wykorzystane przy projektowaniu i optymalizacji współczesnych systemów informatycznych.
+
+\summary
+
+
+% załączniki (opcjonalnie):
+\appendix
+\chapter{Tytuł załącznika jeden}
+Treść załącznika jeden.
+
+\chapter{Tytuł załącznika dwa}
+Treść załącznika dwa.
+
+%\bibliographystyle{plain}
+%\bibliography{literatura}
+
+\printbibliography[type=book,title={Bibliografia - książki}]
+\printbibliography[type=misc,title={Bibliografia - strony internetowe}]
+
+% spis tabel (jeżeli jest potrzebny):
+\listoftables
+
+% spis rysunków (jeżeli jest potrzebny):
+\listoffigures
+
+% spis listingów (jeżeli jest potrzebny):
+\lstlistoflistings
+
+\end{document}
