@@ -1,8 +1,26 @@
-\chapter{Zastosowanie komponentów JavaBeans do tworzenia aplikacji internetowych}
-Rozdział opisuje zastosowanie technologii JavaBeans do tworzenia aplikacji
-internetowych.
-\section{Pakiet Swing}
-Jednym z najczęstszych zastosowań komponentów 
-\subsection{Podstawowe informacje na temat pakietu \texttt{Swing}}
-Java już od wersji 1.0 była wyposażona w pakiet do tworzenia interfejsów graficznych
-\subsection{Przegląd komponentów Swing}
+\chapter{Użyte narzędzia programistyczne}
+
+\section{Git}
+Git jest rozproszonym systemem kontroli wersji, którego głównym celem jest zarządzanie historią zmian w kodzie źródłowym projektu programistycznego \cite{git}. Narzędzie to umożliwia rejestrowanie kolejnych wersji plików, analizę wprowadzonych modyfikacji oraz powrót do wcześniejszych stanów projektu. Dzięki rozproszonej architekturze każdy użytkownik posiada pełną kopię repozytorium wraz z całą historią zmian, co zwiększa niezawodność oraz elastyczność pracy zespołowej.
+
+Git oferuje mechanizmy takie jak gałęzie (ang. \textit{branches}) oraz scalanie zmian (ang. \textit{merge}), które pozwalają na równoległą pracę nad różnymi funkcjonalnościami bez ingerencji w główną wersję projektu. System ten jest szeroko stosowany zarówno w małych projektach indywidualnych, jak i w dużych przedsięwzięciach komercyjnych oraz otwartoźródłowych.
+
+\section{Zed}
+Zed jest nowoczesnym edytorem kodu źródłowego zaprojektowanym z myślą o wysokiej wydajności, niskich opóźnieniach oraz współczesnych potrzebach programistów \cite{zed}. Narzędzie to zostało stworzone przy wykorzystaniu języka Rust, co przekłada się na bezpieczeństwo pamięci oraz wysoką responsywność interfejsu użytkownika.
+
+Edytor oferuje wsparcie dla wielu języków programowania, inteligentne podpowiedzi kodu, integrację z systemami kontroli wersji oraz możliwość pracy zespołowej w czasie rzeczywistym. Zed kładzie duży nacisk na minimalizm interfejsu oraz płynność pracy, co czyni go atrakcyjną alternatywą dla bardziej rozbudowanych środowisk programistycznych.
+
+\section{Visual Studio Code}
+Visual Studio Code jest wieloplatformowym edytorem kodu źródłowego rozwijanym przez firmę Microsoft \cite{vscode}. Narzędzie to łączy w sobie prostotę edytora tekstu z funkcjonalnością zintegrowanego środowiska programistycznego (IDE). Dzięki rozbudowanemu systemowi rozszerzeń możliwe jest dostosowanie edytora do pracy z niemal dowolnym językiem programowania oraz frameworkiem.
+
+Visual Studio Code oferuje funkcje takie jak podświetlanie składni, inteligentne uzupełnianie kodu, debugowanie aplikacji oraz integrację z systemem Git. Jego popularność wynika z dużej elastyczności, aktywnej społeczności oraz regularnych aktualizacji, co czyni go jednym z najczęściej wybieranych narzędzi programistycznych.
+
+\section{NPM}
+NPM (Node Package Manager) jest menedżerem pakietów przeznaczonym dla środowiska Node.js \cite{npm}. Jego głównym zadaniem jest zarządzanie zależnościami projektu, w tym instalowanie, aktualizowanie oraz usuwanie bibliotek zewnętrznych. NPM umożliwia również publikowanie własnych pakietów w publicznym repozytorium, co wspiera ponowne wykorzystanie kodu.
+
+Centralnym elementem działania NPM jest plik \texttt{package.json}, w którym definiowane są informacje o projekcie, jego zależnościach oraz skryptach automatyzujących typowe zadania, takie jak budowanie aplikacji czy uruchamianie testów. Narzędzie to stanowi podstawowy element ekosystemu JavaScript i jest powszechnie wykorzystywane w projektach frontendowych oraz backendowych.
+
+\section{Cargo}
+Cargo jest oficjalnym narzędziem do zarządzania projektami w języku Rust \cite{cargo}. Odpowiada ono za proces kompilacji kodu źródłowego, pobieranie i zarządzanie zależnościami oraz uruchamianie testów jednostkowych. Cargo integruje się bezpośrednio z kompilatorem Rust, zapewniając spójność i automatyzację procesu budowania aplikacji.
+
+Konfiguracja projektu realizowana jest za pomocą pliku \texttt{Cargo.toml}, który zawiera informacje o projekcie, wersjach bibliotek oraz ustawieniach kompilacji. Dzięki Cargo proces tworzenia aplikacji w języku Rust jest uproszczony i ustandaryzowany, co sprzyja utrzymaniu wysokiej jakości kodu oraz jego skalowalności.

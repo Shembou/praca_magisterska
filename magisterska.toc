@@ -1,7 +1,23 @@
-\babel@toc {nil}{}\relax 
-\contentsline {chapter}{Wst\k {e}p}{4}{chapter*.4}%
-\contentsline {chapter}{Zako\'nczenie}{5}{chapter*.5}%
-\contentsline {chapter}{\numberline {A}Tytuł załącznika jeden}{6}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Tytuł załącznika dwa}{7}{appendix.B}%
-\contentsline {chapter}{List of Tables}{8}{appendix*.6}%
-\contentsline {chapter}{List of Figures}{9}{appendix*.7}%
+\contentsline {chapter}{\numberline {1}Wprowadzenie do problematyki doboru technologii}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Znaczenie doboru technologii w aplikacjach webowych}{5}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Charakterystyka współczesnych systemów rozproszonych}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Protokoły komunikacyjne jako fundament wymiany danych}{6}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Uzasadnienie podjęcia badań}{6}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Słownik pojęć i skrótów}{6}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Technologie wykorzystane w projekcie}{8}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Rust}{8}{section.2.1}%
+\contentsline {section}{\numberline {2.2}JavaScript}{9}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Framework Actix-web}{9}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Framework Tonic}{10}{section.2.4}%
+\contentsline {section}{\numberline {2.5}tungstenite-rs}{10}{section.2.5}%
+\contentsline {section}{\numberline {2.6}h2load}{10}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Python}{10}{section.2.7}%
+\contentsline {section}{\numberline {2.8}GraphQL}{11}{section.2.8}%
+\contentsline {section}{\numberline {2.9}gRPC}{11}{section.2.9}%
+\contentsline {section}{\numberline {2.10}WebAssembly}{11}{section.2.10}%
+\contentsline {chapter}{\numberline {3}Użyte narzędzia programistyczne}{12}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Git}{12}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Zed}{12}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Visual Studio Code}{13}{section.3.3}%
+\contentsline {section}{\numberline {3.4}NPM}{13}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Cargo}{13}{section.3.5}%

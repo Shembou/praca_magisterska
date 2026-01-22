@@ -1,18 +1,53 @@
-\chapter{Specyfikacja wymagań}
-\section{Wymagania biznesowe}
-\section{Słownik skrótów i pojęć}
-\cite{java_fundamentals}
-\section{Wymagania funkcjonalne użytkowników}
-%\subsection*{Hierarchia grup użytkowników przedstawiona graficznie}
-\subsection{Wymagania funkcjonalne użytkownika niezarejestrowanego}
-\subsection{Wymagania funkcjonalne użytkownika zarejestrowanego}
-\subsection{Wymagania funkcjonalne administratora}
-\subsection{Wymagania funkcjonalne dziennikarz}
-\subsection{Wymagania funkcjonalne marketing}
-\subsection{Wymagania funkcjonalne specjalista danych}
-\subsection{Wymagania funkcjonalne super administratora}
-\section{Wymagania niefunkcjonalne użytkowników}
-\section{Wymagania niefunkcjonalne systemowe}
-\section{Reguły biznesowe}
-\cite{java17doc}
+\chapter{Wprowadzenie do problematyki doboru technologii}
 
+\section{Znaczenie doboru technologii w aplikacjach webowych}
+
+Współczesne aplikacje webowe stanowią podstawę funkcjonowania wielu systemów informatycznych wykorzystywanych w biznesie, administracji publicznej oraz życiu codziennym. Rosnąca liczba użytkowników, potrzeba obsługi dużych wolumenów danych oraz wymagania dotyczące niskich czasów odpowiedzi powodują, że zagadnienia związane z wydajnością i skalowalnością systemów stają się kluczowe już na etapie projektowania architektury. Jednym z najważniejszych czynników wpływających na te cechy jest dobór odpowiednich technologii komunikacyjnych oraz formatów wymiany danych.
+
+W architekturach rozproszonych komunikacja pomiędzy komponentami systemu odbywa się za pośrednictwem sieci komputerowej, która wprowadza dodatkowe opóźnienia oraz ograniczenia przepustowości. Niewłaściwy wybór protokołu komunikacyjnego lub formatu danych może prowadzić do nadmiernego obciążenia sieci, zwiększonego zużycia zasobów obliczeniowych oraz pogorszenia doświadczeń użytkownika końcowego. Z tego względu świadomy dobór technologii powinien być oparty nie tylko na ich popularności, lecz przede wszystkim na analizie wymagań danego problemu.
+
+\section{Charakterystyka współczesnych systemów rozproszonych}
+
+Nowoczesne systemy informatyczne coraz częściej projektowane są w oparciu o architektury rozproszone, takie jak architektura klient--serwer, mikroserwisy czy systemy oparte na komunikacji zdarzeniowej. W tego typu rozwiązaniach poszczególne komponenty systemu działają niezależnie i komunikują się ze sobą za pomocą jasno zdefiniowanych interfejsów.
+
+Taki model projektowy umożliwia łatwiejszą skalowalność oraz rozwój systemu, jednak jednocześnie zwiększa znaczenie wydajnej i niezawodnej komunikacji. Każde wywołanie zdalne wiąże się z kosztami transmisji danych, serializacji i deserializacji komunikatów oraz przetwarzania po obu stronach połączenia. W praktyce oznacza to, że nawet niewielkie różnice w zastosowanych technologiach mogą prowadzić do zauważalnych różnic w wydajności całego systemu.
+
+\section{Protokoły komunikacyjne jako fundament wymiany danych}
+
+Protokoły komunikacyjne definiują sposób, w jaki dane są przesyłane pomiędzy uczestnikami komunikacji. W aplikacjach webowych powszechnie wykorzystywane są protokoły oparte na rodzinie HTTP, jednak wraz z rozwojem technologii pojawiły się również alternatywne rozwiązania, takie jak gRPC czy WebSocket. Każdy z tych protokołów oferuje inne właściwości w zakresie wydajności, sposobu zestawiania połączeń, obsługi strumieniowania danych oraz kompatybilności z istniejącą infrastrukturą.
+
+Dobór protokołu komunikacyjnego powinien uwzględniać charakter wymiany danych, częstotliwość komunikacji, wymagania dotyczące opóźnień oraz środowisko uruchomieniowe aplikacji. Przykładowo, protokoły oparte na długotrwałych połączeniach mogą być bardziej efektywne w aplikacjach czasu rzeczywistego, natomiast klasyczne podejście żądanie--odpowiedź sprawdza się w prostszych scenariuszach komunikacyjnych.
+
+\section{Uzasadnienie podjęcia badań}
+
+Różnorodność dostępnych protokołów komunikacyjnych, formatów danych oraz technologii wykonawczych sprawia, że projektanci systemów informatycznych stają przed trudnym zadaniem wyboru najbardziej odpowiednich rozwiązań. Brak jednoznacznych odpowiedzi oraz silne uzależnienie wyników od kontekstu zastosowania powodują, że decyzje te często podejmowane są intuicyjnie.
+
+Celem niniejszej pracy jest dostarczenie empirycznych danych oraz praktycznych wniosków, które mogą wspierać proces podejmowania decyzji technologicznych. Przeprowadzone analizy i eksperymenty pozwalają lepiej zrozumieć zależności pomiędzy wyborem technologii a wydajnością aplikacji webowych.
+
+\section{Słownik pojęć i skrótów}
+
+\begin{description}
+	\item[\textbf{API} (\textit{Application Programming Interface})] -
+	Zbiór reguł i definicji umożliwiających komunikację pomiędzy różnymi komponentami oprogramowania \cite{api_wiki}.
+	
+	\item[\textbf{HTTP} (\textit{Hypertext Transfer Protocol})] -
+	Protokół komunikacyjny wykorzystywany do przesyłania danych w sieci WWW \cite{http_wiki}.
+	
+	\item[\textbf{WebSocket}] -
+	Protokół umożliwiający dwukierunkową komunikację w czasie rzeczywistym pomiędzy klientem a serwerem \cite{websocket_wiki}. 
+	
+	\item[\textbf{gRPC}] -
+	Wysokowydajny framework komunikacyjny oparty na protokole HTTP/2 i formacie \textit{Protocol Buffers} \cite{grpc_wiki}.
+	
+	\item[\textbf{Serializacja}]-
+	Proces przekształcania struktury danych do postaci umożliwiającej jej zapis lub transmisję \cite{serialization_wiki}.
+	
+	\item[\textbf{Deserializacja}]- 
+	Proces odtwarzania struktury danych na podstawie jej zserializowanej reprezentacji \cite{deserialization_wiki}.
+	
+	\item[\textbf{WebAssembly} (\textit{Wasm})]  - 
+	Binarny format wykonywalnego kodu umożliwiający uruchamianie aplikacji o wysokiej wydajności w przeglądarkach internetowych \cite{webassembly_meaning}.
+	
+	\item[\textbf{Architektura klient--serwer}]  -
+	Model architektoniczny, w którym klient inicjuje żądania, a serwer je obsługuje i zwraca odpowiedzi \cite{client_server_meaning}.
+\end{description}

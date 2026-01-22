@@ -1,26 +1,131 @@
-\chapter{Zastosowanie komponentów JavaBeans do tworzenia komponentów interfejsu graficznego}
-Rozdział opisuje zastosowanie technologi JavaBeans do tworzenia komponentów
-graficznego interfejsu użytkownika ...
+\chapter{Technologie wykorzystane w projekcie}
 
+\section{Rust}
 
-\section{Podstawowe informacje dotyczące tworzenia aplikacji internetowych w języku Java}
+Rust jest nowoczesnym językiem programowania systemowego, który kładzie duży nacisk na bezpieczeństwo pamięci, wydajność oraz wielowątkowość. Dzięki mechanizmowi własności (ownership) oraz statycznej analizie błędów w czasie kompilacji, Rust minimalizuje ryzyko występowania błędów takich jak wycieki pamięci czy dereferencja pustych wskaźników. Rust zdobył popularność również dzięki nowoczesnemu systemowi typów i możliwości pisania kodu niskopoziomowego bez rezygnacji z bezpieczeństwa.
 
-\subsection{Środowisko potrzebne do działania aplikacji internetowych w Javie}
+W projekcie Rust został wykorzystany do implementacji backendu aplikacji, w tym:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item obsługi żądań sieciowych,
+	\item komunikacji asynchronicznej,
+	\item implementacji serwisów gRPC oraz GraphQL,
+	\item testów wydajnościowych.
+\end{itemize}
 
-\subsection{Serwlety}
+Wybór języka Rust był podyktowany potrzebą uzyskania niskich czasów odpowiedzi oraz stabilności działania aplikacji przy dużej liczbie równoległych zapytań. Dodatkowo paczki wykorzystane do badań nie posiadały zbędnych funkcjonalności, co umożliwiło skupienie się na analizie wyników i minimalnej implementacji rozwiązań.
 
-\subsubsection{Przykładowy serwlet}
+Według Tiobe Index, Rust zyskał największą dotychczas popularność 1 stycznia 2026 roku.
 
-W tym fragmencie zaprezentuję jak stworzyć przykładowy serwlet. Nie będzie to jeszcze przykład z użyciem technologii JavaBeans, jednak mam nadzieję, że przybliży on trochę zagadnienie tworzenia serwletów.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/rust_tiobe_index}
+	\caption{Pozycja języka Rust w rankingu Tiobe Index.}
+	\label{fig:rust_tiobe}
+\end{figure}
 
-\begin{lstlisting}[caption={[Przykładowy serwlet]Przykładowy serwlet}]
-import java.io.*;
-import javax.servlet.http.*;
-public class FirstServlet extends HttpServlet {
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/html");
-		out.println("Hello <b>World</b> !!!");
-	}
-}
-\end{lstlisting}
+Jak widać na Rysunku~\ref{fig:rust_tiobe}, Rust zyskuje coraz większą popularność wśród programistów, co potwierdza rosnące zainteresowanie nim w przemyśle i projektach open source.
+
+\section{JavaScript}
+
+JavaScript jest językiem skryptowym powszechnie wykorzystywanym do tworzenia aplikacji webowych. W projekcie został użyty głównie jako punkt odniesienia dla tradycyjnych interfejsów użytkownika w porównaniu z technologią WebAssembly. Dzięki swojej uniwersalności i dużemu ekosystemowi bibliotek, JavaScript nadal pozostaje podstawowym językiem front-endowym.
+
+\section{Framework Actix-web}
+
+Actix-web jest asynchronicznym frameworkiem webowym dla języka Rust, opartym na modelu aktorów. Charakteryzuje się wysoką wydajnością oraz niskim narzutem czasowym, co sprawia, że jest jedną z najszybszych opcji w ekosystemie Rust.
+
+W projekcie framework Actix-web został wykorzystany do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item obsługi klasycznego API HTTP,
+	\item implementacji endpointów GraphQL,
+	\item obsługi żądań REST.
+\end{itemize}
+
+Framework Actix-web został wybrany ze względu na:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item wysoką wydajność potwierdzoną testami benchmarkowymi,
+	\item dobrą integrację z ekosystemem Rust,
+	\item wsparcie dla programowania asynchronicznego.
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/rust_actix_web}
+	\caption{Framework Actix-web w porównaniu z innymi frameworkami.}
+	\label{fig:rust_actix_web}
+\end{figure}
+
+Jak widać na Rysunku~\ref{fig:rust_actix_web}, Actix wypada bardzo korzystnie w kontekście wydajności i obsługi dużego ruchu, co jest istotne dla aplikacji wymagających niskich czasów odpowiedzi.
+
+\section{Framework Tonic}
+
+Tonic jest frameworkiem do implementacji gRPC w języku Rust, opartym na bibliotece \texttt{tokio} oraz protokole HTTP/2. W projekcie został wykorzystany do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item implementacji serwera gRPC,
+	\item definiowania kontraktów komunikacyjnych w postaci plików \texttt{.proto},
+	\item realizacji wydajnej komunikacji klient–serwer.
+\end{itemize}
+
+Framework Tonic umożliwił stworzenie stabilnej i szybkiej komunikacji typu RPC, co było kluczowe dla testów wydajnościowych i porównawczych z GraphQL.
+
+\section{tungstenite-rs}
+
+\texttt{tungstenite-rs} jest biblioteką w Rust umożliwiającą obsługę protokołu WebSocket. Została wykorzystana do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item obsługi komunikacji w czasie rzeczywistym,
+	\item przesyłania danych bez konieczności inicjowania nowych połączeń HTTP,
+	\item testów alternatywnych modeli komunikacji.
+\end{itemize}
+
+\section{h2load}
+
+\texttt{h2load} jest narzędziem służącym do testowania wydajności aplikacji korzystających z protokołu HTTP/2. W projekcie zostało wykorzystane do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item generowania dużej liczby równoległych zapytań,
+	\item pomiaru czasów odpowiedzi serwera,
+	\item analizy zachowania systemu pod obciążeniem.
+\end{itemize}
+
+\section{Python}
+
+Python jest językiem wysokiego poziomu, który w projekcie został użyty głównie pomocniczo, do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item analizy wyników testów wydajnościowych,
+	\item generowania wykresów porównawczych,
+	\item przetwarzania danych pomiarowych.
+\end{itemize}
+
+Python pozostaje jednym z najpopularniejszych języków programowania, co obrazuje Rysunek~\ref{fig:python_tiobe}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/python_tiobe_index}
+	\caption{Pozycja języka Python w rankingu Tiobe Index.}
+	\label{fig:python_tiobe}
+\end{figure}
+
+\section{GraphQL}
+
+GraphQL jest językiem zapytań do API, pozwalającym klientowi precyzyjnie określić, jakie dane są potrzebne. W projekcie został wykorzystany do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item porównania modelu komunikacji GraphQL z gRPC,
+	\item realizacji zapytań o złożone struktury danych,
+	\item testów wydajnościowych i porównawczych.
+\end{itemize}
+
+\section{gRPC}
+
+gRPC jest mechanizmem komunikacji RPC opartym na protokole HTTP/2 oraz formacie binarnym Protocol Buffers. W projekcie zostało wykorzystane do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item komunikacji między komponentami systemu,
+	\item przeprowadzania testów wydajnościowych,
+	\item porównania z innymi podejściami komunikacyjnymi (np. GraphQL).
+\end{itemize}
+
+\section{WebAssembly}
+
+WebAssembly (Wasm) jest binarnym formatem wykonywalnym, pozwalającym uruchamiać kod napisany w Rust bezpośrednio w przeglądarce. W projekcie zostało wykorzystane do:
+\begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
+	\item uruchamiania części logiki aplikacji po stronie klienta,
+	\item eksperymentalnego porównania wydajności z klasycznym JavaScriptem,
+	\item zwiększenia bezpieczeństwa i wydajności aplikacji webowej.
+\end{itemize}
