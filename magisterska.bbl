@@ -4,80 +4,80 @@
 {Git Project}.
 \newblock Git.
 \newblock \url{https://git-scm.com/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{vscode}
 {Microsoft}.
 \newblock Visual studio code.
 \newblock \url{https://code.visualstudio.com/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{npm}
 {npm, Inc.}
 \newblock npm documentation.
 \newblock \url{https://www.npmjs.com/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{cargo}
 {Rust Project}.
 \newblock Cargo – the rust package manager.
 \newblock \url{https://doc.rust-lang.org/cargo/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{webassembly_meaning}
 Webassembly.org.
 \newblock Webassembly.
 \newblock \url{https://webassembly.org/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{deserialization_wiki}
 Wikipedia.
 \newblock Deserializacja.
 \newblock
   \url{https://en.wikipedia.org/wiki/Marshalling_(computer_science)#Unmarshalling}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{grpc_wiki}
 Wikipedia.
 \newblock google remote procedure call.
 \newblock \url{https://en.wikipedia.org/wiki/GRPC}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{http_wiki}
 Wikipedia.
 \newblock Hypertext transfer protocol.
 \newblock \url{https://pl.wikipedia.org/wiki/HTTP}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{api_wiki}
 Wikipedia.
 \newblock Interfejs programowania aplikacji.
 \newblock
   \url{https://pl.wikipedia.org/wiki/Interfejs_programowania_aplikacji}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{client_server_meaning}
 Wikipedia.
 \newblock Model klient serwer.
 \newblock \url{https://en.wikipedia.org/wiki/Client%E2%80%93server_model}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{serialization_wiki}
 Wikipedia.
 \newblock Serializacja.
 \newblock \url{https://en.wikipedia.org/wiki/Serialization}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{websocket_wiki}
 Wikipedia.
 \newblock Websocket.
 \newblock \url{https://en.wikipedia.org/wiki/WebSocket}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \bibitem{zed}
 {Zed Industries}.
 \newblock Zed editor.
 \newblock \url{https://zed.dev/}.
-\newblock [dostęp: 21 stycznia 2025].
+\newblock [dostęp: 21 stycznia 2026].
 
 \end{thebibliography}

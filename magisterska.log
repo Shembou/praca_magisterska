@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2026.1.21)  22 JAN 2026 09:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2026.1.21)  22 JAN 2026 10:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -484,7 +484,7 @@ Package hyperref Info: Link coloring OFF on input line 52.
 \openout2 = `stronatytulowa.aux'.
 
  (./stronatytulowa.tex
-<logo_ujd.png, id=96, 68.50594pt x 82.80937pt>
+<logo_ujd.png, id=100, 68.50594pt x 82.80937pt>
 File: logo_ujd.png Graphic file (type png)
 <use logo_ujd.png>
 Package pdftex.def Info: logo_ujd.png  used on input line 5.
@@ -544,7 +544,7 @@ Overfull \hbox (1.59053pt too wide) in paragraph at lines 33--35
 
 [6]) (./chapters/chapter2.tex [7]
 Rozdzia\PlPrIeC {\l } 2.
-<images/rust_tiobe_index.png, id=184, 1361.085pt x 462.72874pt>
+<images/rust_tiobe_index.png, id=189, 1361.085pt x 462.72874pt>
 File: images/rust_tiobe_index.png Graphic file (type png)
 <use images/rust_tiobe_index.png>
 Package pdftex.def Info: images/rust_tiobe_index.png  used on input line 21.
@@ -553,7 +553,7 @@ Package pdftex.def Info: images/rust_tiobe_index.png  used on input line 21.
 
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc} <./im
 ages/rust_tiobe_index.png>]
-<images/rust_actix_web.png, id=193, 1487.5575pt x 679.53876pt>
+<images/rust_actix_web.png, id=198, 1487.5575pt x 679.53876pt>
 File: images/rust_actix_web.png Graphic file (type png)
 <use images/rust_actix_web.png>
 Package pdftex.def Info: images/rust_actix_web.png  used on input line 52.
@@ -564,7 +564,7 @@ LaTeX Font Info:    Trying to load font information for T1+fvm on input line 61
 (/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
 File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
 ) [9 <./images/rust_actix_web.png>]
-<images/python_tiobe_index.png, id=202, 1356.06625pt x 456.70625pt>
+<images/python_tiobe_index.png, id=207, 1356.06625pt x 456.70625pt>
 File: images/python_tiobe_index.png Graphic file (type png)
 <use images/python_tiobe_index.png>
 Package pdftex.def Info: images/python_tiobe_index.png  used on input line 101.
@@ -583,46 +583,61 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
  [12
 
 ])
-[13] (./magisterska.bbl [14
+(./chapters/chapter4.tex [13]
+Rozdzia\PlPrIeC {\l } 4.
+) [14
 
-]) [15
+] (./magisterska.bbl [15
+
+]) [16
 
 ] (./magisterska.lof)
 \tf@lof=\write5
 \openout5 = `magisterska.lof'.
 
- [16
+ [17
 
-] (./magisterska.lol)
+]
+(./magisterska.lol)
 \tf@lol=\write6
 \openout6 = `magisterska.lol'.
 
-[17
+ [18
 
 ] (./magisterska.aux (./stronatytulowa.aux))
-Package rerunfilecheck Info: File `magisterska.out' has not changed.
-(rerunfilecheck)             Checksum: 0E62DEEBEAD1E55E8056B9606D9273C3;3596.
+
+Package rerunfilecheck Warning: File `magisterska.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `magisterska.out':
+(rerunfilecheck)             Before: 86B82A2C1AB41FB463C3BCFD0287F6FA;3795
+(rerunfilecheck)             After:  9D6D068D9B4476ABFE65D47CC1275F2F;3784.
  ) 
 Here is how much of TeX's memory you used:
- 12765 strings out of 477950
- 198540 string characters out of 5838504
+ 12775 strings out of 477950
+ 198715 string characters out of 5838504
  1859388 words of memory out of 6000000
- 32675 multiletter control sequences out of 15000+600000
+ 32679 multiletter control sequences out of 15000+600000
  524678 words of font info for 62 fonts, out of 8000000 for 9000
  34 hyphenation exceptions out of 8191
  75i,7n,76p,752b,551s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/bera/fvmr8a.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/cm-super/sfbx1728.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/cm-super/sfbx2488.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/cm-super/sfrm1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-
-super/sfti1200.pfb>
-Output written on magisterska.pdf (19 pages, 322372 bytes).
+
+pdfTeX warning (dest): name{section.3.6} has been referenced but does not exist
+, replaced by a fixed one
+
+</usr/share/texlive/texmf-dist/fonts/type1/public/bera/fvmr8a.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/cm-super/sfbx1728.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/cm-super/sfbx2488.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
+c/cm-super/sfrm1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-su
+per/sfti1200.pfb>
+Output written on magisterska.pdf (20 pages, 323005 bytes).
 PDF statistics:
- 331 PDF objects out of 1000 (max. 8388607)
- 282 compressed objects within 3 object streams
- 63 named destinations out of 1000 (max. 500000)
- 205 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 341 PDF objects out of 1000 (max. 8388607)
+ 291 compressed objects within 3 object streams
+ 66 named destinations out of 1000 (max. 500000)
+ 213 words of extra memory for PDF output out of 10000 (max. 10000000)
 
