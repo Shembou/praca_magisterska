@@ -17,23 +17,26 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{xcolor}
 
 % --- opcje ---
-\lstset{
-	language=Java,
-	basicstyle=\ttfamily,
+\lstdefinestyle{rustcode}{
+	language=C++,
+	backgroundcolor=\color{gray!10},
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue}\bfseries,
+	stringstyle=\color{red},
+	commentstyle=\color{green!50!black},
 	numbers=left,
-	numberstyle=\footnotesize,
+	numberstyle=\tiny\color{gray},
 	stepnumber=1,
-	numbersep=5pt,
-	showspaces=false,
+	numbersep=8pt,
 	showstringspaces=false,
-	showtabs=false,
-	frame=single,
-	tabsize=4,
-	captionpos=b,
 	breaklines=true,
-	escapeinside={\%*}{*)}
+	frame=single,
+	rulecolor=\color{black!30},
+	tabsize=4,
+	captionpos=b
 }
 
 \newtheorem{lemat}{Lemat}

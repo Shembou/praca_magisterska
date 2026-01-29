@@ -21,4 +21,7 @@
 \contentsline {section}{\numberline {3.3}Visual Studio Code}{13}{section.3.3}%
 \contentsline {section}{\numberline {3.4}NPM}{13}{section.3.4}%
 \contentsline {section}{\numberline {3.5}Cargo}{13}{section.3.5}%
-\contentsline {chapter}{\numberline {4}Budowa środowiska testowego}{14}{chapter.4}%
+\contentsline {section}{\numberline {3.6}Testy wydajnościowe}{14}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Aplikacje zawarte w katalogu communication-mechanisms}{14}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Aplikacje zawarte w katalogu data-serialization-formats}{14}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Testy przeglądarkowe}{16}{subsection.3.6.3}%

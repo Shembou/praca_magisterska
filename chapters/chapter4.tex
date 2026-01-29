@@ -1,1 +1,77 @@
-\chapter{Budowa środowiska testowego}
+\section{Testy wydajnościowe}
+
+W ramach przygotowanego środowiska testowego przeprowadzono szereg eksperymentów mających na celu obiektywną ocenę wydajności różnych mechanizmów komunikacji oraz formatów serializacji danych. Poniżej przedstawiono szczegółowy opis metodologii testowania poszczególnych grup aplikacji.
+
+\subsection{Aplikacje zawarte w katalogu communication-mechanisms}
+
+Dla każdego zaimplementowanego protokołu komunikacji przeprowadzono cztery kategorie testów wydajnościowych, pozwalających na kompleksową ocenę charakterystyk przesyłania danych:
+
+\begin{enumerate}
+	\item \textbf{Transmisja małych pakietów danych} -- test polegający na cyklicznym odpytywaniu serwera o dane o rozmiarze 1~KB. Pomiar ten pozwala ocenić narzut protokołu oraz czas odpowiedzi dla typowych żądań zawierających niewielką ilość informacji.
+	
+	\item \textbf{Transmisja dużych pakietów danych} -- test analogiczny do poprzedniego, z tą różnicą, że rozmiar przesyłanych danych wynosi 1~MB. Eksperyment ten umożliwia ocenę wydajności protokołów w scenariuszu transferu większych zasobów.
+	
+	\item \textbf{Head-of-Line Blocking} -- test weryfikujący występowanie zjawiska blokowania głowy kolejki, w którym opóźnienie w przetwarzaniu jednego żądania wpływa na obsługę kolejnych żądań w ramach tego samego połączenia. Pomiar ten jest szczególnie istotny dla protokołów wykorzystujących multipleksowanie strumieni.
+	
+	\item \textbf{Strumieniowanie danych} -- test przeprowadzany wyłącznie dla protokołów wspierających tryb strumieniowy (streaming). Ocenie podlega efektywność przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletną odpowiedź serwera.
+\end{enumerate}
+
+\subsection{Aplikacje zawarte w katalogu data-serialization-formats}
+
+Dla każdej z zaimplementowanych bibliotek serializacji danych przeprowadzono pomiary wydajności na podstawie ustandaryzowanej struktury danych. W celu zapewnienia porównywalności wyników, wszystkie testy wykorzystują identyczny zestaw danych testowych składający się z kolekcji 1000 obiektów użytkowników wraz z metadanymi.
+
+Struktura danych testowych jest generowana w następujący sposób:
+
+\begin{lstlisting}[style=rustcode, caption={Struktura danych wykorzystana w testach serializacji.}, label={lst:user_struct}]
+	let count = 1000;
+	let users: Vec<User> = (0..count)
+	.map(|i| User {
+		id: i as i64,
+		name: format!("User {}", i),
+		email: format!("user{}@example.com", i),
+		age: 20 + (i % 50) as i32,
+		is_active: i % 2 == 0,
+		tags: vec![
+		"tag1".to_string(),
+		"tag2".to_string(),
+		"tag3".to_string(),
+		],
+	})
+	.collect();
+	
+	UserCollection {
+		users,
+		metadata: Metadata {
+			version: "1.0.0".to_string(),
+			created_at: "2025-01-23T00:00:00Z".to_string(),
+			total_count: count,
+		},
+	}
+\end{lstlisting}
+
+Każdy obiekt użytkownika zawiera kompletny zestaw atrybutów: identyfikator liczbowy, nazwę, adres email, wiek, status aktywności oraz listę trzech tagów. Dodatkowo, kolekcja jest wzbogacona o metadane zawierające wersję struktury danych, znacznik czasu utworzenia oraz łączną liczbę elementów. Taka konstrukcja zapewnia reprezentatywny zestaw różnorodnych typów danych (liczby całkowite, ciągi znaków, wartości logiczne, kolekcje) występujących w rzeczywistych zastosowaniach.
+
+Dla każdego formatu serializacji mierzono następujące parametry wydajnościowe:
+
+\begin{enumerate}
+	\item \textbf{Czas serializacji} -- czas potrzebny na przekształcenie struktury danych z reprezentacji obiektowej języka Rust do formatu serializowanego. Pomiar wyrażony w mikrosekundach ($\mu$s) i uśredniony na podstawie wielokrotnych iteracji.
+	
+	\item \textbf{Czas deserializacji} -- czas wymagany do odtworzenia struktury obiektowej z danych w formacie serializowanym. Pomiar wyrażony w mikrosekundach ($\mu$s) i uśredniony na podstawie wielokrotnych iteracji.
+	
+	\item \textbf{Rozmiar zserializowanych danych} -- całkowita wielkość danych po procesie serializacji, wyrażona w bajtach (B). Parametr ten pozwala ocenić efektywność kompresji oraz narzut protokołu dla różnych formatów wymiany danych.
+\end{enumerate}
+
+Wykorzystanie identycznego zestawu danych testowych dla wszystkich formatów serializacji umożliwia obiektywne porównanie ich wydajności oraz charakterystyk w zakresie rozmiaru wynikowych struktur danych.
+
+\subsection{Testy przeglądarkowe}
+
+Testy przeglądarkowe służą do porównania wydajności implementacji algorytmów w czystym języku JavaScript oraz w technologii WebAssembly. Eksperyment polega na równoległym uruchomieniu identycznych funkcjonalności w obu środowiskach wykonawczych i pomiarze czasu ich wykonania.
+
+Testowane są następujące scenariusze:
+
+\begin{itemize}
+	\item \textbf{Implementacja JavaScript} -- natywny kod uruchamiany bezpośrednio przez silnik JavaScript przeglądarki,
+	\item \textbf{Implementacja WebAssembly} -- kod napisany w języku Rust, skompilowany do formatu WASM za pomocą narzędzia \texttt{wasm-pack} i wykonywany w środowisku przeglądarki.
+\end{itemize}
+
+Porównanie obu implementacji pozwala na obiektywną ocenę potencjalnych korzyści wydajnościowych wynikających z zastosowania technologii WebAssembly w aplikacjach webowych wymagających intensywnych obliczeń.
