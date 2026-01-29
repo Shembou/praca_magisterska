@@ -1,3 +1,84 @@
+\chapter{Budowa środowiska testowego}
+W niniejszym rozdziale przedstawiono kluczowe elementy środowiska testowego. W pierwszej kolejności zaprezentowano szczegółową strukturę katalogów projektu wraz z opisem zawartości poszczególnych folderów i plików. Następnie omówiono działanie wybranych aplikacji testowych, których implementację oraz wyniki pomiarów przedstawiono w kolejnym rozdziale.
+
+\section{Struktura plików aplikacji}
+
+Rysunek~\ref{fig:file_structure} przedstawia architekturę przygotowanego środowiska testowego. Projekt składa się z pięciu głównych katalogów, z których każdy odpowiada za odrębny aspekt przeprowadzanych badań.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/file_structure}
+	\caption{Struktura plików i katalogów w aplikacji.}
+	\label{fig:file_structure}
+\end{figure}
+
+\subsection{Katalog communication-mechanisms}
+Katalog ten zawiera implementacje aplikacji testujących wydajność różnych protokołów komunikacji. Każda aplikacja mierzy czasy odpowiedzi oraz przepustowość dla konkretnego mechanizmu wymiany danych. Wspólna struktura podkatalogów dla wszystkich implementacji obejmuje:
+\begin{itemize}
+	\item \textbf{src} -- katalog zawierający kod źródłowy aplikacji serwerowej i klienckiej dla danego protokołu,
+	\item \textbf{cert.pem} -- lokalny certyfikat SSL/TLS niezbędny do nawiązania bezpiecznego połączenia z wykorzystaniem protokołu HTTP/2,
+	\item \textbf{key.pem} -- prywatny klucz kryptograficzny odpowiadający certyfikatowi, wymagany do obsługi szyfrowanej komunikacji,
+	\item \textbf{Cargo.toml} -- manifest pakietu w formacie TOML, zawierający metadane projektu, listę zależności oraz parametry kompilacji niezbędne do zbudowania aplikacji w języku Rust.
+\end{itemize}
+
+W katalogu communication-mechanisms znajdują się następujące implementacje protokołów:
+\begin{itemize}
+	\item \textbf{graphql} -- implementacja serwera GraphQL umożliwiającego elastyczne zapytania o dane ze zdefiniowanego schematu,
+	\item \textbf{grpc} -- implementacja serwera gRPC opartego na Protocol Buffers, wykorzystującego HTTP/2 do efektywnej komunikacji,
+	\item \textbf{REST} -- standardowa implementacja architektury REST API z wykorzystaniem metod HTTP (GET, POST, PUT, DELETE),
+	\item \textbf{soap} -- implementacja protokołu SOAP (Simple Object Access Protocol) opartego na wymianie komunikatów XML,
+	\item \textbf{websocket} -- implementacja serwera WebSocket umożliwiającego dwukierunkową komunikację w czasie rzeczywistym,
+	\item \textbf{websocket\_secure} -- implementacja protokołu WebSocket Secure (WSS) z szyfrowaniem SSL/TLS.
+\end{itemize}
+
+\subsection{Katalog data-serialization-formats}
+Katalog zawiera aplikacje służące do porównania wydajności procesów serializacji i deserializacji danych w różnych formatach. Każda implementacja mierzy czas potrzebny na przekształcenie struktur danych oraz rozmiar wynikowych reprezentacji. W katalogu znajdują się następujące moduły testowe:
+\begin{itemize}
+	\item \textbf{avro} -- implementacja testów dla formatu Apache Avro, binarnego systemu serializacji z wbudowanym wsparciem dla schematów danych,
+	\item \textbf{bson\_benchmark} -- testy wydajności formatu BSON (Binary JSON), wykorzystywanego między innymi w bazach danych MongoDB,
+	\item \textbf{json} -- implementacja testów dla formatu JSON (JavaScript Object Notation), popularnego tekstowego formatu wymiany danych,
+	\item \textbf{message-pack} -- testy formatu MessagePack, będącego binarną alternatywą dla JSON o mniejszym rozmiarze danych,
+	\item \textbf{protobuf} -- implementacja testów dla Protocol Buffers (Protobuf), binarnego formatu serializacji opracowanego przez Google,
+	\item \textbf{xml} -- testy wydajności formatu XML (eXtensible Markup Language), rozszerzalnego języka znaczników.
+\end{itemize}
+
+\subsection{Katalog graphs}
+Katalog zawiera narzędzia do wizualizacji wyników przeprowadzonych eksperymentów oraz wygenerowane wykresy. Struktura obejmuje:
+\begin{itemize}
+	\item \textbf{communicationMechanismsGraphsGenerator.py} -- skrypt w języku Python generujący wykresy porównawcze dla testów mechanizmów komunikacji, wizualizujący czasy odpowiedzi oraz przepustowość poszczególnych protokołów,
+	\item \textbf{dataSerializationGraphsGenerator.py} -- skrypt w języku Python tworzący wykresy przedstawiające wyniki testów serializacji danych, w tym czasy operacji oraz rozmiary zserializowanych struktur,
+	\item \textbf{results} -- katalog przechowujący wygenerowane wykresy w formatach graficznych (PNG, SVG) gotowe do wykorzystania w dokumentacji.
+\end{itemize}
+
+\subsection{Katalog target}
+Katalog target stanowi standardowy folder roboczy kompilatora Rust, zawierający pliki binarne, biblioteki oraz artefakty pośrednie powstałe w procesie budowania projektu. Zawartość tego katalogu jest automatycznie zarządzana przez narzędzie Cargo i nie wymaga ręcznej modyfikacji.
+
+\subsection{Katalog wasm}
+Katalog zawiera programy napisane w języku Rust, które są kompilowane do formatu WebAssembly (WASM). Powstałe moduły binarne są następnie wykorzystywane w środowisku przeglądarki internetowej, umożliwiając uruchomienie kodu o wysokiej wydajności po stronie klienta.
+
+\subsection{Katalog wasm-showcase}
+Katalog wasm-showcase zawiera kompletną aplikację webową demonstrującą możliwości technologii WebAssembly. Struktura projektu obejmuje następujące elementy:
+\begin{itemize}
+	\item \textbf{image-processing} -- katalog zawierający skompilowane do WebAssembly moduły służące do przetwarzania obrazów. Pliki WASM oraz pomocnicze skrypty JavaScript pozwalają na wykonywanie operacji graficznych bezpośrednio w przeglądarce,
+	\item \textbf{particle-system} -- katalog z modułami WASM implementującymi system cząsteczek, wykorzystywany do demonstracji wydajności obliczeń graficznych w środowisku webowym,
+	\item \textbf{web-worker} -- katalog zawierający skompilowane moduły WASM przeznaczone do uruchomienia w Web Workers, umożliwiające wielowątkowe przetwarzanie danych bez blokowania głównego wątku interfejsu użytkownika,
+	\item \textbf{styles} -- katalog ze stylami CSS definiującymi wygląd aplikacji webowej,
+	\item \textbf{build.ts} -- natywny skrypt TypeScript odpowiedzialny za proces budowania aplikacji, zawierający logikę kompilacji i optymalizacji zasobów,
+	\item \textbf{bun.lock} -- plik blokady rejestrujący dokładne wersje wszystkich zależności projektu oraz ich podzależności, zapewniający powtarzalność budowania aplikacji,
+	\item \textbf{bunfig.toml} -- plik konfiguracyjny środowiska uruchomieniowego Bun, zawierający ustawienia dotyczące kompilacji i wykonania projektu,
+	\item \textbf{components.json} -- plik konfiguracyjny definiujący strukturę importów komponentów oraz integrację z biblioteką Tailwind CSS,
+	\item \textbf{package.json} -- manifest projektu Node.js zawierający listę zależności npm wraz z określonymi wersjami, skrypty budowania oraz metadane aplikacji,
+	\item \textbf{README.md} -- plik dokumentacji zawierający szczegółowy opis procesu instalacji, konfiguracji oraz uruchomienia aplikacji,
+	\item \textbf{tsconfig.json} -- plik konfiguracyjny kompilatora TypeScript, definiujący opcje transpilacji, ścieżki modułów oraz poziom zgodności ze standardem ECMAScript,
+	\item \textbf{bun-env.d.ts} -- plik deklaracji typów TypeScript dla środowiska Bun, zapewniający wsparcie IntelliSense i kontrolę typów,
+	\item \textbf{src} -- katalog zawierający pliki źródłowe aplikacji, w tym komponenty React, logikę biznesową oraz pomocnicze moduły,
+	\item \textbf{public} -- katalog z zasobami statycznymi (obrazy, ikony, manifesty) udostępnianymi bezpośrednio przez serwer webowy,
+	\item \textbf{node\_modules} -- katalog zawierający zainstalowane biblioteki i moduły npm, automatycznie zarządzany przez menedżer pakietów.
+\end{itemize}
+
+\subsection{Plik .gitignore}
+Plik konfiguracyjny systemu kontroli wersji Git, zawierający listę plików i katalogów wykluczonych z repozytorium. Typowo obejmuje katalogi tymczasowe (target, node\_modules), pliki konfiguracyjne środowiska oraz artefakty kompilacji, które nie powinny być śledzone w historii zmian projektu.
+
 \section{Testy wydajnościowe}
 
 W ramach przygotowanego środowiska testowego przeprowadzono szereg eksperymentów mających na celu obiektywną ocenę wydajności różnych mechanizmów komunikacji oraz formatów serializacji danych. Poniżej przedstawiono szczegółowy opis metodologii testowania poszczególnych grup aplikacji.
@@ -54,24 +135,11 @@ Każdy obiekt użytkownika zawiera kompletny zestaw atrybutów: identyfikator li
 Dla każdego formatu serializacji mierzono następujące parametry wydajnościowe:
 
 \begin{enumerate}
-	\item \textbf{Czas serializacji} -- czas potrzebny na przekształcenie struktury danych z reprezentacji obiektowej języka Rust do formatu serializowanego. Pomiar wyrażony w mikrosekundach ($\mu$s) i uśredniony na podstawie wielokrotnych iteracji.
+	\item \textbf{Czas serializacji} -- czas potrzebny na przekształcenie struktury danych z reprezentacji obiektowej języka Rust do formatu serializowanego. Pomiar wyrażony w milisekundach (ms) i uśredniony na podstawie wielokrotnych iteracji.
 	
-	\item \textbf{Czas deserializacji} -- czas wymagany do odtworzenia struktury obiektowej z danych w formacie serializowanym. Pomiar wyrażony w mikrosekundach ($\mu$s) i uśredniony na podstawie wielokrotnych iteracji.
+	\item \textbf{Czas deserializacji} -- czas wymagany do odtworzenia struktury obiektowej z danych w formacie serializowanym. Pomiar wyrażony w milisekundach (ms) i uśredniony na podstawie wielokrotnych iteracji.
 	
 	\item \textbf{Rozmiar zserializowanych danych} -- całkowita wielkość danych po procesie serializacji, wyrażona w bajtach (B). Parametr ten pozwala ocenić efektywność kompresji oraz narzut protokołu dla różnych formatów wymiany danych.
 \end{enumerate}
 
 Wykorzystanie identycznego zestawu danych testowych dla wszystkich formatów serializacji umożliwia obiektywne porównanie ich wydajności oraz charakterystyk w zakresie rozmiaru wynikowych struktur danych.
-
-\subsection{Testy przeglądarkowe}
-
-Testy przeglądarkowe służą do porównania wydajności implementacji algorytmów w czystym języku JavaScript oraz w technologii WebAssembly. Eksperyment polega na równoległym uruchomieniu identycznych funkcjonalności w obu środowiskach wykonawczych i pomiarze czasu ich wykonania.
-
-Testowane są następujące scenariusze:
-
-\begin{itemize}
-	\item \textbf{Implementacja JavaScript} -- natywny kod uruchamiany bezpośrednio przez silnik JavaScript przeglądarki,
-	\item \textbf{Implementacja WebAssembly} -- kod napisany w języku Rust, skompilowany do formatu WASM za pomocą narzędzia \texttt{wasm-pack} i wykonywany w środowisku przeglądarki.
-\end{itemize}
-
-Porównanie obu implementacji pozwala na obiektywną ocenę potencjalnych korzyści wydajnościowych wynikających z zastosowania technologii WebAssembly w aplikacjach webowych wymagających intensywnych obliczeń.
