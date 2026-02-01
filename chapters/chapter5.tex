@@ -1,0 +1,461 @@
+\chapter{Przeprowadzanie testów}
+Niniejszy rozdział prezentuje metodologię przeprowadzonych badań eksperymentalnych oraz ich wyniki ilościowe.
+
+\section{Metodologia testowania protokołów komunikacyjnych}
+Wszystkie eksperymenty zostały przeprowadzone z wykorzystaniem ujednoliconych parametrów testowych, dostosowanych do specyfiki każdego badanego protokołu:
+\begin{itemize}
+	\item Liczba współbieżnych operacji: 100
+	\item Liczba zapytań na wątek: 1000
+	\item Rozmiar standardowego ładunku danych: 1024 bajty (1 KB)
+	\item Rozmiar rozszerzonego ładunku danych: 1048576 bajty (1 MB)
+\end{itemize}
+
+\section{Architektura REST API}
+Implementacja architektury REST została zrealizowana przy użyciu biblioteki Actix-web -- jednej z najpopularniejszych wysokopoziomowych platform wspierających natywnie strumieniowanie danych oraz protokół HTTP/2 w połączeniu z certyfikatami TLS. W ramach analizy zbadano również problem blokowania na początku kolejki (Head-of-Line blocking, HOL) wraz z proponowanym rozwiązaniem.
+
+\subsection{Wyniki dla protokołu HTTP/1.1}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/test-2026-02-01_14-11-27/req_per_sec.png}
+	\caption{Przepustowość REST HTTP/1.1 dla ładunku 1 KB.}
+	\label{fig:rest_http1_test}
+\end{figure}
+
+Przepustowość dla zapytań ze standardowym ładunkiem (1 KB) wyniosła 764076 żądań na sekundę.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/test_high_payload-2026-02-01_14-12-55/req_per_sec.png}
+	\caption{Przepustowość REST HTTP/1.1 dla ładunku 1 MB.}
+	\label{fig:rest_http1_test_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku (1 MB) odnotowano przepustowość na poziomie 2759 żądań na sekundę, co stanowi spadek o 99,6\% w porównaniu ze standardowym ładunkiem.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/stream-2026-02-01_17-43-49/req_per_sec.png}
+	\caption{Przepustowość REST HTTP/1.1 dla transmisji strumieniowej (100 iteracji).}
+	\label{fig:rest_http1_stream}
+\end{figure}
+
+Transmisja strumieniowa składająca się ze 100 fragmentów (chunków) osiągnęła przepustowość 239056 żądań na sekundę.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/slow-2026-02-01_17-47-47/req_per_sec.png}
+	\caption{Wpływ blokowania HOL na przepustowość REST HTTP/1.1.}
+	\label{fig:rest_http1_hol_problem}
+\end{figure}
+
+W warunkach występowania problemu Head-of-Line blocking zmierzono przepustowość wynoszącą 1954 żądania na sekundę, demonstrując znaczącą degradację wydajności.
+
+\subsection{Wyniki dla protokołu HTTP/2}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/test-2026-02-01_14-24-59/req_per_sec.png}
+	\caption{Przepustowość REST HTTP/2 dla ładunku 1 KB.}
+	\label{fig:rest_http2_test}
+\end{figure}
+
+Implementacja z wykorzystaniem HTTP/2 osiągnęła przepustowość 198272 żądań na sekundę dla standardowego ładunku -- wartość o 74\% niższą niż w przypadku HTTP/1.1.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/test_high_payload-2026-02-01_14-26-26/req_per_sec.png}
+	\caption{Przepustowość REST HTTP/2 dla ładunku 1 MB.}
+	\label{fig:rest_http2_test_high_payload}
+\end{figure}
+
+Dla dużych pakietów danych zaobserwowano przepustowość 1690 żądań na sekundę, co stanowi spadek o 39\% względem HTTP/1.1.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/stream-2026-02-01_17-45-13/req_per_sec.png}
+	\caption{Przepustowość transmisji strumieniowej REST HTTP/2.}
+	\label{fig:rest_http2_stream}
+\end{figure}
+
+Transmisja strumieniowa w protokole HTTP/2 uzyskała przepustowość 91687 żądań na sekundę, wykazując degradację o 62\% w stosunku do HTTP/1.1.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/slow-2026-02-01_17-45-46/req_per_sec.png}
+	\caption{Mitigacja blokowania HOL w REST HTTP/2.}
+	\label{fig:rest_http2_hol}
+\end{figure}
+
+W scenariuszu testowym HOL blocking protokół HTTP/2 osiągnął przepustowość 135372 żądań na sekundę, demonstrując 69-krotną poprawę względem HTTP/1.1.
+
+\section{Architektura GraphQL}
+Implementację GraphQL zrealizowano przy użyciu biblioteki Juniper -- zaawansowanego frameworka wspierającego natywnie strumieniowanie oraz HTTP/2 z wykorzystaniem TLS.
+
+\subsection{Wyniki dla protokołu HTTP/1.1}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http1/test-2026-02-01_14-37-46/req_per_sec.png}
+	\caption{Przepustowość GraphQL HTTP/1.1 dla ładunku 1 KB.}
+	\label{fig:gql_http1_test}
+\end{figure}
+
+GraphQL w połączeniu z HTTP/1.1 osiągnął przepustowość 179760 żądań na sekundę dla standardowego ładunku, co stanowi 76\% wydajności REST API.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http1/large_payload-2026-02-01_14-39-00/req_per_sec.png}
+	\caption{Przepustowość GraphQL HTTP/1.1 dla ładunku 1 MB.}
+	\label{fig:gql_http1_test_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku zmierzono przepustowość 2418 żądań na sekundę, wykazując nieznaczną przewagę (12\%) nad REST API.
+
+\subsection{Wyniki dla protokołu HTTP/2}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http2/test-2026-02-01_14-40-00/req_per_sec.png}
+	\caption{Przepustowość GraphQL HTTP/2 dla ładunku 1 KB.}
+	\label{fig:gql_http2_test}
+\end{figure}
+
+Konfiguracja z HTTP/2 osiągnęła przepustowość 195877 żądań na sekundę, demonstrując 9\% poprawę względem HTTP/1.1 oraz porównywalne wyniki z REST HTTP/2.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http2/large_payload-2026-02-01_14-41-05/req_per_sec.png}
+	\caption{Przepustowość GraphQL HTTP/2 dla ładunku 1 MB.}
+	\label{fig:gql_http2_test_high_payload}
+\end{figure}
+
+Dla dużych pakietów danych zaobserwowano przepustowość 2097 żądań na sekundę, co stanowi 24\% wzrost względem REST HTTP/2.
+
+\section{Architektura gRPC}
+Implementacja gRPC została zrealizowana przy użyciu biblioteki Tonic -- wysoko wydajnego frameworka natywnie wspierającego HTTP/2, strumieniowanie danych oraz szyfrowanie TLS. Ze względu na optymalizację wydajności zrezygnowano z implementacji mechanizmu refleksji API.
+
+\subsection{Wyniki dla protokołu HTTP/2}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/grpc/test-2026-02-01_13-21-44/req_per_sec.png}
+	\caption{Przepustowość gRPC dla ładunku 1 KB.}
+	\label{fig:grpc_http2_test}
+\end{figure}
+
+gRPC osiągnął przepustowość 168060 żądań na sekundę dla standardowego ładunku, co stanowi 15\% spadek względem GraphQL HTTP/2.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/grpc/large_payload-2026-02-01_14-43-53/req_per_sec.png}
+	\caption{Przepustowość gRPC dla ładunku 1 MB.}
+	\label{fig:grpc_http2_test_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku zmierzono przepustowość 2243 żądań na sekundę, wykazując 7\% przewagę nad GraphQL oraz 33\% nad REST w konfiguracji HTTP/2.
+
+\section{Architektura WebSocket}
+Do implementacji architektury WebSocket wykorzystano bibliotekę tungstenite-rs -- popularny framework wysokiego poziomu dedykowany komunikacji dwukierunkowej w czasie rzeczywistym.
+
+\subsection{Wyniki dla protokołu WebSocket}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket/test-2026-02-01_16-55-46/req_per_sec.png}
+	\caption{Przepustowość WebSocket dla ładunku 1 KB.}
+	\label{fig:ws_test}
+\end{figure}
+
+Protokół WebSocket osiągnął przepustowość 122431 żądań na sekundę, wykazując najniższą wartość spośród testowanych protokołów dla standardowego ładunku.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket/test_high_payload-2026-02-01_16-56-43/req_per_sec.png}
+	\caption{Przepustowość WebSocket dla ładunku 1 MB.}
+	\label{fig:ws_test_high_payload}
+\end{figure}
+
+Dla dużych pakietów danych zaobserwowano przepustowość 3187 żądań na sekundę -- najwyższą wartość wśród wszystkich badanych protokołów, przewyższającą o 42\% najbliższego konkurenta (gRPC).
+
+\subsection{Wyniki dla protokołu WebSocket Secure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket_secure/test-2026-02-01_17-08-26/req_per_sec.png}
+	\caption{Przepustowość WSS dla ładunku 1 KB.}
+	\label{fig:wss_test}
+\end{figure}
+
+Wersja zabezpieczona (WSS) osiągnęła przepustowość 111086 żądań na sekundę, co stanowi 9\% degradację względem niezabezpieczonej implementacji.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket_secure/test_high_payload-2026-02-01_17-10-14/req_per_sec.png}
+	\caption{Przepustowość WSS dla ładunku 1 MB.}
+	\label{fig:wss_test_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku zmierzono przepustowość 2932 żądań na sekundę, wykazując 8\% spadek względem wersji niezabezpieczonej.
+
+\section{Architektura SOAP}
+Implementacja protokołu SOAP została przetestowana w obu wersjach HTTP w celu porównania charakterystyk wydajnościowych.
+
+\subsection{Wyniki dla protokołu HTTP/1.1}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http1/test-2026-02-01_14-06-11/req_per_sec.png}
+	\caption{Przepustowość SOAP HTTP/1.1 dla ładunku 1 KB.}
+	\label{fig:soap_http1_test}
+\end{figure}
+
+SOAP z HTTP/1.1 osiągnął przepustowość 198232 żądań na sekundę, demonstrując porównywalne wyniki z REST HTTP/2.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http1/test_high_payload-2026-02-01_14-05-50/req_per_sec.png}
+	\caption{Przepustowość SOAP HTTP/1.1 dla ładunku 1 MB.}
+	\label{fig:soap_http1_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku zmierzono przepustowość 2892 żądań na sekundę -- najwyższą wartość wśród protokołów wykorzystujących HTTP/1.1.
+
+\subsection{Wyniki dla protokołu HTTP/2}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http2/test-2026-02-01_14-08-18/req_per_sec.png}
+	\caption{Przepustowość SOAP HTTP/2 dla ładunku 1 KB.}
+	\label{fig:soap_http2_test}
+\end{figure}
+
+Implementacja z HTTP/2 osiągnęła przepustowość 213973 żądań na sekundę, wykazując 8\% poprawę względem HTTP/1.1 oraz najwyższy wynik spośród wszystkich protokołów HTTP/2.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http2/large_payload_test-2026-02-01_14-09-26/req_per_sec.png}
+	\caption{Przepustowość SOAP HTTP/2 dla ładunku 1 MB.}
+	\label{fig:soap_http2_high_payload}
+\end{figure}
+
+Dla dużych pakietów danych zaobserwowano przepustowość 2478 żądań na sekundę, co stanowi 14\% spadek względem HTTP/1.1.
+
+\section{Protokół MQTT}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/mqtt/test-2026-02-01_18-35-29/req_per_sec.png}
+	\caption{Przepustowość MQTT dla ładunku 1 KB.}
+	\label{fig:mqtt_test}
+\end{figure}
+
+Protokół MQTT osiągnął przepustowość 112126 żądań na sekundę dla standardowego ładunku.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/mqtt/high_payload-2026-02-01_18-34-45/req_per_sec.png}
+	\caption{Przepustowość MQTT dla ładunku 1 MB.}
+	\label{fig:mqtt_test_high_payload}
+\end{figure}
+
+Dla rozszerzonego ładunku zmierzono przepustowość 2167 żądań na sekundę, lokując MQTT w środkowym przedziale wydajnościowym.
+
+\section{Analiza porównawcza formatów serializacji danych}
+
+Przeprowadzono testy wydajnościowe dla sześciu popularnych formatów serializacji, mierząc czas serializacji, deserializacji oraz rozmiar wynikowych danych. Testowy zbiór składał się z 1000 obiektów użytkownika wraz z metadanymi.
+
+\subsection{Apache Avro}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png}
+	\caption{Metryki wydajności Apache Avro.}
+	\label{fig:avro}
+\end{figure}
+
+Apache Avro uzyskał czas serializacji 7,396 ms, deserializacji 5,988 ms przy rozmiarze danych wynoszącym 521727 bajtów.
+
+\subsection{Binary JSON}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png}
+	\caption{Metryki wydajności Binary JSON.}
+	\label{fig:bson}
+\end{figure}
+
+Format BSON wykazał czas serializacji 2,073 ms, deserializacji 4,842 ms, generując dane o rozmiarze 1426779 bajtów -- największym spośród testowanych formatów.
+
+\subsection{JSON}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png}
+	\caption{Metryki wydajności JSON.}
+	\label{fig:json}
+\end{figure}
+
+Standardowy JSON osiągnął czas serializacji 1,294 ms oraz deserializacji 3,565 ms przy rozmiarze 1181768 bajtów, oferując najszybszą deserializację wśród formatów tekstowych.
+
+\subsection{MessagePack}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metrics.png}
+	\caption{Metryki wydajności MessagePack.}
+	\label{fig:message-pack}
+\end{figure}
+
+MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748 ms i deserializacją 2,247 ms, przy kompaktowym rozmiarze 527431 bajtów.
+
+\subsection{Protocol Buffers}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.png}
+	\caption{Metryki wydajności Protocol Buffers.}
+	\label{fig:protobuf}
+\end{figure}
+
+Protocol Buffers osiągnął czas serializacji 1,648 ms, deserializacji 4,724 ms, generując dane o rozmiarze 587684 bajtów.
+
+\subsection{XML}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png}
+	\caption{Metryki wydajności XML.}
+	\label{fig:xml}
+\end{figure}
+
+Format XML wykazał najdłuższe czasy przetwarzania -- serializację 5,273 ms i deserializację 18,078 ms -- przy największym rozmiarze danych 1761825 bajtów, co stanowi 3,4-krotność najbardziej efektywnych formatów binarnych.
+
+\section{Analiza porównawcza protokołów komunikacyjnych}
+
+Przeprowadzone badania umożliwiły kompleksową ocenę wydajności protokołów komunikacyjnych w różnych scenariuszach użycia. Poniższa analiza syntetyzuje kluczowe wnioski z testów.
+
+\subsection{Wpływ rozmiaru ładunku na wydajność}
+
+\begin{table}[H]
+	\centering
+	\caption{Porównanie przepustowości protokołów komunikacyjnych}
+	\label{tab:protocol_comparison}
+	\begin{tabular}{|l|r|r|r|}
+		\hline
+		\textbf{Protokół} & \textbf{1 KB [req/s]} & \textbf{1 MB [req/s]} & \textbf{Degradacja} \\
+		\hline
+		REST HTTP/1.1 & 764,076 & 2,759 & 276.9x \\
+		REST HTTP/2 & 198,272 & 1,690 & 117.3x \\
+		GraphQL HTTP/1.1 & 179,760 & 2,418 & 74.3x \\
+		GraphQL HTTP/2 & 195,877 & 2,097 & 93.4x \\
+		gRPC & 168,060 & 2,243 & 74.9x \\
+		WebSocket & 122,431 & 3,187 & 38.4x \\
+		WebSocket Secure & 111,086 & 2,932 & 37.9x \\
+		SOAP HTTP/1.1 & 198,232 & 2,892 & 68.5x \\
+		SOAP HTTP/2 & 213,973 & 2,478 & 86.3x \\
+		MQTT & 112,126 & 2,167 & 51.7x \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Analiza współczynnika degradacji (tabela \ref{tab:protocol_comparison}) ujawnia fundamentalne różnice w charakterystykach wydajnościowych protokołów. WebSocket Secure wykazał najniższą degradację (37.9x), co potwierdza jego optymalizację dla transmisji dużych wolumenów danych poprzez utrzymywanie stałego połączenia. W przeciwieństwie do tego, REST HTTP/1.1 odnotował najwyższą degradację (276.9x), co jest konsekwencją narzutu związanego z nawiązywaniem nowego połączenia TCP dla każdego żądania oraz brakiem multipleksowania.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/protocol_comparison_grouped.png}
+	\caption{Porównanie przepustowości protokołów dla ładunku 1 KB i 1 MB (skala logarytmiczna).}
+	\label{fig:protocol_comparison_grouped}
+\end{figure}
+
+Wykres \ref{fig:protocol_comparison_grouped} ilustruje wyraźną dychotomię między wydajnością dla małych i dużych ładunków. Protokoły oparte na HTTP/1.1 dominują w scenariuszach małych pakietów, podczas gdy protokoły z trwałymi połączeniami (WebSocket, WSS) wykazują przewagę dla dużych transferów danych.
+
+\subsection{Wpływ TLS na wydajność}
+
+Bezpieczeństwo transmisji za pomocą TLS wprowadza dodatkowy narzut wydajnościowy, jednak jest niezbędne w aplikacjach produkcyjnych. Kluczowe aspekty TLS handshake:
+
+\begin{itemize}
+	\item \textbf{Czas inicjalizacji}: TLS handshake typowo dodaje 50-100 ms opóźnienia dla pierwszego połączenia
+	\item \textbf{Narzut obliczeniowy}: Szyfrowanie symetryczne (AES) ma minimalny wpływ na przepustowość (<5\%)
+	\item \textbf{Optymalizacja}: HTTP/2 i WebSocket amortyzują koszt TLS poprzez długotrwałe połączenia
+	\item \textbf{Session resumption}: TLS 1.3 redukuje czas ponownego handshake'a do ~1 RTT
+\end{itemize}
+
+Porównanie WebSocket (122,431 req/s) vs WebSocket Secure (111,086 req/s) pokazuje 9\% degradację -- znacząco niższą niż REST HTTP/1.1 vs HTTP/2 (74\%), co wskazuje, że jednorazowy koszt TLS handshake jest amortyzowany w długotrwałych połączeniach.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/protocol_degradation.png}
+	\caption{Współczynnik degradacji wydajności przy zwiększeniu ładunku z 1 KB do 1 MB.}
+	\label{fig:protocol_degradation}
+\end{figure}
+
+\subsection{Rekomendacje wyboru protokołu}
+
+Na podstawie przeprowadzonych badań, dobór protokołu powinien uwzględniać specyficzne wymagania aplikacji:
+
+\begin{enumerate}
+	\item \textbf{REST API (HTTP/1.1 lub HTTP/2)}
+	\begin{itemize}
+		\item Zastosowanie: Aplikacje webowe, API publiczne, architektury mikroserwisowe
+		\item Zalety: Najlepsza skalowalność, cache'owalność, powszechne wsparcie
+		\item Wybór HTTP/2: Gdy priorytetem jest ograniczenie head of line blocking i bezpieczeństwo
+	\end{itemize}
+	
+	\item \textbf{GraphQL}
+	\begin{itemize}
+		\item Zastosowanie: aplikacje frontendowe, złożone modele danych
+		\item Zalety: Eliminacja over-fetchingu, redukcja liczby zapytań
+		\item Kompromis: ~1-2\% niższa wydajność niż REST przy znaczącej poprawie pisania oprogramowania
+	\end{itemize}
+	
+	\item \textbf{gRPC}
+	\begin{itemize}
+		\item Zastosowanie: Komunikacja pomiędzy serwisami, wysoko wydajne współczesne rozwiązania backendowe
+		\item Zalety: Najlepsza wydajność dla dużych ładunków w HTTP/2, silne kontrakty, eliminacja problemu pomiędzy językami programowania.
+		\item Ograniczenie: Słabsze wsparcie w przeglądarkach (wymaga gRPC-web)
+	\end{itemize}
+	
+	\item \textbf{WebSocket/WSS}
+	\begin{itemize}
+		\item Zastosowanie: Aplikacje czasu rzeczywistego (czaty, giełdy, gry)
+		\item Zalety: Najniższa latencja, najlepsza wydajność dla dużych ładunków
+		\item Kompromis: Zwiększona złożoność skalowania. 
+	\end{itemize}
+	
+	\item \textbf{SOAP}
+	\begin{itemize}
+		\item Zastosowanie: Systemy enterprise, integracje legacy, transakcje finansowe
+		\item Zalety: Formalne standardy (WS-Security, WS-Transaction), compliance
+		\item Ograniczenie: Narzut XML, większa złożoność implementacji
+	\end{itemize}
+	
+	\item \textbf{MQTT}
+	\begin{itemize}
+		\item Zastosowanie: IoT, urządzenia wbudowane, sieci z ograniczonym pasmem
+		\item Zalety: Minimalny narzut protokołu, automatyczne kolejkowanie.
+		\item Optymalne: Dla rozproszonych sieci.
+	\end{itemize}
+\end{enumerate}
+
+\subsection{Kluczowe wnioski}
+
+Przeprowadzone badania prowadzą do następujących konkluzji:
+
+\begin{enumerate}
+	\item \textbf{Brak uniwersalnego lidera}: Każdy protokół wykazuje przewagi w specyficznych scenariuszach użycia. REST HTTP/1.1 dominuje dla małych zapytań, WebSocket dla dużych transferów, gRPC dla komunikacji pomiędzy serwisami lub aplikacjami backendowymi.
+	
+	\item \textbf{TLS jest akceptowalnym kosztem}: Degradacja wydajności 5-15\% (w zależności od protokołu) jest w pełni uzasadniona przez krytyczne wymagania bezpieczeństwa. Nowoczesne implementacje TLS 1.3 dodatkowo minimalizują ten narzut.
+	
+	\item \textbf{Długotrwałe połączenia amortyzują koszty}: Protokoły takie jak WebSocket, HTTP/2 wykazują niższą degradację przy wzroście ładunku, co czyni je preferowanymi dla ładunków o wysokiej przepustowości.
+	
+	\item \textbf{Multipleksowanie rozwiązuje HOL blocking}: HTTP/2 osiągnęło 69-krotną poprawę w testach HOL, potwierdzając efektywność multipleksowania strumieni.
+	
+	\item \textbf{Specjalizacja protokołów IoT}: MQTT, mimo umiarkowanej przepustowości, pozostaje optymalnym wyborem dla IoT dzięki mechanizmom QoS i niskiej konsumpcji zasobów.
+\end{enumerate}
+
+\section{Analiza porównawcza WebAssembly i JavaScript}
+
+\subsection{WebWorker}
+
+\subsection{Canvas}
