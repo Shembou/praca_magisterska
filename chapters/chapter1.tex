@@ -14,7 +14,7 @@ Taki model projektowy umożliwia łatwiejszą skalowalność oraz rozwój system
 
 \section{Protokoły komunikacyjne jako fundament wymiany danych}
 
-Protokoły komunikacyjne definiują sposób, w jaki dane są przesyłane pomiędzy uczestnikami komunikacji. W aplikacjach webowych powszechnie wykorzystywane są protokoły oparte na rodzinie HTTP, jednak wraz z rozwojem technologii pojawiły się również alternatywne rozwiązania, takie jak gRPC czy WebSocket. Każdy z tych protokołów oferuje inne właściwości w zakresie wydajności, sposobu zestawiania połączeń, obsługi strumieniowania danych oraz kompatybilności z istniejącą infrastrukturą.
+Protokoły komunikacyjne definiują sposób, w jaki dane są przesyłane pomiędzy uczestnikami komunikacji. W aplikacjach webowych powszechnie wykorzystywane są protokoły oparte na rodzinie HTTP, jednak wraz z rozwojem technologii pojawiły się również alternatywne rozwiązania, takie jak gRPC, WebSocket, GraphQL. Każdy z tych protokołów oferuje inne właściwości w zakresie wydajności, sposobu zestawiania połączeń, obsługi strumieniowania danych oraz kompatybilności z istniejącą infrastrukturą.
 
 Dobór protokołu komunikacyjnego powinien uwzględniać charakter wymiany danych, częstotliwość komunikacji, wymagania dotyczące opóźnień oraz środowisko uruchomieniowe aplikacji. Przykładowo, protokoły oparte na długotrwałych połączeniach mogą być bardziej efektywne w aplikacjach czasu rzeczywistego, natomiast klasyczne podejście żądanie--odpowiedź sprawdza się w prostszych scenariuszach komunikacyjnych.
 
@@ -27,27 +27,55 @@ Celem niniejszej pracy jest dostarczenie empirycznych danych oraz praktycznych w
 \section{Słownik pojęć i skrótów}
 
 \begin{description}
-	\item[\textbf{API} (\textit{Application Programming Interface})] -
-	Zbiór reguł i definicji umożliwiających komunikację pomiędzy różnymi komponentami oprogramowania \cite{api_wiki}.
+	\item[\textbf{API} (\textit{Application Programming Interface})] --
+	Zbiór reguł, definicji oraz mechanizmów umożliwiających komunikację pomiędzy różnymi komponentami oprogramowania \cite{api_wiki}.
 	
-	\item[\textbf{HTTP} (\textit{Hypertext Transfer Protocol})] -
-	Protokół komunikacyjny wykorzystywany do przesyłania danych w sieci WWW \cite{http_wiki}.
+	\item[\textbf{HTTP} (\textit{Hypertext Transfer Protocol})] --
+	Protokół komunikacyjny wykorzystywany do przesyłania danych w sieci WWW w modelu klient--serwer \cite{http_wiki}.
 	
-	\item[\textbf{WebSocket}] -
-	Protokół umożliwiający dwukierunkową komunikację w czasie rzeczywistym pomiędzy klientem a serwerem \cite{websocket_wiki}. 
+	\item[\textbf{WebSocket}] --
+	Protokół umożliwiający utrzymywanie stałego, dwukierunkowego połączenia pomiędzy klientem a serwerem, wykorzystywany do komunikacji w czasie rzeczywistym \cite{websocket_wiki}.
 	
-	\item[\textbf{gRPC}] -
-	Wysokowydajny framework komunikacyjny oparty na protokole HTTP/2 i formacie \textit{Protocol Buffers} \cite{grpc_wiki}.
+	\item[\textbf{gRPC}] --
+	Wysokowydajny framework komunikacyjny typu RPC, oparty na protokole HTTP/2 oraz binarnym formacie \textit{Protocol Buffers} \cite{grpc_wiki}.
 	
-	\item[\textbf{Serializacja}]-
-	Proces przekształcania struktury danych do postaci umożliwiającej jej zapis lub transmisję \cite{serialization_wiki}.
+	\item[\textbf{Protocol Buffers} (\textit{Protobuf})] --
+	Binarny format serializacji danych opracowany przez firmę Google, wykorzystywany m.in. w komunikacji gRPC \cite{protobuf_meaning}.
 	
-	\item[\textbf{Deserializacja}]- 
-	Proces odtwarzania struktury danych na podstawie jej zserializowanej reprezentacji \cite{deserialization_wiki}.
+	\item[\textbf{SOAP} (\textit{Simple Object Access Protocol})] --
+	Protokół komunikacyjny oparty na wymianie komunikatów XML, stosowany w architekturach usług sieciowych \cite{SOAP}.
 	
-	\item[\textbf{WebAssembly} (\textit{Wasm})]  - 
-	Binarny format wykonywalnego kodu umożliwiający uruchamianie aplikacji o wysokiej wydajności w przeglądarkach internetowych \cite{webassembly_meaning}.
+	\item[\textbf{MQTT} (\textit{Message Queuing Telemetry Transport})] --
+	Lekki protokół komunikacyjny typu publish--subscribe, przeznaczony do systemów o ograniczonych zasobach oraz komunikacji w sieciach o niskiej przepustowości \cite{MQTT}.
 	
-	\item[\textbf{Architektura klient--serwer}]  -
-	Model architektoniczny, w którym klient inicjuje żądania, a serwer je obsługuje i zwraca odpowiedzi \cite{client_server_meaning}.
+	\item[\textbf{Serializacja}] --
+	Proces przekształcania struktury danych do postaci umożliwiającej jej zapis lub transmisję pomiędzy systemami \cite{serialization_wiki}.
+	
+	\item[\textbf{Deserializacja}] --
+	Proces odtwarzania pierwotnej struktury danych na podstawie jej zserializowanej reprezentacji \cite{deserialization_wiki}.
+	
+	\item[\textbf{XML} (\textit{eXtensible Markup Language})] --
+	Rozszerzalny język znaczników wykorzystywany do opisu i strukturyzacji danych tekstowych \cite{XML}.
+	
+	\item[\textbf{Strumieniowanie danych}] --
+	Technika przetwarzania i przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletny zbiór danych \cite{stream}.
+	
+	\item[\textbf{Head-of-Line Blocking} (\textit{HOL})] --
+	Zjawisko polegające na blokowaniu przetwarzania kolejnych żądań przez opóźnienie jednego z nich w ramach tego samego połączenia \cite{HOL}.
+	
+	\item[\textbf{WebAssembly} (\textit{Wasm})] --
+	Binarny format wykonywalnego kodu umożliwiający uruchamianie aplikacji o wysokiej wydajności w środowisku przeglądarek internetowych \cite{webassembly_meaning}.
+	
+	\item[\textbf{TLS} (\textit{Transport Layer Security})] --
+	Protokół kryptograficzny zapewniający poufność, integralność oraz uwierzytelnianie danych przesyłanych w sieci komputerowej \cite{tls}.
+	
+	\item[\textbf{Architektura klient--serwer}] --
+	Model architektoniczny, w którym klient inicjuje żądania, a serwer przetwarza je i zwraca odpowiedzi \cite{client_server_meaning}.
+	
+	\item[\textbf{Silnik JavaScript V8}] --
+	Wysokowydajny silnik JavaScript opracowany przez firmę Google, wykorzystywany m.in. w przeglądarce Google Chrome oraz środowisku Node.js \cite{Jv8}.
+	
+	\item[\textbf{DOM} (\textit{Document Object Model})] --
+	Model obiektowy dokumentu HTML lub XML, który reprezentuje jego strukturę w postaci drzewa obiektów, umożliwiając programom (np. skryptom JavaScript) dynamiczny dostęp do zawartości, struktury oraz stylów strony internetowej \cite{dom_wiki}.
+	
 \end{description}

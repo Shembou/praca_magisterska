@@ -91,16 +91,6 @@ Celem niniejszej pracy magisterskiej jest analiza i porównanie wydajności wybr
 
 Dodatkowym celem pracy jest zbadanie wpływu zastosowania technologii WebAssembly na wydajność przetwarzania danych po stronie klienta w porównaniu z tradycyjnym podejściem opartym na języku JavaScript. W tym kontekście przeprowadzono eksperymenty mające na celu ocenę różnic w czasie wykonywania operacji, zużyciu zasobów oraz potencjalnych korzyściach wynikających z wykorzystania WebAssembly w aplikacjach webowych.
 
-Praca została podzielona na cztery rozdziały.  
-
-W pierwszym rozdziale przedstawiono wprowadzenie do tematyki pracy, obejmujące podstawowe pojęcia związane z komunikacją w aplikacjach webowych oraz uzasadnienie podjęcia badań nad wydajnością protokołów i technologii wykorzystywanych w nowoczesnych systemach informatycznych.  
-
-Rozdział drugi poświęcono porównaniu protokołów komunikacyjnych stosowanych w aplikacjach webowych. Opisano w nim charakterystykę wybranych protokołów, takich jak HTTP/1.1, HTTP/2, GraphQL, gRPC, SOAP, WebSocket Secure oraz WebSocket, a także przedstawiono środowisko badawcze, wykorzystane narzędzia, biblioteki oraz sposób przeprowadzania eksperymentów wydajnościowych.  
-
-W rozdziale trzecim zaprezentowano różnice pomiędzy formatami danych wykorzystywanymi w komunikacji sieciowej. Omówiono takie aspekty jak rozmiar przesyłanych danych, czas przetwarzania oraz kompatybilność pomiędzy systemami na przykładzie formatów JSON, XML, Protocol Buffers oraz MessagePack.  
-
-Czwarty rozdział poświęcono analizie wydajności technologii WebAssembly w porównaniu z JavaScriptem. Przedstawiono w nim wyniki przeprowadzonych eksperymentów oraz ocenę wpływu obu podejść na wydajność aplikacji webowych.  
-
 Podsumowując, praca ma na celu dostarczenie praktycznych i eksperymentalnie potwierdzonych wniosków, które mogą stanowić wsparcie przy wyborze protokołów komunikacyjnych, formatów danych oraz technologii wykonawczych w projektowaniu wydajnych i nowoczesnych aplikacji webowych.
 
 \input{chapters/chapter1}
@@ -110,7 +100,53 @@ Podsumowując, praca ma na celu dostarczenie praktycznych i eksperymentalnie pot
 \input{chapters/chapter5}
 
 \chapter*{Zakończenie}
+\addcontentsline{toc}{chapter}{Zakończenie}
 
+Niniejsza praca magisterska poświęcona była kompleksowej analizie wydajności protokołów komunikacyjnych, formatów serializacji danych oraz technologii wykonawczych stosowanych we współczesnych aplikacjach webowych. Przeprowadzone badania eksperymentalne dostarczyły cennych danych ilościowych oraz pozwoliły na sformułowanie praktycznych rekomendacji dla architektów systemów i programistów.
+
+\section*{Podsumowanie wyników badań}
+
+Analiza protokołów komunikacyjnych wykazała, że nie istnieje uniwersalne rozwiązanie optymalne dla wszystkich scenariuszy użycia. REST API z protokołem HTTP/1.1 osiągnął najwyższą przepustowość dla małych pakietów danych (764~076 żądań na sekundę), co czyni go doskonałym wyborem dla mikrousług operujących na niewielkich zbiorach danych niewymagających bezpiecznego połączenia. Z kolei WebSocket wykazał najlepszą wydajność dla transferu dużych ładunków (3~187 żądań na sekundę) oraz najniższy współczynnik degradacji (38,4×), potwierdzając przewagę protokołów z trwałymi połączeniami w scenariuszach wymagających intensywnej wymiany danych.
+
+Szczególnie istotnym odkryciem była efektywność protokołu HTTP/2 w mitigacji problemu Head-of-Line blocking. Osiągnięta 69-krotna poprawa przepustowości w porównaniu z HTTP/1.1 (135~372 vs. 1~954 żądań na sekundę) potwierdza, że mechanizm multipleksowania strumieni stanowi fundamentalną optymalizację dla nowoczesnych aplikacji webowych. Dodatkowym aspektem wartym podkreślenia jest stosunkowo niewielki narzut wydajnościowy związany z warstwą TLS -- degradacja rzędu 5--15\% jest w pełni akceptowalna w kontekście krytycznych wymagań bezpieczeństwa współczesnych systemów.
+
+W zakresie formatów serializacji MessagePack osiągnął najkrótszy całkowity czas przetwarzania (2,995~ms), podczas gdy Apache Avro zapewnił najlepszą kompresję danych (509,5~KB). Format JSON, mimo 2,2-krotnie większego rozmiaru względem formatów binarnych, pozostaje wartościowym wyborem ze względu na czytelność, debugowalność oraz natywne wsparcie w przeglądarkach. Z kolei XML, choć wykazał najgorsze metryki wydajnościowe (23,4~ms łącznie, 1721~KB), zachowuje znaczenie w środowiskach enterprise ze względu na wymagania regulacyjne oraz wsparcie dla złożonych schematów walidacji.
+
+Analiza technologii WebAssembly dostarczyła niuansowanego obrazu jej zastosowania w aplikacjach webowych. Kluczowym wnioskiem jest, że złożoność obliczeniowa stanowi czynnik decydujący o opłacalności implementacji w WebAssembly. Podczas gdy proste operacje (grayscale, brightness, contrast) wykazały lepszą wydajność w JavaScript, złożone algorytmy -- reprezentowane przez operację blur -- osiągnęły 3,52-krotne przyspieszenie w WebAssembly (371,3~ms vs. 1308,5~ms). Ten wzorzec potwierdza, że WebAssembly znajduje optymalne zastosowanie w scenariuszach wymagających intensywnych obliczeń numerycznych, podczas gdy JavaScript pozostaje preferowany dla operacji o niskiej złożoności oraz częstej interakcji z DOM.
+
+\section*{Wkład naukowy i praktyczny}
+
+Wartość niniejszej pracy przejawia się w kilku kluczowych aspektach. Po~pierwsze, przeprowadzone badania opierają się na rzeczywistych implementacjach oraz kontrolowanych eksperymentach, eliminując abstrakcyjne założenia teoretyczne. Ujednolicona metodologia testowania (100 współbieżnych operacji, 1000 zapytań na wątek) zapewnia porównywalność wyników między różnymi protokołami i formatami.
+
+Po drugie, praca dostarcza konkretnych, kwantyfikowalnych metryk wydajnościowych, które mogą stanowić bezpośrednie wsparcie w procesie podejmowania decyzji architektonicznych. Zamiast ogólnych stwierdzeń typu ``protokół X jest szybszy od Y'', prezentowane są precyzyjne dane numeryczne wraz z analizą kontekstów, w których dana technologia wykazuje przewagę.
+
+Po trzecie, sformułowane rekomendacje uwzględniają wielowymiarowy charakter wydajności systemu -- nie ograniczają się wyłącznie do przepustowości, ale uwzględniają również aspekty takie jak skalowalność, kompatybilność wsteczna, developer experience oraz wymagania bezpieczeństwa i compliance.
+
+\section*{Ograniczenia badań}
+
+Przy interpretacji wyników należy uwzględnić pewne ograniczenia przeprowadzonych badań. Testy wykonano w kontrolowanym środowisku testowym, które nie w pełni odzwierciedla złożoność środowisk produkcyjnych, charakteryzujących się zmiennym obciążeniem sieciowym, różnorodną infrastrukturą oraz nieprzewidywalnymi wzorcami użytkowania.
+
+Dodatkowo, implementacje testowe zostały zoptymalizowane pod kątem maksymalnej wydajności dla poszczególnych protokołów, co może nie odzwierciedlać typowych wdrożeń produkcyjnych, w których priorytetem jest często równowaga między wydajnością a możliwością utrzymania kodu oraz zgodnością z istniejącą architekturą systemu.
+
+Warto również zaznaczyć, że wyniki dotyczące WebAssembly odnoszą się do konkretnych implementacji algorytmów i mogą różnić się w zależności od charakterystyki przetwarzanych danych oraz specyfiki wykorzystywanych bibliotek.
+
+\section*{Kierunki dalszych badań}
+
+Przeprowadzone badania otwierają kilka perspektywicznych kierunków dalszych eksploracji. Pierwszym z nich jest analiza wydajności protokołów w środowiskach rozproszonych charakteryzujących się wysokim opóźnieniem sieciowym oraz niestabilnymi połączeniami, co jest szczególnie istotne w kontekście aplikacji mobilnych oraz systemów IoT.
+
+Interesującym kierunkiem jest również badanie wpływu nowych wersji protokołów -- w szczególności HTTP/3 z protokołem QUIC -- na wydajność komunikacji w aplikacjach webowych. HTTP/3, eliminujący problem Head-of-Line blocking na poziomie warstwy transportowej, może istotnie zmienić krajobraz wydajnościowy prezentowany w niniejszej pracy.
+
+Wreszcie, w kontekście rosnącej popularności architektur serverless oraz edge computing, wartościowe byłoby zbadanie, jak charakterystyki wydajnościowe poszczególnych protokołów i formatów zmieniają się w środowiskach o dynamicznej skalowalności i geograficznie rozproszonych węzłach obliczeniowych.
+
+\section*{Wnioski końcowe}
+
+Głównym przesłaniem niniejszej pracy jest przekonanie, że świadome i oparte na danych empirycznych decyzje architektoniczne stanowią fundament wydajnych systemów informatycznych. Wybór protokołu komunikacyjnego, formatu serializacji oraz technologii wykonawczej powinien być determinowany przez specyficzne wymagania aplikacji, uwzględniając takie czynniki jak charakterystyka przetwarzanych danych, oczekiwana latencja, wymagania bezpieczeństwa oraz ograniczenia infrastrukturalne.
+
+Przeprowadzone badania potwierdzają, że nowoczesne aplikacje webowe mogą osiągać wysoką wydajność poprzez inteligentne wykorzystanie dostępnych technologii. REST API pozostaje doskonałym wyborem dla większości aplikacji webowych dzięki skalowalności i uniwersalności, WebSocket okazuje się optymalny dla komunikacji w czasie rzeczywistym, gRPC przewyższa konkurencję w komunikacji backend-to-backend, a WebAssembly stanowi wartościowe uzupełnienie JavaScript w scenariuszach wymagających intensywnych obliczeń.
+
+Równocześnie praca podkreśla, że wydajność nie powinna być traktowana jako wyłączny czynnik decyzyjny -- aspekty takie jak możliwość utrzymania kodu, ekosystem narzędzi, wsparcie społeczności oraz kompatybilność z istniejącymi systemami często przeważają nad przewagą wydajnościową rzędu kilku czy kilkunastu procent.
+
+Podsumowując, niniejsza praca dostarcza praktycznych wskazówek oraz danych empirycznych, które mogą wspierać proces projektowania i optymalizacji nowoczesnych aplikacji webowych. Mam nadzieję, że przedstawione wyniki i rekomendacje okażą się wartościowe dla architektów systemów, programistów oraz badaczy zajmujących się wydajnością aplikacji internetowych.
 
 
 \bibliographystyle{plain}

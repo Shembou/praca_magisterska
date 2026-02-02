@@ -1,10 +1,46 @@
 \begin{thebibliography}{10}
 
+\bibitem{bun}
+{Anthropic}.
+\newblock bun documentation.
+\newblock \url{https://bun.com//}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{git}
 {Git Project}.
 \newblock Git.
 \newblock \url{https://git-scm.com/}.
 \newblock [dostęp: 21 stycznia 2026].
+
+\bibitem{juniper}
+{github}.
+\newblock Juniper graphql server library for rust.
+\newblock \url{https://github.com/graphql-rust/juniper}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{tonic}
+{github}.
+\newblock Tonic framework.
+\newblock \url{https://github.com/hyperium/tonic}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{Jv8}
+{Google}.
+\newblock Javascript v8 engine.
+\newblock \url{https://v8.dev/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{protobuf_meaning}
+{Google}.
+\newblock Protocol buffers.
+\newblock \url{https://protobuf.dev/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{typesciript}
+{Microsoft}.
+\newblock Typescript.
+\newblock \url{https://www.typescriptlang.org/}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{vscode}
 {Microsoft}.
@@ -12,17 +48,77 @@
 \newblock \url{https://code.visualstudio.com/}.
 \newblock [dostęp: 21 stycznia 2026].
 
-\bibitem{npm}
-{npm, Inc.}
-\newblock npm documentation.
-\newblock \url{https://www.npmjs.com/}.
-\newblock [dostęp: 21 stycznia 2026].
+\bibitem{MQTT}
+{MQTT.org}.
+\newblock Message queuing telemetry transport.
+\newblock \url{https://mqtt.org/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{prost}
+{Open source}.
+\newblock Prost.
+\newblock \url{https://github.com/tokio-rs/prost}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{qXML}
+{Open Source}.
+\newblock quck-xml.
+\newblock \url{https://crates.io/crates/quick-xml/0.24.1}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{serde}
+{Open source}.
+\newblock Serde.
+\newblock \url{https://serde.rs/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{rumqttc}
+{Ravi Teja}.
+\newblock rumqttc.
+\newblock \url{https://crates.io/crates/rumqttc}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{cargo}
 {Rust Project}.
 \newblock Cargo – the rust package manager.
 \newblock \url{https://doc.rust-lang.org/cargo/}.
 \newblock [dostęp: 21 stycznia 2026].
+
+\bibitem{rust}
+{Rust Team}.
+\newblock Rust language.
+\newblock \url{https://rust-lang.org/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{tungstenite}
+{Snapview GmbH}.
+\newblock tungstenite-rs.
+\newblock \url{https://github.com/snapview/tungstenite-rs}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{h2load}
+{Tatsuhiro Tsujikawa}.
+\newblock h2load.
+\newblock \url{https://nghttp2.org/documentation/h2load-howto.html#}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{actix}
+{@The Actix Team}.
+\newblock Actix-web.
+\newblock \url{https://actix.rs/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{avro}
+{The Apache Software Foundation }.
+\newblock Apache avro.
+\newblock \url{https://avro.apache.org/docs/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{gql}
+{The GraphQL Foundation.}
+\newblock Graphql.
+\newblock \url{https://graphql.org/}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{webassembly_meaning}
 Webassembly.org.
@@ -37,11 +133,23 @@ Wikipedia.
   \url{https://en.wikipedia.org/wiki/Marshalling_(computer_science)#Unmarshalling}.
 \newblock [dostęp: 21 stycznia 2026].
 
+\bibitem{XML}
+{Wikipedia}.
+\newblock Extensible markup language.
+\newblock \url{https://pl.wikipedia.org/wiki/XML}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{grpc_wiki}
 Wikipedia.
 \newblock google remote procedure call.
 \newblock \url{https://en.wikipedia.org/wiki/GRPC}.
 \newblock [dostęp: 21 stycznia 2026].
+
+\bibitem{HOL}
+{Wikipedia}.
+\newblock Head-of-line-blocking.
+\newblock \url{https://en.wikipedia.org/wiki/Head-of-line_blocking}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{http_wiki}
 Wikipedia.
@@ -56,17 +164,47 @@ Wikipedia.
   \url{https://pl.wikipedia.org/wiki/Interfejs_programowania_aplikacji}.
 \newblock [dostęp: 21 stycznia 2026].
 
+\bibitem{javascript}
+{Wikipedia}.
+\newblock Javascript.
+\newblock \url{https://pl.wikipedia.org/wiki/JavaScript}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{client_server_meaning}
 Wikipedia.
 \newblock Model klient serwer.
 \newblock \url{https://en.wikipedia.org/wiki/Client%E2%80%93server_model}.
 \newblock [dostęp: 21 stycznia 2026].
 
+\bibitem{python}
+{Wikipedia}.
+\newblock Python.
+\newblock \url{https://en.wikipedia.org/wiki/Python_(programming_language)}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{serialization_wiki}
 Wikipedia.
 \newblock Serializacja.
 \newblock \url{https://en.wikipedia.org/wiki/Serialization}.
 \newblock [dostęp: 21 stycznia 2026].
+
+\bibitem{SOAP}
+{Wikipedia}.
+\newblock Simple object access protocol.
+\newblock \url{https://en.wikipedia.org/wiki/SOAP}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{stream}
+{Wikipedia}.
+\newblock Strumieniowanie.
+\newblock \url{https://en.wikipedia.org/wiki/Stream_(computing)}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{tls}
+{Wikipedia}.
+\newblock Tls - transport layer security.
+\newblock \url{https://pl.wikipedia.org/wiki/Transport_Layer_Security}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{websocket_wiki}
 Wikipedia.

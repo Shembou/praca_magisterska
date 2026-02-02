@@ -92,9 +92,9 @@ Dla każdego zaimplementowanego protokołu komunikacji przeprowadzono cztery kat
 	
 	\item \textbf{Transmisja dużych pakietów danych} -- test analogiczny do poprzedniego, z tą różnicą, że rozmiar przesyłanych danych wynosi 1~MB. Eksperyment ten umożliwia ocenę wydajności protokołów w scenariuszu transferu większych zasobów.
 	
-	\item \textbf{Head-of-Line Blocking} -- test weryfikujący występowanie zjawiska blokowania głowy kolejki, w którym opóźnienie w przetwarzaniu jednego żądania wpływa na obsługę kolejnych żądań w ramach tego samego połączenia. Pomiar ten jest szczególnie istotny dla protokołów wykorzystujących multipleksowanie strumieni.
+	\item \textbf{Head-of-Line Blocking} -- test weryfikujący występowanie zjawiska blokowania głowy kolejki, w którym opóźnienie w przetwarzaniu jednego żądania wpływa na obsługę kolejnych żądań w ramach tego samego połączenia. Testom został poodany tylko protokół HTTP1.1 oraz HTTP2.
 	
-	\item \textbf{Strumieniowanie danych} -- test przeprowadzany wyłącznie dla protokołów wspierających tryb strumieniowy (streaming). Ocenie podlega efektywność przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletną odpowiedź serwera.
+	\item \textbf{Strumieniowanie danych} -- test przeprowadzany wyłącznie dla protokołów wspierających tryb strumieniowy (streaming). Ocenie podlega efektywność przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletną odpowiedź serwera. Testom został poodany tylko protokół HTTP1.1 oraz HTTP2.
 \end{enumerate}
 
 \subsection{Aplikacje zawarte w katalogu data-serialization-formats}
@@ -143,3 +143,17 @@ Dla każdego formatu serializacji mierzono następujące parametry wydajnościow
 \end{enumerate}
 
 Wykorzystanie identycznego zestawu danych testowych dla wszystkich formatów serializacji umożliwia obiektywne porównanie ich wydajności oraz charakterystyk w zakresie rozmiaru wynikowych struktur danych.
+
+\subsection{Aplikacje zawarte w katalogu wasm oraz wasm-showcase}
+
+Katalogi \textit{wasm} oraz \textit{wasm-showcase} obejmują zbiór aplikacji eksperymentalnych napisanych w języku Rust, które zostały skompilowane do formatu WebAssembly (WASM) z wykorzystaniem narzędzia \textit{wasm-pack}. Celem tych aplikacji jest analiza wpływu wykorzystania technologii WebAssembly na wydajność wykonywania obliczeń po stronie klienta w środowisku przeglądarki internetowej.
+
+W ramach przeprowadzonych eksperymentów porównywany jest czas wykonania wybranych operacji matematycznych realizowanych bezpośrednio w języku JavaScript oraz analogicznych operacji wykonywanych przez skompilowane moduły WebAssembly. Takie zestawienie umożliwia ocenę potencjalnych korzyści wynikających z wykorzystania kodu natywnego kompilowanego do WASM w kontekście obliczeń o zwiększonej złożoności.
+
+Testy zostały przeprowadzone z wykorzystaniem dwóch interfejsów programistycznych dostępnych w środowisku webowym:
+\begin{itemize}
+	\item \textbf{Canvas API} -- wykorzystywanego do wykonywania obliczeń związanych z przetwarzaniem grafiki oraz renderowaniem dynamicznych scen, co pozwala ocenić wydajność obliczeń realizowanych w głównym wątku aplikacji,
+	\item \textbf{Web Workers API} -- umożliwiającego uruchamianie modułów WebAssembly w osobnych wątkach roboczych, co pozwala na analizę wpływu przetwarzania równoległego na czas wykonania obliczeń oraz responsywność interfejsu użytkownika.
+\end{itemize}
+
+Zastosowanie zarówno Canvas API, jak i Web Workers pozwala na kompleksową ocenę wydajności modułów WebAssembly w różnych scenariuszach użycia, obejmujących zarówno obciążenie głównego wątku aplikacji, jak i przetwarzanie asynchroniczne. Wyniki uzyskane w ramach tych testów stanowią podstawę do dalszej analizy porównawczej przedstawionej w kolejnym rozdziale pracy.

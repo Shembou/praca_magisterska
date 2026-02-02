@@ -15,10 +15,13 @@ Visual Studio Code jest wieloplatformowym edytorem kodu źródłowego rozwijanym
 
 Visual Studio Code oferuje funkcje takie jak podświetlanie składni, inteligentne uzupełnianie kodu, debugowanie aplikacji oraz integrację z systemem Git. Jego popularność wynika z dużej elastyczności, aktywnej społeczności oraz regularnych aktualizacji, co czyni go jednym z najczęściej wybieranych narzędzi programistycznych.
 
-\section{NPM}
-NPM (Node Package Manager) jest menedżerem pakietów przeznaczonym dla środowiska Node.js \cite{npm}. Jego głównym zadaniem jest zarządzanie zależnościami projektu, w tym instalowanie, aktualizowanie oraz usuwanie bibliotek zewnętrznych. NPM umożliwia również publikowanie własnych pakietów w publicznym repozytorium, co wspiera ponowne wykorzystanie kodu.
+\section{Bun}
 
-Centralnym elementem działania NPM jest plik \texttt{package.json}, w którym definiowane są informacje o projekcie, jego zależnościach oraz skryptach automatyzujących typowe zadania, takie jak budowanie aplikacji czy uruchamianie testów. Narzędzie to stanowi podstawowy element ekosystemu JavaScript i jest powszechnie wykorzystywane w projektach frontendowych oraz backendowych.
+Bun jest nowoczesnym środowiskiem uruchomieniowym dla języka JavaScript, TypeScript oraz WebAssembly, pełniącym jednocześnie rolę menedżera pakietów, narzędzia do budowania aplikacji oraz serwera uruchomieniowego \cite{bun}. Jego głównym celem jest zwiększenie wydajności i uproszczenie procesu tworzenia aplikacji webowych poprzez integrację funkcjonalności, które w tradycyjnym ekosystemie Node.js realizowane są przez wiele odrębnych narzędzi.
+
+Jednym z kluczowych elementów środowiska Bun jest wbudowany menedżer pakietów, stanowiący alternatywę dla NPM. Umożliwia on instalowanie, aktualizowanie oraz usuwanie zależności projektowych, a także korzystanie z pakietów dostępnych w rejestrze NPM, przy jednoczesnym zachowaniu znacznie krótszych czasów instalacji. Konfiguracja projektu opiera się na pliku \texttt{package.json}, analogicznie do standardowego ekosystemu JavaScript, natomiast dodatkowym elementem jest plik \texttt{bun.lock}, zapewniający deterministyczność i powtarzalność procesu budowania aplikacji.
+
+Bun obsługuje również natywne uruchamianie kodu TypeScript bez konieczności wcześniejszej transpilacji oraz oferuje wbudowany system budowania i bundlowania zasobów. Dzięki temu środowisko to może pełnić rolę kompleksowej platformy deweloperskiej, szczególnie przydatnej w aplikacjach frontendowych, backendowych oraz projektach wykorzystujących technologię WebAssembly.
 
 \section{Cargo}
 Cargo jest oficjalnym narzędziem do zarządzania projektami w języku Rust \cite{cargo}. Odpowiada ono za proces kompilacji kodu źródłowego, pobieranie i zarządzanie zależnościami oraz uruchamianie testów jednostkowych. Cargo integruje się bezpośrednio z kompilatorem Rust, zapewniając spójność i automatyzację procesu budowania aplikacji.

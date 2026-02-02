@@ -1,335 +1,572 @@
 \chapter{Przeprowadzanie testów}
+
 Niniejszy rozdział prezentuje metodologię przeprowadzonych badań eksperymentalnych oraz ich wyniki ilościowe.
 
 \section{Metodologia testowania protokołów komunikacyjnych}
+
 Wszystkie eksperymenty zostały przeprowadzone z wykorzystaniem ujednoliconych parametrów testowych, dostosowanych do specyfiki każdego badanego protokołu:
+
 \begin{itemize}
 	\item Liczba współbieżnych operacji: 100
 	\item Liczba zapytań na wątek: 1000
-	\item Rozmiar standardowego ładunku danych: 1024 bajty (1 KB)
-	\item Rozmiar rozszerzonego ładunku danych: 1048576 bajty (1 MB)
+	\item Rozmiar standardowego ładunku danych: 1024 bajty (1~KB)
+	\item Rozmiar rozszerzonego ładunku danych: 1~048~576 bajtów (1~MB)
 \end{itemize}
 
 \section{Architektura REST API}
-Implementacja architektury REST została zrealizowana przy użyciu biblioteki Actix-web -- jednej z najpopularniejszych wysokopoziomowych platform wspierających natywnie strumieniowanie danych oraz protokół HTTP/2 w połączeniu z certyfikatami TLS. W ramach analizy zbadano również problem blokowania na początku kolejki (Head-of-Line blocking, HOL) wraz z proponowanym rozwiązaniem.
+
+Implementacja architektury REST została zrealizowana przy użyciu biblioteki Actix-web -- jednej z najpopularniejszych wysokopoziomowych platform wspierających natywnie strumieniowanie danych oraz protokół HTTP/2 w połączeniu z certyfikatami TLS. W ramach analizy zbadano również problem blokowania na początku kolejki (ang. \textit{Head-of-Line blocking}, HOL) wraz z proponowanym rozwiązaniem.
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/test-2026-02-01_14-11-27/req_per_sec.png}
-	\caption{Przepustowość REST HTTP/1.1 dla ładunku 1 KB.}
-	\label{fig:rest_http1_test}
-\end{figure}
+Listing~\ref{lst:http_handlers_implementation} przedstawia implementację punktów końcowych (ang. \textit{endpoints}) obsługujących zapytania ze standardowym oraz rozszerzonym ładunkiem danych.
 
-Przepustowość dla zapytań ze standardowym ładunkiem (1 KB) wyniosła 764076 żądań na sekundę.
+\begin{lstlisting}[style=rustcode, caption={Implementacja zapytań dla ładunków 1KB oraz 1MB dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_handlers_implementation}]
+	use actix_web::{get, HttpResponse};
+	
+	#[get("/test")]
+	async fn test() -> HttpResponse {
+		HttpResponse::Ok().json(serde_json::json!({
+			"message": "x".repeat(1024)
+		}))
+	}
+	
+	#[get("/test_high_payload")]
+	async fn test_high_payload() -> HttpResponse {
+		HttpResponse::Ok().json(serde_json::json!({
+			"message": "x".repeat(1024 * 1024)
+		}))
+	}
+\end{lstlisting}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/test_high_payload-2026-02-01_14-12-55/req_per_sec.png}
-	\caption{Przepustowość REST HTTP/1.1 dla ładunku 1 MB.}
-	\label{fig:rest_http1_test_high_payload}
-\end{figure}
+\textbf{Wyniki pomiarów dla standardowego ładunku (1~KB):}
+Przepustowość wyniosła 764~076 żądań na sekundę, co stanowi najwyższą wartość spośród wszystkich testowanych konfiguracji dla małych pakietów danych.
 
-Dla rozszerzonego ładunku (1 MB) odnotowano przepustowość na poziomie 2759 żądań na sekundę, co stanowi spadek o 99,6\% w porównaniu ze standardowym ładunkiem.
+\textbf{Wyniki pomiarów dla rozszerzonego ładunku (1~MB):}
+Odnotowano przepustowość na poziomie 2~759 żądań na sekundę, co stanowi spadek o 99,6\% w porównaniu ze standardowym ładunkiem. Ta znacząca degradacja wynika z narzutu związanego z nawiązywaniem nowego połączenia TCP dla każdego żądania.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/stream-2026-02-01_17-43-49/req_per_sec.png}
-	\caption{Przepustowość REST HTTP/1.1 dla transmisji strumieniowej (100 iteracji).}
-	\label{fig:rest_http1_stream}
-\end{figure}
+\subsubsection{Transmisja strumieniowa}
 
-Transmisja strumieniowa składająca się ze 100 fragmentów (chunków) osiągnęła przepustowość 239056 żądań na sekundę.
+Listing~\ref{lst:http_stream_impl} pokazuję implementację strumieniowania danych, gdzie odpowiedź jest wysyłana w postaci sekwencji fragmentów (ang. \textit{chunks}).
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http1/slow-2026-02-01_17-47-47/req_per_sec.png}
-	\caption{Wpływ blokowania HOL na przepustowość REST HTTP/1.1.}
-	\label{fig:rest_http1_hol_problem}
-\end{figure}
+\begin{lstlisting}[style=rustcode, caption={Implementacja strumienowania dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_stream_impl}]
+	use actix_web::{get, HttpResponse};
+	use futures_util::stream::{self};
+	use bytes::Bytes;
+	
+	#[get("/stream")]
+	async fn stream_handler() -> HttpResponse {
+		let response_stream = stream::unfold(0, |count| async move {
+			if count >= 100 {
+				None
+			} else {
+				let chunk = format!("chunk {}\n", count);
+				Some((Ok::<Bytes, actix_web::Error>(Bytes::from(chunk)), count + 1))
+			}
+		});
+		
+		HttpResponse::Ok()
+		.content_type("text/plain")
+		.streaming(response_stream)
+	}
+\end{lstlisting}
 
-W warunkach występowania problemu Head-of-Line blocking zmierzono przepustowość wynoszącą 1954 żądania na sekundę, demonstrując znaczącą degradację wydajności.
+Transmisja strumieniowa składająca się ze 100 fragmentów osiągnęła przepustowość 239~056 żądań na sekundę, co stanowi wartość pośrednią między scenariuszami małych i dużych pakietów.
+
+\subsubsection{Problem Head-of-Line Blocking}
+
+Listing~\ref{lst:http_hol_impl} przedstawia implementację testową symulującą problem HOL, w którym opóźnienie jednego fragmentu danych blokuje całą kolejkę oczekujących pakietów.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja symulacji problemu HOL dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_hol_impl}]
+	use actix_web::{get, HttpResponse};
+	use futures_util::stream::{self};
+	use bytes::Bytes;
+	
+	#[get("/stream")]
+	async fn stream_handler() -> HttpResponse {
+		let response_stream = stream::unfold(0, |count| async move {
+			if count >= 100 {
+				None
+			} else {
+				let chunk = format!("chunk {}\n", count);
+				Some((Ok::<Bytes, actix_web::Error>(Bytes::from(chunk)), count + 1))
+			}
+		});
+		
+		HttpResponse::Ok()
+		.content_type("text/plain")
+		.streaming(response_stream)
+	}
+\end{lstlisting}
+
+W warunkach występowania problemu Head-of-Line blocking zmierzono przepustowość wynoszącą 1~954 żądania na sekundę, demonstrując znaczącą degradację wydajności względem normalnego strumieniowania.
 
 \subsection{Wyniki dla protokołu HTTP/2}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/test-2026-02-01_14-24-59/req_per_sec.png}
-	\caption{Przepustowość REST HTTP/2 dla ładunku 1 KB.}
-	\label{fig:rest_http2_test}
-\end{figure}
+Protokół HTTP/2 wykorzystuje ten sam kod implementacyjny co HTTP/1.1. Jedyną różnicą jest dodanie warstwy TLS, która zapewnia bezpieczną komunikację poprzez szyfrowanie danych, integralność oraz uwierzytelnianie serwerów~\cite{tls}.
 
-Implementacja z wykorzystaniem HTTP/2 osiągnęła przepustowość 198272 żądań na sekundę dla standardowego ładunku -- wartość o 74\% niższą niż w przypadku HTTP/1.1.
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+Implementacja z wykorzystaniem HTTP/2 osiągnęła przepustowość 198~272 żądań na sekundę dla standardowego ładunku -- wartość o 74\% niższą niż w przypadku HTTP/1.1. Degradacja ta wynika z narzutu związanego z negocjacją TLS oraz multipleksowaniem strumieni.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/test_high_payload-2026-02-01_14-26-26/req_per_sec.png}
-	\caption{Przepustowość REST HTTP/2 dla ładunku 1 MB.}
-	\label{fig:rest_http2_test_high_payload}
-\end{figure}
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla dużych pakietów danych zaobserwowano przepustowość 1~690 żądań na sekundę, co stanowi spadek o 39\% względem HTTP/1.1. Mimo niższej wartości bezwzględnej, proporcjonalnie mniejsza degradacja wskazuje na lepszą optymalizację HTTP/2 dla transferu dużych wolumenów danych.
 
-Dla dużych pakietów danych zaobserwowano przepustowość 1690 żądań na sekundę, co stanowi spadek o 39\% względem HTTP/1.1.
+\textbf{Wyniki pomiarów -- transmisja strumieniowa:}
+Transmisja strumieniowa w protokole HTTP/2 uzyskała przepustowość 91~687 żądań na sekundę, wykazując degradację o 62\% w stosunku do HTTP/1.1.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/stream-2026-02-01_17-45-13/req_per_sec.png}
-	\caption{Przepustowość transmisji strumieniowej REST HTTP/2.}
-	\label{fig:rest_http2_stream}
-\end{figure}
-
-Transmisja strumieniowa w protokole HTTP/2 uzyskała przepustowość 91687 żądań na sekundę, wykazując degradację o 62\% w stosunku do HTTP/1.1.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/REST/http2/slow-2026-02-01_17-45-46/req_per_sec.png}
-	\caption{Mitigacja blokowania HOL w REST HTTP/2.}
-	\label{fig:rest_http2_hol}
-\end{figure}
-
-W scenariuszu testowym HOL blocking protokół HTTP/2 osiągnął przepustowość 135372 żądań na sekundę, demonstrując 69-krotną poprawę względem HTTP/1.1.
+\textbf{Wyniki pomiarów -- HOL blocking:}
+W scenariuszu testowym HOL blocking protokół HTTP/2 osiągnął przepustowość 135~372 żądań na sekundę, demonstrując 69-krotną poprawę względem HTTP/1.1. Ten wynik potwierdza efektywność mechanizmu multipleksowania strumieni w mitigacji problemu blokowania kolejki.
 
 \section{Architektura GraphQL}
+
 Implementację GraphQL zrealizowano przy użyciu biblioteki Juniper -- zaawansowanego frameworka wspierającego natywnie strumieniowanie oraz HTTP/2 z wykorzystaniem TLS.
+
+Listing~\ref{lst:http_gql_obj_impl} przedstawia implementację schematu GraphQL wraz z funkcjami resolver, które są wywoływane w celu uzyskania żądanych danych.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja zapytania GraphQL}, label={lst:http_gql_obj_impl}]
+	#[juniper::graphql_object]
+	impl Query {
+		fn test_payload() -> Payload {
+			Payload {
+				message: "x".repeat(1024),
+			}
+		}
+		
+		fn large_payload() -> Payload {
+			const PAYLOAD_SIZE: usize = 1024 * 1024;
+			Payload {
+				message: "x".repeat(PAYLOAD_SIZE),
+			}
+		}
+	}
+\end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http1/test-2026-02-01_14-37-46/req_per_sec.png}
-	\caption{Przepustowość GraphQL HTTP/1.1 dla ładunku 1 KB.}
-	\label{fig:gql_http1_test}
-\end{figure}
+GraphQL w połączeniu z HTTP/1.1 osiągnął przepustowość 179~760 żądań na sekundę dla standardowego ładunku, co stanowi 76\% wydajności REST API w analogicznej konfiguracji.
 
-GraphQL w połączeniu z HTTP/1.1 osiągnął przepustowość 179760 żądań na sekundę dla standardowego ładunku, co stanowi 76\% wydajności REST API.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http1/large_payload-2026-02-01_14-39-00/req_per_sec.png}
-	\caption{Przepustowość GraphQL HTTP/1.1 dla ładunku 1 MB.}
-	\label{fig:gql_http1_test_high_payload}
-\end{figure}
-
-Dla rozszerzonego ładunku zmierzono przepustowość 2418 żądań na sekundę, wykazując nieznaczną przewagę (12\%) nad REST API.
+Dla rozszerzonego ładunku zmierzono przepustowość 2~418 żądań na sekundę, wykazując nieznaczną przewagę (12\%) nad REST API. Lepsza wydajność dla dużych pakietów może wynikać z bardziej efektywnej serializacji JSON w bibliotece Juniper.
 
 \subsection{Wyniki dla protokołu HTTP/2}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http2/test-2026-02-01_14-40-00/req_per_sec.png}
-	\caption{Przepustowość GraphQL HTTP/2 dla ładunku 1 KB.}
-	\label{fig:gql_http2_test}
-\end{figure}
+Konfiguracja z HTTP/2 osiągnęła przepustowość 195~877 żądań na sekundę, demonstrując 9\% poprawę względem HTTP/1.1 oraz porównywalne wyniki z REST HTTP/2.
 
-Konfiguracja z HTTP/2 osiągnęła przepustowość 195877 żądań na sekundę, demonstrując 9\% poprawę względem HTTP/1.1 oraz porównywalne wyniki z REST HTTP/2.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/graphql/http2/large_payload-2026-02-01_14-41-05/req_per_sec.png}
-	\caption{Przepustowość GraphQL HTTP/2 dla ładunku 1 MB.}
-	\label{fig:gql_http2_test_high_payload}
-\end{figure}
-
-Dla dużych pakietów danych zaobserwowano przepustowość 2097 żądań na sekundę, co stanowi 24\% wzrost względem REST HTTP/2.
+Dla dużych pakietów danych zaobserwowano przepustowość 2~097 żądań na sekundę, co stanowi 24\% wzrost względem REST HTTP/2, potwierdzając optymalizacje GraphQL dla złożonych zapytań z dużymi zbiorami danych.
 
 \section{Architektura gRPC}
-Implementacja gRPC została zrealizowana przy użyciu biblioteki Tonic -- wysoko wydajnego frameworka natywnie wspierającego HTTP/2, strumieniowanie danych oraz szyfrowanie TLS. Ze względu na optymalizację wydajności zrezygnowano z implementacji mechanizmu refleksji API.
+
+Implementacja gRPC została zrealizowana przy użyciu biblioteki Tonic -- wysoko wydajnego frameworka natywnie wspierającego HTTP/2, strumieniowanie danych oraz szyfrowanie TLS. Ze względu na optymalizację wydajności zrezygnowano z implementacji mechanizmu refleksji API. Protokół gRPC automatycznie wykorzystuje protokół HTTP/2.
+
+\subsection{Definicja protokołu}
+
+Listing~\ref{lst:gprc_proto} przedstawia zawartość pliku definicji protokołu (ang. \textit{Protocol Buffers}), na podstawie którego generowany jest automatycznie kod oraz typy danych dla języka Rust.
+
+\begin{lstlisting}[style=rustcode, caption={Zawartość pliku .proto, do którego tworzony jest automatycznie kod oraz typy}, label={lst:gprc_proto}]
+	syntax = "proto3";
+	
+	package benchmark;
+	
+	service BenchmarkService {
+		rpc TestPayload (TestPayloadRequest) returns (TestPayloadResponse);
+		rpc TestHighPayload (TestHighPayloadRequest) returns (TestHighPayloadResponse);
+		rpc TestStreamPayload (TestStreamPayloadRequest) returns (stream TestStreamPayloadResponse);
+	}
+	
+	message TestPayloadRequest {}
+	
+	message TestPayloadResponse {
+		string message = 1;
+	}
+	
+	message TestHighPayloadRequest {}
+	
+	message TestHighPayloadResponse {
+		string message = 1;
+	}
+	
+	message TestStreamPayloadRequest {}
+	
+	message TestStreamPayloadResponse {
+		bytes chunk = 1;
+	}
+\end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/2}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/grpc/test-2026-02-01_13-21-44/req_per_sec.png}
-	\caption{Przepustowość gRPC dla ładunku 1 KB.}
-	\label{fig:grpc_http2_test}
-\end{figure}
+Listing~\ref{lst:gprc_fn} pokazuję implementację funkcji obsługujących zapytania gRPC.
 
-gRPC osiągnął przepustowość 168060 żądań na sekundę dla standardowego ładunku, co stanowi 15\% spadek względem GraphQL HTTP/2.
+\begin{lstlisting}[style=rustcode, caption={Funkcje wykorzystywane w testach}, label={lst:gprc_fn}]
+	async fn test_payload(
+	&self,
+	_request: Request<TestPayloadRequest>,
+	) -> Result<Response<TestPayloadResponse>, Status> {
+		let payload = "x".repeat(1024);
+		Ok(Response::new(TestPayloadResponse {
+			message: payload,
+		}))
+	}
+	
+	async fn test_high_payload(
+	&self,
+	_request: Request<TestHighPayloadRequest>,
+	) -> Result<Response<TestHighPayloadResponse>, Status> {
+		let payload = "x".repeat(1024 * 1024);
+		Ok(Response::new(TestHighPayloadResponse {
+			message: payload,
+		}))
+	}
+\end{lstlisting}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/grpc/large_payload-2026-02-01_14-43-53/req_per_sec.png}
-	\caption{Przepustowość gRPC dla ładunku 1 MB.}
-	\label{fig:grpc_http2_test_high_payload}
-\end{figure}
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+gRPC osiągnął przepustowość 168~060 żądań na sekundę dla standardowego ładunku, co stanowi 15\% spadek względem GraphQL HTTP/2. Niższa wartość może wynikać z narzutu związanego z serializacją Protocol Buffers oraz dodatkowych nagłówków gRPC.
 
-Dla rozszerzonego ładunku zmierzono przepustowość 2243 żądań na sekundę, wykazując 7\% przewagę nad GraphQL oraz 33\% nad REST w konfiguracji HTTP/2.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla rozszerzonego ładunku zmierzono przepustowość 2~243 żądań na sekundę, wykazując 7\% przewagę nad GraphQL oraz 33\% nad REST w konfiguracji HTTP/2. Wynik ten potwierdza optymalizację gRPC dla transferu dużych wolumenów danych binarnych.
 
 \section{Architektura WebSocket}
-Do implementacji architektury WebSocket wykorzystano bibliotekę tungstenite-rs -- popularny framework wysokiego poziomu dedykowany komunikacji dwukierunkowej w czasie rzeczywistym.
+
+Do implementacji architektury WebSocket wykorzystano bibliotekę \texttt{tungstenite-rs} -- popularny framework wysokiego poziomu dedykowany komunikacji dwukierunkowej w czasie rzeczywistym. 
+
+Listing~\ref{lst:ws_impl} przedstawia kompletną implementację serwera WebSocket obsługującego trzy typy zapytań: standardowy ładunek, rozszerzony ładunek oraz transmisję strumieniową.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja serwera WebSocket}, label={lst:ws_impl}]
+	use tokio::net::TcpListener;
+	use tokio_tungstenite::accept_async;
+	use futures_util::{StreamExt, SinkExt};
+	use tungstenite::Message;
+	use std::sync::atomic::{AtomicUsize, Ordering};
+	use std::sync::Arc;
+	
+	const PAYLOAD_SIZE: usize = 1024;
+	const HIGH_PAYLOAD_SIZE: usize = 1024 * 1024;
+	
+	#[tokio::main]
+	async fn main() -> Result<(), Box<dyn std::error::Error>> {
+		let server = TcpListener::bind("127.0.0.1:9001").await?;
+		println!("WebSocket server listening on ws://127.0.0.1:9001");
+		
+		let connection_count = Arc::new(AtomicUsize::new(0));
+		
+		loop {
+			let (stream, _) = server.accept().await?;
+			let conn_id = connection_count.fetch_add(1, Ordering::SeqCst);
+			
+			tokio::spawn(async move {
+				let mut websocket = match accept_async(stream).await {
+					Ok(ws) => ws,
+					Err(e) => {
+						eprintln!("WebSocket handshake failed: {}", e);
+						return;
+					}
+				};
+				
+				println!("Connection {} established", conn_id);
+				
+				let mut request_count = 0;
+				
+				while let Some(msg) = websocket.next().await {
+					match msg {
+						Ok(Message::Text(text)) => {
+							request_count += 1;
+							
+							match text.as_str() {
+								"test" => {
+									let payload = "x".repeat(PAYLOAD_SIZE);
+									if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+										eprintln!("Connection {} write error: {}", conn_id, e);
+										break;
+									}
+								}
+								"test_high_payload" => {
+									let payload = "x".repeat(HIGH_PAYLOAD_SIZE);
+									if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+										eprintln!("Connection {} write error: {}", conn_id, e);
+										break;
+									}
+								}
+								"stream" => {
+									for count in 0..100 {
+										let chunk = format!("chunk {}\n", count);
+										if let Err(e) = websocket.send(Message::Text(chunk.into())).await {
+											eprintln!("Connection {} write error at chunk {}: {}", conn_id, count, e);
+											break;
+										}
+									}
+								}
+								_ => {
+									eprintln!("Connection {} unknown command: {}", conn_id, text);
+								}
+							}
+							
+							if request_count % 100 == 0 {
+								println!("Connection {} processed {} requests", conn_id, request_count);
+							}
+						}
+						Ok(Message::Close(_)) => {
+							println!("Connection {} closed gracefully after {} requests", conn_id, request_count);
+							let _ = websocket.send(Message::Close(None)).await;
+							break;
+						}
+						Err(e) => {
+							eprintln!("Connection {} error: {}", conn_id, e);
+							break;
+						}
+						_ => {}
+					}
+				}
+				
+				println!("Connection {} handler exiting", conn_id);
+			});
+		}
+	}
+\end{lstlisting}
 
 \subsection{Wyniki dla protokołu WebSocket}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket/test-2026-02-01_16-55-46/req_per_sec.png}
-	\caption{Przepustowość WebSocket dla ładunku 1 KB.}
-	\label{fig:ws_test}
-\end{figure}
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+Protokół WebSocket osiągnął przepustowość 122~431 żądań na sekundę, wykazując najniższą wartość spośród testowanych protokołów dla standardowego ładunku. Niższa wydajność wynika z narzutu związanego z utrzymywaniem trwałych połączeń oraz ramkowaniem wiadomości.
 
-Protokół WebSocket osiągnął przepustowość 122431 żądań na sekundę, wykazując najniższą wartość spośród testowanych protokołów dla standardowego ładunku.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla dużych pakietów danych zaobserwowano przepustowość 3~187 żądań na sekundę -- najwyższą wartość wśród wszystkich badanych protokołów, przewyższającą o 42\% najbliższego konkurenta (gRPC). Wynik ten potwierdza optymalizację WebSocket dla transferu dużych wolumenów danych poprzez eliminację narzutu związanego z nawiązywaniem połączeń.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket/test_high_payload-2026-02-01_16-56-43/req_per_sec.png}
-	\caption{Przepustowość WebSocket dla ładunku 1 MB.}
-	\label{fig:ws_test_high_payload}
-\end{figure}
+\subsection{Wyniki dla protokołu WebSocket Secure (WSS)}
 
-Dla dużych pakietów danych zaobserwowano przepustowość 3187 żądań na sekundę -- najwyższą wartość wśród wszystkich badanych protokołów, przewyższającą o 42\% najbliższego konkurenta (gRPC).
+Implementacja protokołu WebSocket Secure jest niemal identyczna z wersją niezabezpieczoną. Kluczową różnicą jest dodanie warstwy TLS, która zapewnia szyfrowanie komunikacji oraz weryfikację tożsamości serwera.
 
-\subsection{Wyniki dla protokołu WebSocket Secure}
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+Wersja zabezpieczona (WSS) osiągnęła przepustowość 111~086 żądań na sekundę, co stanowi 9\% degradację względem niezabezpieczonej implementacji. Spadek ten wynika z narzutu związanego z szyfrowaniem oraz weryfikacją certyfikatów.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket_secure/test-2026-02-01_17-08-26/req_per_sec.png}
-	\caption{Przepustowość WSS dla ładunku 1 KB.}
-	\label{fig:wss_test}
-\end{figure}
-
-Wersja zabezpieczona (WSS) osiągnęła przepustowość 111086 żądań na sekundę, co stanowi 9\% degradację względem niezabezpieczonej implementacji.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/websocket_secure/test_high_payload-2026-02-01_17-10-14/req_per_sec.png}
-	\caption{Przepustowość WSS dla ładunku 1 MB.}
-	\label{fig:wss_test_high_payload}
-\end{figure}
-
-Dla rozszerzonego ładunku zmierzono przepustowość 2932 żądań na sekundę, wykazując 8\% spadek względem wersji niezabezpieczonej.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla rozszerzonego ładunku zmierzono przepustowość 2~932 żądań na sekundę, wykazując 8\% spadek względem wersji niezabezpieczonej. Proporcjonalnie mniejsza degradacja dla dużych pakietów wskazuje, że koszt TLS handshake jest amortyzowany w długotrwałych transferach.
 
 \section{Architektura SOAP}
-Implementacja protokołu SOAP została przetestowana w obu wersjach HTTP w celu porównania charakterystyk wydajnościowych.
+
+Implementacja protokołu SOAP została przetestowana w obu wersjach HTTP w celu porównania charakterystyk wydajnościowych. Implementacja opiera się na bibliotece Actix-web, identycznej jak w przypadku REST API.
+
+Listing~\ref{lst:soap_impl} przedstawia implementację punktów końcowych SOAP generujących odpowiedzi w formacie XML zgodnym ze specyfikacją SOAP 1.2.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja endpointów SOAP}, label={lst:soap_impl}]
+	use actix_web::{HttpResponse, post};
+	
+	#[post("/test")]
+	async fn soap_handler() -> HttpResponse {
+		let payload = "x".repeat(1024);
+		
+		let response = format!(
+		r#"
+		<?xml version="1.0" encoding="utf-8"?>
+		<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+		xmlns:test="urn:benchmark">
+		<soap:Body>
+		<test:TestPayloadResponse>
+		<test:message>{}</test:message>
+		</test:TestPayloadResponse>
+		</soap:Body>
+		</soap:Envelope>
+		"#,
+		payload
+		);
+		
+		HttpResponse::Ok()
+		.content_type("text/xml; charset=utf-8")
+		.body(response)
+	}
+	
+	#[post("/test_large_payload")]
+	async fn soap_large_payload_handler() -> HttpResponse {
+		let payload = "x".repeat(1024 * 1024);
+		let response = format!(
+		r#"
+		<?xml version="1.0" encoding="utf-8"?>
+		<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+		xmlns:test="urn:benchmark">
+		<soap:Body>
+		<test:TestPayloadResponse>
+		<test:message>{}</test:message>
+		</test:TestPayloadResponse>
+		</soap:Body>
+		</soap:Envelope>
+		"#,
+		payload
+		);
+		
+		HttpResponse::Ok()
+		.content_type("text/xml; charset=utf-8")
+		.body(response)
+	}
+\end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http1/test-2026-02-01_14-06-11/req_per_sec.png}
-	\caption{Przepustowość SOAP HTTP/1.1 dla ładunku 1 KB.}
-	\label{fig:soap_http1_test}
-\end{figure}
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+SOAP z HTTP/1.1 osiągnął przepustowość 198~232 żądań na sekundę, demonstrując porównywalne wyniki z REST HTTP/2. Nieoczekiwanie wysoka wydajność wynika z efektywnej implementacji generowania XML oraz braku konieczności parsowania złożonych struktur danych.
 
-SOAP z HTTP/1.1 osiągnął przepustowość 198232 żądań na sekundę, demonstrując porównywalne wyniki z REST HTTP/2.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http1/test_high_payload-2026-02-01_14-05-50/req_per_sec.png}
-	\caption{Przepustowość SOAP HTTP/1.1 dla ładunku 1 MB.}
-	\label{fig:soap_http1_high_payload}
-\end{figure}
-
-Dla rozszerzonego ładunku zmierzono przepustowość 2892 żądań na sekundę -- najwyższą wartość wśród protokołów wykorzystujących HTTP/1.1.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla rozszerzonego ładunku zmierzono przepustowość 2~892 żądań na sekundę -- najwyższą wartość wśród protokołów wykorzystujących HTTP/1.1, przewyższającą REST o 4,8\%.
 
 \subsection{Wyniki dla protokołu HTTP/2}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http2/test-2026-02-01_14-08-18/req_per_sec.png}
-	\caption{Przepustowość SOAP HTTP/2 dla ładunku 1 KB.}
-	\label{fig:soap_http2_test}
-\end{figure}
+Protokół SOAP z TLS automatycznie wykorzystuje HTTP/2, jeśli klient i serwer wspierają negocjację ALPN (Application-Layer Protocol Negotiation).
 
-Implementacja z HTTP/2 osiągnęła przepustowość 213973 żądań na sekundę, wykazując 8\% poprawę względem HTTP/1.1 oraz najwyższy wynik spośród wszystkich protokołów HTTP/2.
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+Implementacja z HTTP/2 osiągnęła przepustowość 213~973 żądań na sekundę, wykazując 8\% poprawę względem HTTP/1.1 oraz najwyższy wynik spośród wszystkich protokołów HTTP/2 dla małych pakietów.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/SOAP/http2/large_payload_test-2026-02-01_14-09-26/req_per_sec.png}
-	\caption{Przepustowość SOAP HTTP/2 dla ładunku 1 MB.}
-	\label{fig:soap_http2_high_payload}
-\end{figure}
-
-Dla dużych pakietów danych zaobserwowano przepustowość 2478 żądań na sekundę, co stanowi 14\% spadek względem HTTP/1.1.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla dużych pakietów danych zaobserwowano przepustowość 2~478 żądań na sekundę, co stanowi 14\% spadek względem HTTP/1.1. Degradacja ta jest nietypowa i może wynikać z narzutu multipleksowania strumieni dla pojedynczych, dużych odpowiedzi XML.
 
 \section{Protokół MQTT}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/mqtt/test-2026-02-01_18-35-29/req_per_sec.png}
-	\caption{Przepustowość MQTT dla ładunku 1 KB.}
-	\label{fig:mqtt_test}
-\end{figure}
+MQTT (Message Queuing Telemetry Transport) to lekki protokół publikacji/subskrypcji zaprojektowany dla środowisk z ograniczonymi zasobami oraz niestabilnymi połączeniami sieciowymi.
 
-Protokół MQTT osiągnął przepustowość 112126 żądań na sekundę dla standardowego ładunku.
+\subsection{Implementacja serwera}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/communication-mechanisms/mqtt/high_payload-2026-02-01_18-34-45/req_per_sec.png}
-	\caption{Przepustowość MQTT dla ładunku 1 MB.}
-	\label{fig:mqtt_test_high_payload}
-\end{figure}
+Listing~\ref{lst:mqtt-receiver} przedstawia główną pętlę zdarzeń (ang. \textit{event loop}) odbiorcy MQTT, która przetwarza przychodzące publikacje i wysyła odpowiedzi na dedykowane tematy.
 
-Dla rozszerzonego ładunku zmierzono przepustowość 2167 żądań na sekundę, lokując MQTT w środkowym przedziale wydajnościowym.
+\begin{lstlisting}[style=rustcode, caption={Główna pętla zdarzeń odbiorcy MQTT}, label={lst:mqtt-receiver}]
+	loop {
+		match eventloop.poll().await {
+			Ok(Event::Incoming(Incoming::Publish(p))) => {
+				request_count += 1;
+				
+				let response_topic = match p.topic.as_str() {
+					"benchmark/request" => "benchmark/response",
+					"benchmark/high_payload" => "benchmark/high_payload_response",
+					_ => continue,
+				};
+				
+				if let Err(e) = client
+				.publish(
+				response_topic,
+				QoS::AtLeastOnce,
+				false,
+				p.payload,
+				)
+				.await
+				{
+					eprintln!("Failed to publish response: {:?}", e);
+				}
+				
+				if request_count % 1000 == 0 {
+					println!("Processed {} requests", request_count);
+				}
+			}
+			Ok(_) => {}
+			Err(e) => {
+				eprintln!("Server error: {:?}", e);
+				tokio::time::sleep(Duration::from_secs(1)).await;
+			}
+		}
+	}
+\end{lstlisting}
 
-\section{Analiza porównawcza formatów serializacji danych}
+\subsection{Implementacja klienta}
 
-Przeprowadzono testy wydajnościowe dla sześciu popularnych formatów serializacji, mierząc czas serializacji, deserializacji oraz rozmiar wynikowych danych. Testowy zbiór składał się z 1000 obiektów użytkownika wraz z metadanymi.
+Listing~\ref{lst:mqtt-sender} pokazuję implementację klienta MQTT wykorzystywanego w testach wydajnościowych, obsługującego publikację wiadomości oraz odbieranie odpowiedzi z mechanizmem timeout.
 
-\subsection{Apache Avro}
+\begin{lstlisting}[style=rustcode, caption={Implementacja klienta MQTT dla testów wydajnościowych}, label={lst:mqtt-sender}]
+	let mut latencies = Vec::with_capacity(config.requests_per_worker);
+	
+	// Create unique client ID for this worker
+	let client_id = format!("benchmark_worker_{}", worker_id);
+	let mut opts = MqttOptions::new(client_id, "127.0.0.1", 1883);
+	opts.set_keep_alive(Duration::from_secs(30));
+	
+	// Increase max packet size to handle 1MB+ payloads
+	opts.set_max_packet_size(10 * 1024 * 1024, 10 * 1024 * 1024); // 10 MB max
+	
+	let (client, mut eventloop) = AsyncClient::new(opts, 1000);
+	
+	let (response_tx, mut response_rx) = mpsc::unbounded_channel();
+	
+	// Spawn event loop handler
+	let response_topic = if config.high_payload {
+		"benchmark/high_payload_response"
+	} else {
+		"benchmark/response"
+	};
+	
+	tokio::spawn(async move {
+		loop {
+			match eventloop.poll().await {
+				Ok(Event::Incoming(Incoming::Publish(p))) => {
+					if p.topic == response_topic {
+						let _ = response_tx.send(());
+					}
+				}
+				Ok(_) => {}
+				Err(e) => {
+					eprintln!("Worker {} eventloop error: {:?}", worker_id, e);
+					break;
+				}
+			}
+		}
+	});
+	
+	// Subscribe to response topic
+	client
+	.subscribe(response_topic, QoS::AtLeastOnce)
+	.await?;
+	
+	// Wait a bit for subscription to be established
+	tokio::time::sleep(Duration::from_millis(100)).await;
+	
+	let request_topic = if config.high_payload {
+		"benchmark/high_payload"
+	} else {
+		"benchmark/request"
+	};
+	
+	let payload = if config.high_payload {
+		serde_json::json!({
+			"id": format!("worker_{}", worker_id),
+			"payload": "x".repeat(1024 * 1024) // 1 MB payload
+		})
+		.to_string()
+	} else {
+		serde_json::json!({
+			"id": format!("worker_{}", worker_id),
+			"payload": "x".repeat(config.payload_size)
+		})
+		.to_string()
+	};
+	
+	for i in 0..config.requests_per_worker {
+		// Acquire semaphore permit to control concurrency
+		let _permit = semaphore.acquire().await?;
+		
+		let start = Instant::now();
+		
+		// Send request
+		client
+		.publish(request_topic, QoS::AtLeastOnce, false, payload.clone())
+		.await?;
+		
+		// Wait for response with timeout
+		match timeout(Duration::from_secs(10), response_rx.recv()).await {
+			Ok(Some(_)) => {
+				let latency = start.elapsed();
+				latencies.push(latency);
+			}
+			Ok(None) => {
+				eprintln!("Worker {} request {}: Channel closed", worker_id, i);
+				break;
+			}
+			Err(_) => {
+				eprintln!("Worker {} request {}: Timeout", worker_id, i);
+			}
+		}
+		
+		drop(_permit);
+	}
+\end{lstlisting}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png}
-	\caption{Metryki wydajności Apache Avro.}
-	\label{fig:avro}
-\end{figure}
+\subsection{Wyniki pomiarów}
 
-Apache Avro uzyskał czas serializacji 7,396 ms, deserializacji 5,988 ms przy rozmiarze danych wynoszącym 521727 bajtów.
+\textbf{Wyniki pomiarów -- standardowy ładunek:}
+Protokół MQTT osiągnął przepustowość 112~126 żądań na sekundę dla standardowego ładunku, co lokuje go w dolnej części spektrum wydajnościowego dla małych pakietów.
 
-\subsection{Binary JSON}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png}
-	\caption{Metryki wydajności Binary JSON.}
-	\label{fig:bson}
-\end{figure}
-
-Format BSON wykazał czas serializacji 2,073 ms, deserializacji 4,842 ms, generując dane o rozmiarze 1426779 bajtów -- największym spośród testowanych formatów.
-
-\subsection{JSON}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png}
-	\caption{Metryki wydajności JSON.}
-	\label{fig:json}
-\end{figure}
-
-Standardowy JSON osiągnął czas serializacji 1,294 ms oraz deserializacji 3,565 ms przy rozmiarze 1181768 bajtów, oferując najszybszą deserializację wśród formatów tekstowych.
-
-\subsection{MessagePack}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metrics.png}
-	\caption{Metryki wydajności MessagePack.}
-	\label{fig:message-pack}
-\end{figure}
-
-MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748 ms i deserializacją 2,247 ms, przy kompaktowym rozmiarze 527431 bajtów.
-
-\subsection{Protocol Buffers}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.png}
-	\caption{Metryki wydajności Protocol Buffers.}
-	\label{fig:protobuf}
-\end{figure}
-
-Protocol Buffers osiągnął czas serializacji 1,648 ms, deserializacji 4,724 ms, generując dane o rozmiarze 587684 bajtów.
-
-\subsection{XML}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png}
-	\caption{Metryki wydajności XML.}
-	\label{fig:xml}
-\end{figure}
-
-Format XML wykazał najdłuższe czasy przetwarzania -- serializację 5,273 ms i deserializację 18,078 ms -- przy największym rozmiarze danych 1761825 bajtów, co stanowi 3,4-krotność najbardziej efektywnych formatów binarnych.
+\textbf{Wyniki pomiarów -- rozszerzony ładunek:}
+Dla rozszerzonego ładunku zmierzono przepustowość 2~167 żądań na sekundę, lokując MQTT w środkowym przedziale wydajnościowym. Wynik ten potwierdza, że protokół jest zoptymalizowany pod kątem niezawodności i niskiego zużycia zasobów, nie zaś maksymalnej przepustowości.
 
 \section{Analiza porównawcza protokołów komunikacyjnych}
 
@@ -341,25 +578,25 @@ Przeprowadzone badania umożliwiły kompleksową ocenę wydajności protokołów
 	\centering
 	\caption{Porównanie przepustowości protokołów komunikacyjnych}
 	\label{tab:protocol_comparison}
-	\begin{tabular}{|l|r|r|r|}
+	\begin{tabular}{lccc}
 		\hline
 		\textbf{Protokół} & \textbf{1 KB [req/s]} & \textbf{1 MB [req/s]} & \textbf{Degradacja} \\
 		\hline
-		REST HTTP/1.1 & 764,076 & 2,759 & 276.9x \\
-		REST HTTP/2 & 198,272 & 1,690 & 117.3x \\
-		GraphQL HTTP/1.1 & 179,760 & 2,418 & 74.3x \\
-		GraphQL HTTP/2 & 195,877 & 2,097 & 93.4x \\
-		gRPC & 168,060 & 2,243 & 74.9x \\
-		WebSocket & 122,431 & 3,187 & 38.4x \\
-		WebSocket Secure & 111,086 & 2,932 & 37.9x \\
-		SOAP HTTP/1.1 & 198,232 & 2,892 & 68.5x \\
-		SOAP HTTP/2 & 213,973 & 2,478 & 86.3x \\
-		MQTT & 112,126 & 2,167 & 51.7x \\
+		REST HTTP/1.1 & 764~076 & 2~759 & 276,9× \\
+		REST HTTP/2 & 198~272 & 1~690 & 117,3× \\
+		GraphQL HTTP/1.1 & 179~760 & 2~418 & 74,3× \\
+		GraphQL HTTP/2 & 195~877 & 2~097 & 93,4× \\
+		gRPC & 168~060 & 2~243 & 74,9× \\
+		WebSocket & 122~431 & 3~187 & 38,4× \\
+		WebSocket Secure & 111~086 & 2~932 & 37,9× \\
+		SOAP HTTP/1.1 & 198~232 & 2~892 & 68,5× \\
+		SOAP HTTP/2 & 213~973 & 2~478 & 86,3× \\
+		MQTT & 112~126 & 2~167 & 51,7× \\
 		\hline
 	\end{tabular}
 \end{table}
 
-Analiza współczynnika degradacji (tabela \ref{tab:protocol_comparison}) ujawnia fundamentalne różnice w charakterystykach wydajnościowych protokołów. WebSocket Secure wykazał najniższą degradację (37.9x), co potwierdza jego optymalizację dla transmisji dużych wolumenów danych poprzez utrzymywanie stałego połączenia. W przeciwieństwie do tego, REST HTTP/1.1 odnotował najwyższą degradację (276.9x), co jest konsekwencją narzutu związanego z nawiązywaniem nowego połączenia TCP dla każdego żądania oraz brakiem multipleksowania.
+Analiza współczynnika degradacji (tabela~\ref{tab:protocol_comparison}) ujawnia fundamentalne różnice w charakterystykach wydajnościowych protokołów. WebSocket Secure wykazał najniższą degradację (37,9×), co potwierdza jego optymalizację dla transmisji dużych wolumenów danych poprzez utrzymywanie stałego połączenia. W przeciwieństwie do tego, REST HTTP/1.1 odnotował najwyższą degradację (276,9×), co jest konsekwencją narzutu związanego z nawiązywaniem nowego połączenia TCP dla każdego żądania oraz brakiem multipleksowania.
 
 \begin{figure}[H]
 	\centering
@@ -368,20 +605,20 @@ Analiza współczynnika degradacji (tabela \ref{tab:protocol_comparison}) ujawni
 	\label{fig:protocol_comparison_grouped}
 \end{figure}
 
-Wykres \ref{fig:protocol_comparison_grouped} ilustruje wyraźną dychotomię między wydajnością dla małych i dużych ładunków. Protokoły oparte na HTTP/1.1 dominują w scenariuszach małych pakietów, podczas gdy protokoły z trwałymi połączeniami (WebSocket, WSS) wykazują przewagę dla dużych transferów danych.
+Wykres~\ref{fig:protocol_comparison_grouped} ilustruje wyraźną dychotomię między wydajnością dla małych i dużych ładunków. Protokoły oparte na HTTP/1.1 dominują w scenariuszach małych pakietów, podczas gdy protokoły z trwałymi połączeniami (WebSocket, WSS) wykazują przewagę dla dużych transferów danych.
 
 \subsection{Wpływ TLS na wydajność}
 
 Bezpieczeństwo transmisji za pomocą TLS wprowadza dodatkowy narzut wydajnościowy, jednak jest niezbędne w aplikacjach produkcyjnych. Kluczowe aspekty TLS handshake:
 
 \begin{itemize}
-	\item \textbf{Czas inicjalizacji}: TLS handshake typowo dodaje 50-100 ms opóźnienia dla pierwszego połączenia
-	\item \textbf{Narzut obliczeniowy}: Szyfrowanie symetryczne (AES) ma minimalny wpływ na przepustowość (<5\%)
-	\item \textbf{Optymalizacja}: HTTP/2 i WebSocket amortyzują koszt TLS poprzez długotrwałe połączenia
-	\item \textbf{Session resumption}: TLS 1.3 redukuje czas ponownego handshake'a do ~1 RTT
+	\item \textbf{Czas inicjalizacji:} TLS handshake typowo dodaje 50--100~ms opóźnienia dla pierwszego połączenia
+	\item \textbf{Narzut obliczeniowy:} Szyfrowanie symetryczne (AES) ma minimalny wpływ na przepustowość (<5\%)
+	\item \textbf{Optymalizacja:} HTTP/2 i WebSocket amortyzują koszt TLS poprzez długotrwałe połączenia
+	\item \textbf{Session resumption:} TLS 1.3 redukuje czas ponownego handshake'a do $\sim$1 RTT
 \end{itemize}
 
-Porównanie WebSocket (122,431 req/s) vs WebSocket Secure (111,086 req/s) pokazuje 9\% degradację -- znacząco niższą niż REST HTTP/1.1 vs HTTP/2 (74\%), co wskazuje, że jednorazowy koszt TLS handshake jest amortyzowany w długotrwałych połączeniach.
+Porównanie WebSocket (122~431~req/s) vs WebSocket Secure (111~086~req/s) pokazuje 9\% degradację -- znacząco niższą niż REST HTTP/1.1 vs HTTP/2 (74\%), co wskazuje, że jednorazowy koszt TLS handshake jest amortyzowany w długotrwałych połączeniach.
 
 \begin{figure}[H]
 	\centering
@@ -399,28 +636,28 @@ Na podstawie przeprowadzonych badań, dobór protokołu powinien uwzględniać s
 	\begin{itemize}
 		\item Zastosowanie: Aplikacje webowe, API publiczne, architektury mikroserwisowe
 		\item Zalety: Najlepsza skalowalność, cache'owalność, powszechne wsparcie
-		\item Wybór HTTP/2: Gdy priorytetem jest ograniczenie head of line blocking i bezpieczeństwo
+		\item Wybór HTTP/2: Gdy priorytetem jest mitigacja HOL blocking i bezpieczeństwo
 	\end{itemize}
 	
 	\item \textbf{GraphQL}
 	\begin{itemize}
-		\item Zastosowanie: aplikacje frontendowe, złożone modele danych
+		\item Zastosowanie: Frontend-heavy aplikacje, złożone modele danych
 		\item Zalety: Eliminacja over-fetchingu, redukcja liczby zapytań
-		\item Kompromis: ~1-2\% niższa wydajność niż REST przy znaczącej poprawie pisania oprogramowania
+		\item Kompromis: $\sim$1--2\% niższa wydajność niż REST przy znaczącej poprawie developer experience
 	\end{itemize}
 	
 	\item \textbf{gRPC}
 	\begin{itemize}
-		\item Zastosowanie: Komunikacja pomiędzy serwisami, wysoko wydajne współczesne rozwiązania backendowe
-		\item Zalety: Najlepsza wydajność dla dużych ładunków w HTTP/2, silne kontrakty, eliminacja problemu pomiędzy językami programowania.
+		\item Zastosowanie: Komunikacja service-to-service, high-performance backends
+		\item Zalety: Najlepsza wydajność dla dużych ładunków w HTTP/2, silne kontrakty
 		\item Ograniczenie: Słabsze wsparcie w przeglądarkach (wymaga gRPC-web)
 	\end{itemize}
 	
 	\item \textbf{WebSocket/WSS}
 	\begin{itemize}
-		\item Zastosowanie: Aplikacje czasu rzeczywistego (czaty, giełdy, gry)
+		\item Zastosowanie: Aplikacje real-time (czaty, giełdy, gaming)
 		\item Zalety: Najniższa latencja, najlepsza wydajność dla dużych ładunków
-		\item Kompromis: Zwiększona złożoność skalowania. 
+		\item Kompromis: Zwiększona złożoność skalowania (sticky sessions)
 	\end{itemize}
 	
 	\item \textbf{SOAP}
@@ -433,8 +670,8 @@ Na podstawie przeprowadzonych badań, dobór protokołu powinien uwzględniać s
 	\item \textbf{MQTT}
 	\begin{itemize}
 		\item Zastosowanie: IoT, urządzenia wbudowane, sieci z ograniczonym pasmem
-		\item Zalety: Minimalny narzut protokołu, automatyczne kolejkowanie.
-		\item Optymalne: Dla rozproszonych sieci.
+		\item Zalety: Minimalny narzut protokołu, kolejkowanie, QoS levels
+		\item Optymalne: Dla rozproszonych sieci sensorów z intermittent connectivity
 	\end{itemize}
 \end{enumerate}
 
@@ -443,19 +680,465 @@ Na podstawie przeprowadzonych badań, dobór protokołu powinien uwzględniać s
 Przeprowadzone badania prowadzą do następujących konkluzji:
 
 \begin{enumerate}
-	\item \textbf{Brak uniwersalnego lidera}: Każdy protokół wykazuje przewagi w specyficznych scenariuszach użycia. REST HTTP/1.1 dominuje dla małych zapytań, WebSocket dla dużych transferów, gRPC dla komunikacji pomiędzy serwisami lub aplikacjami backendowymi.
+	\item \textbf{Brak uniwersalnego lidera:} Każdy protokół wykazuje przewagi w specyficznych scenariuszach użycia. REST HTTP/1.1 dominuje dla małych zapytań, WebSocket dla dużych transferów, gRPC dla komunikacji backend-to-backend.
 	
-	\item \textbf{TLS jest akceptowalnym kosztem}: Degradacja wydajności 5-15\% (w zależności od protokołu) jest w pełni uzasadniona przez krytyczne wymagania bezpieczeństwa. Nowoczesne implementacje TLS 1.3 dodatkowo minimalizują ten narzut.
+	\item \textbf{TLS jest akceptowalnym kosztem:} Degradacja wydajności 5--15\% (w zależności od protokołu) jest w pełni uzasadniona przez krytyczne wymagania bezpieczeństwa. Nowoczesne implementacje TLS 1.3 dodatkowo minimalizują ten narzut.
 	
-	\item \textbf{Długotrwałe połączenia amortyzują koszty}: Protokoły takie jak WebSocket, HTTP/2 wykazują niższą degradację przy wzroście ładunku, co czyni je preferowanymi dla ładunków o wysokiej przepustowości.
+	\item \textbf{Długotrwałe połączenia amortyzują koszty:} Protokoły z persistent connections (WebSocket, HTTP/2) wykazują niższą degradację przy wzroście ładunku, co czyni je preferowanymi dla high-throughput scenarios.
 	
-	\item \textbf{Multipleksowanie rozwiązuje HOL blocking}: HTTP/2 osiągnęło 69-krotną poprawę w testach HOL, potwierdzając efektywność multipleksowania strumieni.
+	\item \textbf{Multipleksowanie rozwiązuje HOL blocking:} HTTP/2 osiągnęło 69-krotną poprawę w testach HOL, potwierdzając efektywność multipleksowania strumieni.
 	
-	\item \textbf{Specjalizacja protokołów IoT}: MQTT, mimo umiarkowanej przepustowości, pozostaje optymalnym wyborem dla IoT dzięki mechanizmom QoS i niskiej konsumpcji zasobów.
+	\item \textbf{Specjalizacja protokołów IoT:} MQTT, mimo umiarkowanej przepustowości, pozostaje optymalnym wyborem dla IoT dzięki mechanizmom QoS i niskiej konsumpcji zasobów.
 \end{enumerate}
+
+\section{Analiza porównawcza formatów serializacji danych}
+
+Przeprowadzono testy wydajnościowe dla sześciu popularnych formatów serializacji, mierząc czas serializacji, deserializacji oraz rozmiar wynikowych danych. Testowy zbiór składał się z 1000 obiektów użytkownika wraz z metadanymi.
+
+\subsection{Apache Avro}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png}
+	\caption{Metryki wydajności Apache Avro.}
+	\label{fig:avro}
+\end{figure}
+
+Apache Avro uzyskał czas serializacji 7,396~ms, deserializacji 5,988~ms przy rozmiarze danych wynoszącym 521~727 bajtów (509,5~KB).
+
+\subsection{Binary JSON (BSON)}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png}
+	\caption{Metryki wydajności Binary JSON.}
+	\label{fig:bson}
+\end{figure}
+
+Format BSON wykazał czas serializacji 2,073~ms, deserializacji 4,842~ms, generując dane o rozmiarze 1~426~779 bajtów (1~393,3~KB) -- największym spośród testowanych formatów.
+
+\subsection{JSON}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png}
+	\caption{Metryki wydajności JSON.}
+	\label{fig:json}
+\end{figure}
+
+Standardowy JSON osiągnął czas serializacji 1,294~ms oraz deserializacji 3,565~ms przy rozmiarze 1~181~768 bajtów (1~154,1~KB), oferując najszybszą deserializację wśród formatów tekstowych.
+
+\subsection{MessagePack}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metrics.png}
+	\caption{Metryki wydajności MessagePack.}
+	\label{fig:message-pack}
+\end{figure}
+
+MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748~ms i deserializacją 2,247~ms, przy kompaktowym rozmiarze 527~431 bajtów (515,1~KB).
+
+\subsection{Protocol Buffers}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.png}
+	\caption{Metryki wydajności Protocol Buffers.}
+	\label{fig:protobuf}
+\end{figure}
+
+Protocol Buffers osiągnął czas serializacji 1,648~ms, deserializacji 4,724~ms, generując dane o rozmiarze 587~684 bajtów (573,9~KB).
+
+\subsection{XML}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.55\textwidth]{images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png}
+	\caption{Metryki wydajności XML.}
+	\label{fig:xml}
+\end{figure}
+
+Format XML wykazał najdłuższe czasy przetwarzania -- serializację 5,273~ms i deserializację 18,078~ms -- przy największym rozmiarze danych 1~761~825 bajtów (1~720,5~KB), co stanowi 3,4-krotność najbardziej efektywnych formatów binarnych.
+
+\subsection{Analiza porównawcza formatów serializacji}
+
+Kompleksowa analiza wydajności formatów serializacji wymaga uwzględnienia trzech kluczowych metryk: czasu serializacji, czasu deserializacji oraz rozmiaru wynikowych danych.
+
+\begin{table}[H]
+	\centering
+	\caption{Porównanie formatów serializacji danych}
+	\label{tab:serialization_comparison}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Format} & \textbf{Serializacja [ms]} & \textbf{Deserializacja [ms]} & \textbf{Rozmiar [KB]} \\
+		\hline
+		Apache Avro & 7,396 & 5,988 & 509,5 \\
+		BSON & 2,073 & 4,842 & 1393,3 \\
+		JSON & 1,294 & 3,565 & 1154,1 \\
+		MessagePack & 0,748 & 2,247 & 515,1 \\
+		Protocol Buffers & 1,648 & 4,724 & 573,9 \\
+		XML & 5,273 & 18,078 & 1720,5 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/serialization_time_comparison.png}
+	\caption{Porównanie czasu serializacji różnych formatów.}
+	\label{fig:serialization_time}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{images/deserialization_time_comparison.png}
+	\caption{Porównanie czasu deserializacji formatowania danych.}
+	\label{fig:deserialization_time}
+\end{figure}
+
+\subsubsection{Wydajność czasowa}
+
+MessagePack wykazał najlepszą wydajność czasową we wszystkich kategoriach:
+
+\begin{itemize}
+	\item Najszybsza serializacja: 0,748~ms (6,0× szybciej niż XML, 9,9× szybciej niż Apache Avro)
+	\item Najszybsza deserializacja: 2,247~ms (8,0× szybciej niż XML, 2,7× szybciej niż Apache Avro)
+	\item Najniższy całkowity czas przetwarzania: 2,995~ms
+\end{itemize}
+
+JSON i Protocol Buffers osiągnęły porównywalne wyniki czasowe (odpowiednio 4,859~ms i 6,372~ms łącznie), oferując dobry kompromis między wydajnością a czytelnością (JSON) lub efektywnością kompresji (Protobuf).
+
+XML wykazał najgorsze charakterystyki czasowe z deserializacją trwającą 18,078~ms -- ponad 8× dłużej niż najbliższy konkurent (Apache Avro). Ta degradacja wynika z parsowania tekstowej struktury hierarchicznej oraz narzutu związanego z walidacją schematu.
+
+\subsubsection{Efektywność kompresji}
+
+Apache Avro osiągnął najlepszą kompresję danych z rozmiarem 521~727 bajtów (509,5~KB), co stanowi:
+
+\begin{itemize}
+	\item 2,2× mniejszy rozmiar niż JSON
+	\item 2,7× mniejszy rozmiar niż BSON
+	\item 3,4× mniejszy rozmiar niż XML
+\end{itemize}
+
+MessagePack wykazał rozmiar 527~431 bajtów (515,1~KB) -- zaledwie 1,1\% większy niż Avro, co w połączeniu z najlepszą wydajnością czasową czyni go najbardziej zrównoważonym formatem.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{images/serialization_size_comparison.png}
+	\caption{Porównanie rozmiaru zserializowanych danych dla różnych formatów.}
+	\label{fig:serialization_size}
+\end{figure}
+
+XML i BSON wykazały najbardziej nieefektywną kompresję, przekraczając 1,4~MB dla tego samego zestawu danych. W przypadku XML nadmiarowy rozmiar wynika z tagów otwierających i zamykających oraz metadanych, podczas gdy BSON przechowuje dodatkowe informacje typów dla każdego pola.
+
+\subsubsection{Charakterystyki formatów i rekomendacje}
+
+\textbf{MessagePack} -- optymalny wybór dla aplikacji wymagających maksymalnej wydajności:
+\begin{itemize}
+	\item Najszybszy całkowity czas przetwarzania (2,995~ms)
+	\item Bardzo dobra kompresja (515~KB, +1\% względem najlepszego)
+	\item Idealne zastosowanie: real-time gaming, high-frequency trading, cache'owanie
+	\item Ograniczenie: brak natywnej czytelności dla człowieka
+\end{itemize}
+
+\textbf{Apache Avro} -- najlepsza kompresja dla big data:
+\begin{itemize}
+	\item Najmniejszy rozmiar danych (509,5~KB)
+	\item Schema evolution -- wsparcie dla zmian struktury danych w czasie
+	\item Idealne zastosowanie: Apache Kafka, Hadoop, długoterminowe przechowywanie danych
+	\item Ograniczenie: wolniejsza serializacja (7,4~ms) -- nie nadaje się dla ultra-low-latency
+\end{itemize}
+
+\textbf{JSON} -- balans między wydajnością a developer experience:
+\begin{itemize}
+	\item Szybka serializacja (1,294~ms), umiarkowana deserializacja (3,565~ms)
+	\item Natywna czytelność, debugowalność, wsparcie w przeglądarkach
+	\item Idealne zastosowanie: REST APIs, konfigurace, komunikacja frontend-backend
+	\item Kompromis: 2,2× większy rozmiar niż formaty binarne
+\end{itemize}
+
+\textbf{Protocol Buffers} -- wydajność dla kontraktów API:
+\begin{itemize}
+	\item Dobra równowaga: średni czas (6,4~ms), średni rozmiar (574~KB)
+	\item Silne typowanie, backward/forward compatibility
+	\item Idealne zastosowanie: gRPC, komunikacja mikroserwisowa, mobile APIs
+	\item Wymaganie: generowanie kodu z plików .proto
+\end{itemize}
+
+\textbf{BSON} -- specjalizacja dla baz dokumentowych:
+\begin{itemize}
+	\item Szybka serializacja (2,073~ms), dedykowana dla MongoDB
+	\item Wsparcie dla typów binarnych (ObjectId, DateTime, Binary)
+	\item Idealne zastosowanie: MongoDB storage/queries, document databases
+	\item Ograniczenie: 2,7× większy rozmiar niż formaty binarne
+\end{itemize}
+
+\textbf{XML} -- legacy i compliance:
+\begin{itemize}
+	\item Wsparcie dla złożonych schematów (XSD), przestrzeni nazw, transformacji (XSLT)
+	\item Najgorsze metryki wydajnościowe: 23,4~ms łącznie, 1721~KB
+	\item Idealne zastosowanie: systemy enterprise, SOAP, compliance (HIPAA, financial regulations)
+	\item Uzasadnienie: wymagania regulacyjne często przeważają nad wydajnością
+\end{itemize}
+
+\subsubsection{Wnioski}
+
+Przeprowadzone badania potwierdzają, że nie istnieje uniwersalnie optymalny format serializacji -- wybór powinien być determinowany przez specyficzne wymagania aplikacji:
+
+\begin{enumerate}
+	\item \textbf{Dla maksymalnej wydajności:} MessagePack oferuje najlepszy czas przetwarzania przy akceptowalnym rozmiarze
+	\item \textbf{Dla minimalnego rozmiaru:} Apache Avro zapewnia najlepszą kompresję, idealny dla storage i network bandwidth
+	\item \textbf{Dla developer experience:} JSON oferuje czytelność i debugowalność kosztem rozmiaru
+	\item \textbf{Dla typowanych API:} Protocol Buffers zapewnia kontrakt i kompatybilność wsteczną
+	\item \textbf{Dla compliance:} XML pozostaje niezbędny w regulowanych środowiskach enterprise
+\end{enumerate}
+
+Kluczowym odkryciem jest, że różnica między najszybszym (MessagePack: 2,995~ms) a najwolniejszym (XML: 23,351~ms) formatem wynosi 7,8×, podczas gdy różnica w rozmiarze wynosi 3,4×. To wskazuje, że wydajność czasowa wykazuje większą wariancję niż efektywność kompresji, czyniąc ją krytycznym czynnikiem decyzyjnym w aplikacjach real-time.
 
 \section{Analiza porównawcza WebAssembly i JavaScript}
 
-\subsection{WebWorker}
+Do stworzenia modułów WebAssembly wykorzystano narzędzie \texttt{wasm-pack}. Jest to gotowe rozwiązanie, które kompiluje kod z języka Rust na język JavaScript, gdzie część kodu jest napisana w WebAssembly. Takie podejście umożliwia przeniesienie wybranych fragmentów kodu do WebAssembly, co pozwala na przyśpieszenie działania aplikacji.
 
-\subsection{Canvas}
+\subsection{Web Workers}
+
+Technologia Web Workers umożliwia przerzucenie części kodu, który wykonuje się na wątku głównym, na wątek poboczny. Stworzone zostały dwa przykładowe workery zawierające kod napisany w języku Rust (z równoważnym kodem napisanym w JavaScript) -- jeden z małym obciążeniem obliczeniowym i drugi z dużym obciążeniem obliczeniowym.
+
+\subsubsection{Implementacja workerów o niskim obciążeniu obliczeniowym}
+
+Listing~\ref{lst:web_worker_low_compute} przedstawia implementację Web Workera wykonującego podstawowe operacje matematyczne na tablicy liczb zmiennoprzecinkowych. Worker oblicza sumę pierwiastków kwadratowych pomnożonych przez logarytmy naturalne dla każdego elementu tablicy.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja Web Workera z prostymi operacjami obliczeniowymi}, label={lst:web_worker_low_compute}]
+	use wasm_bindgen::prelude::*;
+	use js_sys::Float64Array;
+	use web_sys::DedicatedWorkerGlobalScope;
+	
+	#[wasm_bindgen(start)]
+	pub fn worker_entry() {
+		let global: DedicatedWorkerGlobalScope =
+		js_sys::global().unchecked_into();
+		
+		let global_for_closure = global.clone();
+		
+		let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
+			let buffer = event.data();
+			let data = Float64Array::new(&buffer);
+			
+			let performance = global_for_closure.performance().unwrap();
+			let t0 = performance.now();
+			
+			let mut sum = 0.0;
+			for i in 0..data.length() {
+				let x = data.get_index(i);
+				sum += x.sqrt() * (x + 1.0).ln();
+			}
+			
+			let t1 = performance.now();
+			
+			let response = js_sys::Object::new();
+			js_sys::Reflect::set(&response, &"time".into(), &(t1 - t0).into()).unwrap();
+			
+			global_for_closure.post_message(&response).unwrap();
+		});
+		
+		global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
+		onmessage.forget();
+	}
+\end{lstlisting}
+
+\subsubsection{Implementacja workerów o wysokim obciążeniu obliczeniowym}
+
+Listing~\ref{lst:web_worker_high_compute} pokazuję implementację Web Workera wykonującego złożone operacje obliczeniowe z wykorzystaniem mapy chaotycznej (ang. \textit{chaotic map}). Algorytm ten symuluje zachowanie chaotyczne poprzez iteracyjne obliczenia wykorzystujące mapowanie logistyczne.
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja Web Workera z zaawansowanymi operacjami obliczeniowymi}, label={lst:web_worker_high_compute}]
+	use wasm_bindgen::prelude::*;
+	use js_sys::Float64Array;
+	use web_sys::DedicatedWorkerGlobalScope;
+	
+	#[wasm_bindgen(start)]
+	pub fn worker_entry() {
+		let global: DedicatedWorkerGlobalScope =
+		js_sys::global().unchecked_into();
+		
+		let global_for_closure = global.clone();
+		
+		let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
+			let buffer = event.data();
+			let data = Float64Array::new(&buffer);
+			
+			let perf = global_for_closure.performance().unwrap();
+			let t0 = perf.now();
+			
+			let mut acc = 0.0;
+			let mut seed = 0.123456789_f64;
+			
+			for i in 0..data.length() {
+				let v = data.get_index(i);
+				
+				// Mapowanie chaotyczne (logistic map)
+				seed = seed * 3.999999 - seed * seed;
+				let x = seed + v;
+				
+				seed = seed * 3.999999 - seed * seed;
+				let y = seed + v;
+				
+				acc += (x * x + y * y).sqrt().ln();
+			}
+			
+			let t1 = perf.now();
+			
+			let result = js_sys::Object::new();
+			js_sys::Reflect::set(&result, &"value".into(), &acc.into()).unwrap();
+			js_sys::Reflect::set(&result, &"time".into(), &(t1 - t0).into()).unwrap();
+			
+			global_for_closure.post_message(&result).unwrap();
+		});
+		
+		global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
+		onmessage.forget();
+	}
+\end{lstlisting}
+
+\subsubsection{Wyniki pomiarów -- Web Workers}
+
+Tabela~\ref{tab:webworker_results} przedstawia porównanie czasów wykonania dla obu implementacji (JavaScript i WebAssembly) w zależności od złożoności zadania obliczeniowego.
+
+\begin{table}[ht]
+	\centering
+	\caption{Porównanie wydajności Web Workers -- JavaScript vs. WebAssembly}
+	\label{tab:webworker_results}
+	\begin{tabular}{lcc}
+		\hline
+		\textbf{Typ zadania} & \textbf{JavaScript [ms]} & \textbf{WebAssembly [ms]} \\
+		\hline
+		Małe zadanie obliczeniowe & 9,6 & 43,1 \\
+		Duże zadanie obliczeniowe & 113,3 & 91,69 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Wyniki wskazują, że dla prostych operacji JavaScript osiąga lepszą wydajność (9,6~ms vs. 43,1~ms), prawdopodobnie ze względu na narzut związany z inicjalizacją modułu WebAssembly oraz przekazywaniem danych między środowiskami. Natomiast w przypadku złożonych obliczeń WebAssembly wykazuje przewagę wydajnościową (91,69~ms vs. 113,3~ms), co potwierdza jego przydatność w scenariuszach wymagających intensywnych operacji numerycznych.
+
+\subsection{Operacje na Canvas}
+
+Drugi zestaw testów dotyczył operacji przetwarzania obrazu na elemencie Canvas. Wszystkie operacje zostały wykonane na obrazie w rozdzielczości 4K (3840~×~2160~pikseli), co odpowiada przetwarzaniu 8~294~400~pikseli (każdy reprezentowany przez 4~bajty w formacie RGBA).
+
+\subsubsection{Implementacja filtrów graficznych}
+
+Listing~\ref{lst:canvas_filters} zawiera implementację czterech podstawowych operacji przetwarzania obrazu: konwersji do skali szarości, regulacji jasności, kontrastu oraz rozmycia (blur).
+
+\begin{lstlisting}[style=rustcode, caption={Implementacja filtrów graficznych dla operacji Canvas}, label={lst:canvas_filters}]
+	use wasm_bindgen::prelude::*;
+	
+	#[wasm_bindgen]
+	pub fn grayscale(data: &mut [u8]) {
+		for i in (0..data.len()).step_by(4) {
+			let r = data[i] as u32;
+			let g = data[i + 1] as u32;
+			let b = data[i + 2] as u32;
+			// Wzor uwzgledniajacy percepcje ludzkiego oka
+			let gray = ((299 * r + 587 * g + 114 * b) / 1000) as u8;
+			data[i] = gray;
+			data[i + 1] = gray;
+			data[i + 2] = gray;
+		}
+	}
+	
+	#[wasm_bindgen]
+	pub fn brightness(data: &mut [u8], amount: i32) {
+		for i in (0..data.len()).step_by(4) {
+			data[i] = (data[i] as i32 + amount).clamp(0, 255) as u8;
+			data[i + 1] = (data[i + 1] as i32 + amount).clamp(0, 255) as u8;
+			data[i + 2] = (data[i + 2] as i32 + amount).clamp(0, 255) as u8;
+		}
+	}
+	
+	#[wasm_bindgen]
+	pub fn contrast(data: &mut [u8], factor: f32) {
+		let f = (259.0 * (factor + 255.0)) / (255.0 * (259.0 - factor));
+		for i in (0..data.len()).step_by(4) {
+			data[i] = (f * (data[i] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
+			data[i + 1] = (f * (data[i + 1] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
+			data[i + 2] = (f * (data[i + 2] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
+		}
+	}
+	
+	#[wasm_bindgen]
+	pub fn blur(data: &mut [u8], width: usize, height: usize, radius: usize) {
+		let temp = data.to_vec();
+		let radius_i = radius as i32;
+		
+		for y in 0..height {
+			for x in 0..width {
+				let mut r_sum = 0u32;
+				let mut g_sum = 0u32;
+				let mut b_sum = 0u32;
+				let mut count = 0u32;
+				
+				let y_start = (y as i32 - radius_i).max(0) as usize;
+				let y_end = (y + radius + 1).min(height);
+				let x_start = (x as i32 - radius_i).max(0) as usize;
+				let x_end = (x + radius + 1).min(width);
+				
+				for ny in y_start..y_end {
+					for nx in x_start..x_end {
+						let idx = (ny * width + nx) * 4;
+						r_sum += temp[idx] as u32;
+						g_sum += temp[idx + 1] as u32;
+						b_sum += temp[idx + 2] as u32;
+						count += 1;
+					}
+				}
+				
+				let idx = (y * width + x) * 4;
+				data[idx] = (r_sum / count) as u8;
+				data[idx + 1] = (g_sum / count) as u8;
+				data[idx + 2] = (b_sum / count) as u8;
+			}
+		}
+	}
+\end{lstlisting}
+
+\subsubsection{Wyniki pomiarów -- operacje Canvas}
+
+Tabela~\ref{tab:canvas_results} przedstawia szczegółowe porównanie czasów wykonania dla każdej z czterech operacji graficznych, wraz z wyliczonym współczynnikiem przyspieszenia.
+
+\begin{table}[ht]
+	\centering
+	\caption{Porównanie wydajności operacji Canvas -- JavaScript vs. WebAssembly}
+	\label{tab:canvas_results}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Operacja} & \textbf{JavaScript [ms]} & \textbf{WebAssembly [ms]} & \textbf{Współczynnik} \\
+		\hline
+		Grayscale & 23,6 & 26,3 & 0,90× \\
+		Brightness & 22,1 & 34,3 & 0,64× \\
+		Contrast & 28,4 & 51,1 & 0,56× \\
+		Blur & 1308,5 & 371,3 & 3,52× \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Analiza wyników ujawnia interesujący wzorzec: dla prostych operacji pikselowych (grayscale, brightness, contrast) JavaScript przewyższa WebAssembly pod względem wydajności. Natomiast w przypadku operacji rozmycia (blur), która charakteryzuje się znacznie wyższą złożonością obliczeniową ($O(n \cdot r^2)$, gdzie $n$ to liczba pikseli, a $r$ to promień rozmycia), WebAssembly osiąga ponad 3,5-krotne przyspieszenie (371,3~ms kontra 1308,5~ms).
+
+\subsection{Wnioski}
+
+Przeprowadzone testy wydajnościowe pozwalają na sformułowanie następujących wniosków:
+
+\begin{enumerate}
+	\item \textbf{Złożoność obliczeniowa jako czynnik decydujący} -- WebAssembly wykazuje przewagę wydajnościową głównie w scenariuszach wymagających intensywnych obliczeń o wysokiej złożoności algorytmicznej. Dla operacji prostych narzut związany z inicjalizacją i komunikacją między środowiskami przewyższa potencjalne korzyści.
+	
+	\item \textbf{Optymalizacje specyficzne dla przeglądarki} -- nowoczesne silniki JavaScript, takie jak V8, zawierają rozbudowane optymalizacje dla typowych operacji webowych, co może przeważać nad wydajnością WebAssembly w przypadku prostych transformacji danych.
+	
+	\item \textbf{Rekomendacje praktyczne} -- WebAssembly stanowi optymalny wybór dla:
+	\begin{itemize}
+		\item algorytmów o złożoności $O(n^2)$ lub wyższej,
+		\item przetwarzania dużych zbiorów danych,
+		\item operacji wymagających przewidywalnej wydajności,
+		\item portowania istniejących bibliotek C/C++/Rust.
+	\end{itemize}
+	
+	Z kolei JavaScript pozostaje preferowany dla operacji o niskiej złożoności, szybkiego prototypowania oraz scenariuszy wymagających częstej interakcji z DOM.
+\end{enumerate}
+
+Podsumowując, wybór między WebAssembly a JavaScript powinien być uzależniony od specyfiki problemu -- optymalne rozwiązanie często stanowi architektura hybrydowa, łącząca elastyczność JavaScript z wydajnością WebAssembly.
