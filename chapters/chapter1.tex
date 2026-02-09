@@ -8,9 +8,9 @@ W architekturach rozproszonych komunikacja pomiędzy komponentami systemu odbywa
 
 \section{Charakterystyka współczesnych systemów rozproszonych}
 
-Nowoczesne systemy informatyczne coraz częściej projektowane są w oparciu o architektury rozproszone, takie jak architektura klient--serwer, mikroserwisy czy systemy oparte na komunikacji zdarzeniowej. W tego typu rozwiązaniach poszczególne komponenty systemu działają niezależnie i komunikują się ze sobą za pomocą jasno zdefiniowanych interfejsów.
+Nowoczesne systemy informatyczne coraz częściej projektowane są w oparciu o architektury rozproszone\cite{Systemy_rozporszone}, takie jak architektura klient--serwer, mikroserwisy\cite{Microservice} czy systemy oparte na komunikacji zdarzeniowej\cite{event_driven_architecture}. W tego typu rozwiązaniach poszczególne komponenty systemu działają niezależnie i komunikują się ze sobą za pomocą jasno zdefiniowanych interfejsów.
 
-Taki model projektowy umożliwia łatwiejszą skalowalność oraz rozwój systemu, jednak jednocześnie zwiększa znaczenie wydajnej i niezawodnej komunikacji. Każde wywołanie zdalne wiąże się z kosztami transmisji danych, serializacji i deserializacji komunikatów oraz przetwarzania po obu stronach połączenia. W praktyce oznacza to, że nawet niewielkie różnice w zastosowanych technologiach mogą prowadzić do zauważalnych różnic w wydajności całego systemu.
+Taki model projektowy umożliwia łatwiejszą skalowalność oraz rozwój systemu, jednak jednocześnie zwiększa znaczenie wydajnej i niezawodnej komunikacji. Każde wywołanie zdalne wiąże się z kosztami transmisji danych, serializacji\cite{serialization_wiki} i deserializacji\cite{deserialization_wiki} komunikatów oraz przetwarzania po obu stronach połączenia. W praktyce oznacza to, że nawet niewielkie różnice w zastosowanych technologiach mogą prowadzić do zauważalnych różnic w wydajności całego systemu.
 
 \section{Protokoły komunikacyjne jako fundament wymiany danych}
 
@@ -28,54 +28,81 @@ Celem niniejszej pracy jest dostarczenie empirycznych danych oraz praktycznych w
 
 \begin{description}
 	\item[\textbf{API} (\textit{Application Programming Interface})] --
-	Zbiór reguł, definicji oraz mechanizmów umożliwiających komunikację pomiędzy różnymi komponentami oprogramowania \cite{api_wiki}.
+	Zbiór reguł, definicji oraz mechanizmów umożliwiających komunikację pomiędzy różnymi komponentami oprogramowania\cite{api_wiki}.
 	
 	\item[\textbf{HTTP} (\textit{Hypertext Transfer Protocol})] --
-	Protokół komunikacyjny wykorzystywany do przesyłania danych w sieci WWW w modelu klient--serwer \cite{http_wiki}.
+	Protokół komunikacyjny wykorzystywany do przesyłania danych w sieci WWW w modelu klient--serwer.
 	
 	\item[\textbf{WebSocket}] --
-	Protokół umożliwiający utrzymywanie stałego, dwukierunkowego połączenia pomiędzy klientem a serwerem, wykorzystywany do komunikacji w czasie rzeczywistym \cite{websocket_wiki}.
+	Protokół umożliwiający utrzymywanie stałego, dwukierunkowego połączenia pomiędzy klientem a serwerem, wykorzystywany do komunikacji w czasie rzeczywistym.
 	
 	\item[\textbf{gRPC}] --
-	Wysokowydajny framework komunikacyjny typu RPC, oparty na protokole HTTP/2 oraz binarnym formacie \textit{Protocol Buffers} \cite{grpc_wiki}.
+	Wysokowydajny framework komunikacyjny typu RPC, oparty na protokole HTTP/2 oraz binarnym formacie \textit{Protocol Buffers}.
+	
+	\item[\textbf{RPC} (\textit{Remote Procedure Call})] --
+	Mechanizm komunikacji międzyprocesowej umożliwiający wykonywanie procedur lub funkcji w zdalnym systemie komputerowym tak, jakby były wywoływane lokalnie\cite{RPC}.
 	
 	\item[\textbf{Protocol Buffers} (\textit{Protobuf})] --
-	Binarny format serializacji danych opracowany przez firmę Google, wykorzystywany m.in. w komunikacji gRPC \cite{protobuf_meaning}.
+	Binarny format serializacji danych opracowany przez firmę Google, charakteryzujący się kompaktową reprezentacją oraz efektywnym przetwarzaniem, wykorzystywany m.in. w komunikacji gRPC.
 	
 	\item[\textbf{SOAP} (\textit{Simple Object Access Protocol})] --
-	Protokół komunikacyjny oparty na wymianie komunikatów XML, stosowany w architekturach usług sieciowych \cite{SOAP}.
+	Protokół komunikacyjny oparty na wymianie komunikatów XML, stosowany w architekturach usług sieciowych.
 	
 	\item[\textbf{MQTT} (\textit{Message Queuing Telemetry Transport})] --
-	Lekki protokół komunikacyjny typu publish--subscribe, przeznaczony do systemów o ograniczonych zasobach oraz komunikacji w sieciach o niskiej przepustowości \cite{MQTT}.
+	Lekki protokół komunikacyjny typu publish--subscribe, przeznaczony do systemów o ograniczonych zasobach oraz komunikacji w sieciach o niskiej przepustowości\cite{MQTT}.
+	
+	\item[\textbf{JSON} (\textit{JavaScript Object Notation})] --
+	Tekstowy format wymiany danych oparty na składni JavaScript, charakteryzujący się czytelnością dla człowieka oraz łatwością parsowania przez maszyny.
+	
+	\item[\textbf{MessagePack}] --
+	Binarny format serializacji danych zaprojektowany jako wydajniejsza alternatywa dla JSON, oferujący mniejszy rozmiar oraz szybsze przetwarzanie przy zachowaniu podobnej elastyczności.
+	
+	\item[\textbf{Apache Avro}] --
+	System serializacji danych opracowany w ramach projektu Apache Hadoop, wykorzystujący schematy JSON do definiowania struktury danych oraz zapewniający kompaktową reprezentację binarną\cite{avro}.
+	
+	\item[\textbf{BSON} (\textit{Binary JSON})] --
+	Binarny format serializacji dokumentów wzorowany na JSON, wykorzystywany m.in. w bazie danych MongoDB, rozszerzający JSON o dodatkowe typy danych oraz umożliwiający efektywne przechowywanie i przetwarzanie\cite{BSON}.
 	
 	\item[\textbf{Serializacja}] --
-	Proces przekształcania struktury danych do postaci umożliwiającej jej zapis lub transmisję pomiędzy systemami \cite{serialization_wiki}.
+	Proces przekształcania struktury danych do postaci umożliwiającej jej zapis lub transmisję pomiędzy systemami\cite{serialization_wiki}.
 	
 	\item[\textbf{Deserializacja}] --
-	Proces odtwarzania pierwotnej struktury danych na podstawie jej zserializowanej reprezentacji \cite{deserialization_wiki}.
+	Proces odtwarzania pierwotnej struktury danych na podstawie jej zserializowanej reprezentacji\cite{deserialization_wiki}.
 	
 	\item[\textbf{XML} (\textit{eXtensible Markup Language})] --
-	Rozszerzalny język znaczników wykorzystywany do opisu i strukturyzacji danych tekstowych \cite{XML}.
+	Rozszerzalny język znaczników wykorzystywany do opisu i strukturyzacji danych tekstowych.
+	
+	\item[\textbf{Mikroserwis}] --
+	Architektoniczny wzorzec projektowy, w którym aplikacja składa się z wielu niezależnych, luźno powiązanych usług, z których każda realizuje konkretną funkcjonalność biznesową i może być rozwijana oraz wdrażana niezależnie.
+	
+	\item[\textbf{Systemy rozproszone}] --
+	Zbiór niezależnych komponentów obliczeniowych połączonych siecią, które współpracują ze sobą w celu realizacji wspólnego zadania, prezentując się użytkownikowi jako jeden spójny system.
+	
+	\item[\textbf{Komunikacja zdarzeniowa} (\textit{Event-Driven Architecture})] --
+	Architektura oprogramowania, w której komponenty systemu komunikują się poprzez generowanie, wykrywanie i reagowanie na zdarzenia, umożliwiając luźne powiązanie oraz asynchroniczną wymianę informacji.
 	
 	\item[\textbf{Strumieniowanie danych}] --
-	Technika przetwarzania i przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletny zbiór danych \cite{stream}.
+	Technika przetwarzania i przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletny zbiór danych\cite{stream}.
 	
 	\item[\textbf{Head-of-Line Blocking} (\textit{HOL})] --
-	Zjawisko polegające na blokowaniu przetwarzania kolejnych żądań przez opóźnienie jednego z nich w ramach tego samego połączenia \cite{HOL}.
+	Zjawisko polegające na blokowaniu przetwarzania kolejnych żądań przez opóźnienie jednego z nich w ramach tego samego połączenia\cite{HOL}.
 	
 	\item[\textbf{WebAssembly} (\textit{Wasm})] --
-	Binarny format wykonywalnego kodu umożliwiający uruchamianie aplikacji o wysokiej wydajności w środowisku przeglądarek internetowych \cite{webassembly_meaning}.
+	Binarny format wykonywalnego kodu umożliwiający uruchamianie aplikacji o wysokiej wydajności w środowisku przeglądarek internetowych.
 	
 	\item[\textbf{TLS} (\textit{Transport Layer Security})] --
-	Protokół kryptograficzny zapewniający poufność, integralność oraz uwierzytelnianie danych przesyłanych w sieci komputerowej \cite{tls}.
+	Protokół kryptograficzny zapewniający poufność, integralność oraz uwierzytelnianie danych przesyłanych w sieci komputerowej\cite{tls}.
 	
 	\item[\textbf{Architektura klient--serwer}] --
-	Model architektoniczny, w którym klient inicjuje żądania, a serwer przetwarza je i zwraca odpowiedzi \cite{client_server_meaning}.
+	Model architektoniczny, w którym klient inicjuje żądania, a serwer przetwarza je i zwraca odpowiedzi\cite{client_server_meaning}.
 	
 	\item[\textbf{Silnik JavaScript V8}] --
-	Wysokowydajny silnik JavaScript opracowany przez firmę Google, wykorzystywany m.in. w przeglądarce Google Chrome oraz środowisku Node.js \cite{Jv8}.
+	Wysokowydajny silnik JavaScript opracowany przez firmę Google, wykorzystywany m.in. w przeglądarce Google Chrome oraz środowisku Node.js\cite{Jv8}.
 	
 	\item[\textbf{DOM} (\textit{Document Object Model})] --
-	Model obiektowy dokumentu HTML lub XML, który reprezentuje jego strukturę w postaci drzewa obiektów, umożliwiając programom (np. skryptom JavaScript) dynamiczny dostęp do zawartości, struktury oraz stylów strony internetowej \cite{dom_wiki}.
+	Model obiektowy dokumentu HTML lub XML, który reprezentuje jego strukturę w postaci drzewa obiektów, umożliwiając programom (np. skryptom JavaScript) dynamiczny dostęp do zawartości, struktury oraz stylów strony internetowej\cite{DOM}.
+	
+	\item[\textbf{Web Worker}] --
+	Mechanizm platformy webowej umożliwiający uruchamianie skryptów JavaScript w tle, w osobnym wątku względem głównego wątku interfejsu użytkownika, co pozwala na wykonywanie kosztownych obliczeń bez blokowania renderowania strony oraz interakcji użytkownika. Web Worker nie ma bezpośredniego dostępu do drzewa DOM, a komunikacja z głównym wątkiem odbywa się za pomocą asynchronicznego przesyłania komunikatów\cite{web_worker}.
 	
 \end{description}

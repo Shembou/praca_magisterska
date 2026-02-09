@@ -6,90 +6,95 @@
 \contentsline {section}{\numberline {1.5}Słownik pojęć i skrótów}{7}{section.1.5}%
 \contentsline {chapter}{\numberline {2}Technologie wykorzystane w projekcie}{10}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Rust}{10}{section.2.1}%
-\contentsline {section}{\numberline {2.2}JavaScript}{11}{section.2.2}%
+\contentsline {section}{\numberline {2.2}JavaScript}{10}{section.2.2}%
 \contentsline {section}{\numberline {2.3}TypeScript}{11}{section.2.3}%
 \contentsline {section}{\numberline {2.4}Framework Actix-web}{11}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Framework Tonic}{12}{section.2.5}%
+\contentsline {section}{\numberline {2.5}Framework Tonic}{11}{section.2.5}%
 \contentsline {section}{\numberline {2.6}tungstenite-rs}{12}{section.2.6}%
 \contentsline {section}{\numberline {2.7}h2load}{12}{section.2.7}%
 \contentsline {section}{\numberline {2.8}Python}{12}{section.2.8}%
-\contentsline {section}{\numberline {2.9}GraphQL}{13}{section.2.9}%
+\contentsline {section}{\numberline {2.9}GraphQL}{12}{section.2.9}%
 \contentsline {section}{\numberline {2.10}gRPC}{13}{section.2.10}%
 \contentsline {section}{\numberline {2.11}WebAssembly}{13}{section.2.11}%
 \contentsline {section}{\numberline {2.12}rumqttc}{13}{section.2.12}%
-\contentsline {section}{\numberline {2.13}wasm-pack}{14}{section.2.13}%
-\contentsline {section}{\numberline {2.14}Juniper}{14}{section.2.14}%
+\contentsline {section}{\numberline {2.13}wasm-pack}{13}{section.2.13}%
+\contentsline {section}{\numberline {2.14}Juniper}{13}{section.2.14}%
 \contentsline {section}{\numberline {2.15}Apache Avro}{14}{section.2.15}%
 \contentsline {section}{\numberline {2.16}BSON}{14}{section.2.16}%
-\contentsline {section}{\numberline {2.17}Serde}{15}{section.2.17}%
-\contentsline {section}{\numberline {2.18}Prost}{15}{section.2.18}%
+\contentsline {section}{\numberline {2.17}Serde}{14}{section.2.17}%
+\contentsline {section}{\numberline {2.18}Prost}{14}{section.2.18}%
 \contentsline {section}{\numberline {2.19}quick-xml}{15}{section.2.19}%
 \contentsline {chapter}{\numberline {3}Użyte narzędzia programistyczne}{16}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Git}{16}{section.3.1}%
 \contentsline {section}{\numberline {3.2}Zed}{16}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Visual Studio Code}{17}{section.3.3}%
+\contentsline {section}{\numberline {3.3}Visual Studio Code}{16}{section.3.3}%
 \contentsline {section}{\numberline {3.4}Bun}{17}{section.3.4}%
 \contentsline {section}{\numberline {3.5}Cargo}{17}{section.3.5}%
-\contentsline {chapter}{\numberline {4}Budowa środowiska testowego}{19}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Struktura plików aplikacji}{19}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Katalog communication-mechanisms}{20}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Katalog data-serialization-formats}{21}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}Katalog graphs}{22}{subsection.4.1.3}%
-\contentsline {subsection}{\numberline {4.1.4}Katalog target}{22}{subsection.4.1.4}%
-\contentsline {subsection}{\numberline {4.1.5}Katalog wasm}{22}{subsection.4.1.5}%
-\contentsline {subsection}{\numberline {4.1.6}Katalog wasm-showcase}{23}{subsection.4.1.6}%
-\contentsline {subsection}{\numberline {4.1.7}Plik .gitignore}{24}{subsection.4.1.7}%
-\contentsline {section}{\numberline {4.2}Testy wydajnościowe}{24}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Aplikacje zawarte w katalogu communication-mechanisms}{24}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Aplikacje zawarte w katalogu data-serialization-formats}{25}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Aplikacje zawarte w katalogu wasm oraz wasm-showcase}{26}{subsection.4.2.3}%
-\contentsline {chapter}{\numberline {5}Przeprowadzanie testów}{27}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Metodologia testowania protokołów komunikacyjnych}{27}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Architektura REST API}{27}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Wyniki dla protokołu HTTP/1.1}{27}{subsection.5.2.1}%
-\contentsline {subsubsection}{Transmisja strumieniowa}{28}{section*.3}%
-\contentsline {subsubsection}{Problem Head-of-Line Blocking}{29}{section*.4}%
-\contentsline {subsection}{\numberline {5.2.2}Wyniki dla protokołu HTTP/2}{30}{subsection.5.2.2}%
-\contentsline {section}{\numberline {5.3}Architektura GraphQL}{30}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Wyniki dla protokołu HTTP/1.1}{31}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}Wyniki dla protokołu HTTP/2}{31}{subsection.5.3.2}%
-\contentsline {section}{\numberline {5.4}Architektura gRPC}{31}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Definicja protokołu}{31}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Wyniki dla protokołu HTTP/2}{32}{subsection.5.4.2}%
-\contentsline {section}{\numberline {5.5}Architektura WebSocket}{33}{section.5.5}%
-\contentsline {subsection}{\numberline {5.5.1}Wyniki dla protokołu WebSocket}{36}{subsection.5.5.1}%
-\contentsline {subsection}{\numberline {5.5.2}Wyniki dla protokołu WebSocket Secure (WSS)}{36}{subsection.5.5.2}%
-\contentsline {section}{\numberline {5.6}Architektura SOAP}{37}{section.5.6}%
-\contentsline {subsection}{\numberline {5.6.1}Wyniki dla protokołu HTTP/1.1}{38}{subsection.5.6.1}%
-\contentsline {subsection}{\numberline {5.6.2}Wyniki dla protokołu HTTP/2}{38}{subsection.5.6.2}%
-\contentsline {section}{\numberline {5.7}Protokół MQTT}{39}{section.5.7}%
-\contentsline {subsection}{\numberline {5.7.1}Implementacja serwera}{39}{subsection.5.7.1}%
-\contentsline {subsection}{\numberline {5.7.2}Implementacja klienta}{40}{subsection.5.7.2}%
-\contentsline {subsection}{\numberline {5.7.3}Wyniki pomiarów}{43}{subsection.5.7.3}%
-\contentsline {section}{\numberline {5.8}Analiza porównawcza protokołów komunikacyjnych}{43}{section.5.8}%
-\contentsline {subsection}{\numberline {5.8.1}Wpływ rozmiaru ładunku na wydajność}{43}{subsection.5.8.1}%
-\contentsline {subsection}{\numberline {5.8.2}Wpływ TLS na wydajność}{44}{subsection.5.8.2}%
-\contentsline {subsection}{\numberline {5.8.3}Rekomendacje wyboru protokołu}{45}{subsection.5.8.3}%
-\contentsline {subsection}{\numberline {5.8.4}Kluczowe wnioski}{46}{subsection.5.8.4}%
-\contentsline {section}{\numberline {5.9}Analiza porównawcza formatów serializacji danych}{46}{section.5.9}%
-\contentsline {subsection}{\numberline {5.9.1}Apache Avro}{47}{subsection.5.9.1}%
-\contentsline {subsection}{\numberline {5.9.2}Binary JSON (BSON)}{47}{subsection.5.9.2}%
-\contentsline {subsection}{\numberline {5.9.3}JSON}{48}{subsection.5.9.3}%
-\contentsline {subsection}{\numberline {5.9.4}MessagePack}{48}{subsection.5.9.4}%
-\contentsline {subsection}{\numberline {5.9.5}Protocol Buffers}{49}{subsection.5.9.5}%
-\contentsline {subsection}{\numberline {5.9.6}XML}{49}{subsection.5.9.6}%
-\contentsline {subsection}{\numberline {5.9.7}Analiza porównawcza formatów serializacji}{49}{subsection.5.9.7}%
-\contentsline {subsubsection}{Wydajność czasowa}{51}{section*.5}%
-\contentsline {subsubsection}{Efektywność kompresji}{51}{section*.6}%
-\contentsline {subsubsection}{Charakterystyki formatów i rekomendacje}{52}{section*.7}%
-\contentsline {subsubsection}{Wnioski}{54}{section*.8}%
-\contentsline {section}{\numberline {5.10}Analiza porównawcza WebAssembly i JavaScript}{54}{section.5.10}%
-\contentsline {subsection}{\numberline {5.10.1}Web Workers}{54}{subsection.5.10.1}%
-\contentsline {subsubsection}{Implementacja workerów o niskim obciążeniu obliczeniowym}{54}{section*.9}%
-\contentsline {subsubsection}{Implementacja workerów o wysokim obciążeniu obliczeniowym}{56}{section*.10}%
-\contentsline {subsubsection}{Wyniki pomiarów -- Web Workers}{57}{section*.11}%
-\contentsline {subsection}{\numberline {5.10.2}Operacje na Canvas}{57}{subsection.5.10.2}%
-\contentsline {subsubsection}{Implementacja filtrów graficznych}{57}{section*.12}%
-\contentsline {subsubsection}{Wyniki pomiarów -- operacje Canvas}{59}{section*.13}%
-\contentsline {subsection}{\numberline {5.10.3}Wnioski}{60}{subsection.5.10.3}%
-\contentsline {chapter}{Zakończenie}{61}{chapter*.14}%
+\contentsline {chapter}{\numberline {4}Budowa środowiska testowego}{18}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Struktura plików aplikacji}{18}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Katalog communication-mechanisms}{18}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Katalog data-serialization-formats}{20}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Katalog graphs}{20}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Katalog target}{20}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.5}Katalog wasm}{21}{subsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.1.6}Katalog wasm-showcase}{21}{subsection.4.1.6}%
+\contentsline {subsection}{\numberline {4.1.7}Plik .gitignore}{22}{subsection.4.1.7}%
+\contentsline {section}{\numberline {4.2}Testy wydajnościowe}{22}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Aplikacje zawarte w katalogu communication-mechanisms}{22}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Aplikacje zawarte w katalogu data-serialization-formats}{22}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Aplikacje zawarte w katalogu wasm oraz wasm-showcase}{24}{subsection.4.2.3}%
+\contentsline {chapter}{\numberline {5}Przeprowadzanie testów}{25}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Metodologia testowania protokołów komunikacyjnych}{25}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Architektura REST API}{25}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Wyniki dla protokołu HTTP/1.1}{25}{subsection.5.2.1}%
+\contentsline {subsubsection}{Transmisja strumieniowa}{26}{section*.3}%
+\contentsline {subsubsection}{Problem Head-of-Line Blocking}{27}{section*.4}%
+\contentsline {subsection}{\numberline {5.2.2}Wyniki dla protokołu HTTP/2}{27}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Architektura GraphQL}{27}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Wyniki dla protokołu HTTP/1.1}{28}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Wyniki dla protokołu HTTP/2}{28}{subsection.5.3.2}%
+\contentsline {section}{\numberline {5.4}Architektura gRPC}{28}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Definicja protokołu}{28}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Wyniki dla protokołu HTTP/2}{29}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Architektura WebSocket}{30}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Wyniki dla protokołu WebSocket}{30}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Wyniki dla protokołu WebSocket Secure (WSS)}{31}{subsection.5.5.2}%
+\contentsline {section}{\numberline {5.6}Architektura SOAP}{31}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Wyniki dla protokołu HTTP/1.1}{32}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Wyniki dla protokołu HTTP/2}{32}{subsection.5.6.2}%
+\contentsline {section}{\numberline {5.7}Protokół MQTT}{33}{section.5.7}%
+\contentsline {subsection}{\numberline {5.7.1}Implementacja serwera}{33}{subsection.5.7.1}%
+\contentsline {subsection}{\numberline {5.7.2}Implementacja klienta}{34}{subsection.5.7.2}%
+\contentsline {subsection}{\numberline {5.7.3}Wyniki pomiarów}{34}{subsection.5.7.3}%
+\contentsline {section}{\numberline {5.8}Analiza porównawcza protokołów komunikacyjnych}{34}{section.5.8}%
+\contentsline {subsection}{\numberline {5.8.1}Wpływ rozmiaru ładunku na wydajność}{35}{subsection.5.8.1}%
+\contentsline {subsection}{\numberline {5.8.2}Wpływ TLS na wydajność}{36}{subsection.5.8.2}%
+\contentsline {subsection}{\numberline {5.8.3}Rekomendacje wyboru protokołu}{36}{subsection.5.8.3}%
+\contentsline {subsection}{\numberline {5.8.4}Kluczowe wnioski}{37}{subsection.5.8.4}%
+\contentsline {section}{\numberline {5.9}Analiza porównawcza formatów serializacji danych}{38}{section.5.9}%
+\contentsline {subsection}{\numberline {5.9.1}Apache Avro}{38}{subsection.5.9.1}%
+\contentsline {subsection}{\numberline {5.9.2}Binary JSON (BSON)}{38}{subsection.5.9.2}%
+\contentsline {subsection}{\numberline {5.9.3}JSON}{39}{subsection.5.9.3}%
+\contentsline {subsection}{\numberline {5.9.4}MessagePack}{39}{subsection.5.9.4}%
+\contentsline {subsection}{\numberline {5.9.5}Protocol Buffers}{40}{subsection.5.9.5}%
+\contentsline {subsection}{\numberline {5.9.6}XML}{40}{subsection.5.9.6}%
+\contentsline {subsection}{\numberline {5.9.7}Analiza porównawcza formatów serializacji}{40}{subsection.5.9.7}%
+\contentsline {subsubsection}{Wydajność czasowa}{42}{section*.5}%
+\contentsline {subsubsection}{Efektywność kompresji}{42}{section*.6}%
+\contentsline {subsubsection}{Charakterystyki formatów i rekomendacje}{43}{section*.7}%
+\contentsline {subsubsection}{Wnioski}{44}{section*.8}%
+\contentsline {section}{\numberline {5.10}Analiza porównawcza WebAssembly i JavaScript}{44}{section.5.10}%
+\contentsline {subsection}{\numberline {5.10.1}Web Workers}{44}{subsection.5.10.1}%
+\contentsline {subsubsection}{Implementacja workerów o niskim obciążeniu obliczeniowym}{45}{section*.9}%
+\contentsline {subsubsection}{Implementacja workerów o wysokim obciążeniu obliczeniowym}{45}{section*.10}%
+\contentsline {subsubsection}{Wyniki pomiarów -- Web Workers}{47}{section*.11}%
+\contentsline {subsection}{\numberline {5.10.2}Operacje na Canvas}{47}{subsection.5.10.2}%
+\contentsline {subsubsection}{Implementacja filtrów graficznych}{47}{section*.12}%
+\contentsline {subsubsection}{Wyniki pomiarów -- operacje Canvas}{49}{section*.13}%
+\contentsline {subsection}{\numberline {5.10.3}Wnioski}{49}{subsection.5.10.3}%
+\contentsline {chapter}{Zakończenie}{50}{chapter*.14}%
+\contentsline {chapter}{\numberline {A}Dodatkowy kod źródłowy}{58}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Konfiguracja TLS 1.3}{58}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Implementacja funkcji, która wykonywała zapytania do brokera MQTT}{59}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Implementacja serwera websocket}{61}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Implementacja funkcji do testowania rozmiaru, czasu serializacji oraz deserializacji formatu JSON}{63}{section.A.4}%

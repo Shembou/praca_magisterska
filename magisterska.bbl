@@ -6,23 +6,23 @@
 \newblock \url{https://bun.com//}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{prost}
+{Dan Burkert}.
+\newblock Prost.
+\newblock \url{https://github.com/tokio-rs/prost}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{serde}
+{David Tolnay, Erick Tryzelaar, Oli Scherer}.
+\newblock Serde.
+\newblock \url{https://serde.rs/}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{git}
 {Git Project}.
 \newblock Git.
 \newblock \url{https://git-scm.com/}.
 \newblock [dostęp: 21 stycznia 2026].
-
-\bibitem{juniper}
-{github}.
-\newblock Juniper graphql server library for rust.
-\newblock \url{https://github.com/graphql-rust/juniper}.
-\newblock [dostęp: 2 luty 2026].
-
-\bibitem{tonic}
-{github}.
-\newblock Tonic framework.
-\newblock \url{https://github.com/hyperium/tonic}.
-\newblock [dostęp: 2 luty 2026].
 
 \bibitem{Jv8}
 {Google}.
@@ -34,6 +34,18 @@
 {Google}.
 \newblock Protocol buffers.
 \newblock \url{https://protobuf.dev/}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{qXML}
+{Johann Tuffe, Daniel Alley, Mingun}.
+\newblock quck-xml.
+\newblock \url{https://crates.io/crates/quick-xml/0.24.1}.
+\newblock [dostęp: 2 luty 2026].
+
+\bibitem{juniper}
+{Kai Ren, Magnus Hallin, Christoph Herzog, Christian Legnitto}.
+\newblock Juniper graphql server library for rust.
+\newblock \url{https://crates.io/crates/juniper}.
 \newblock [dostęp: 2 luty 2026].
 
 \bibitem{typesciript}
@@ -54,23 +66,11 @@
 \newblock \url{https://mqtt.org/}.
 \newblock [dostęp: 2 luty 2026].
 
-\bibitem{prost}
-{Open source}.
-\newblock Prost.
-\newblock \url{https://github.com/tokio-rs/prost}.
-\newblock [dostęp: 2 luty 2026].
-
-\bibitem{qXML}
-{Open Source}.
-\newblock quck-xml.
-\newblock \url{https://crates.io/crates/quick-xml/0.24.1}.
-\newblock [dostęp: 2 luty 2026].
-
-\bibitem{serde}
-{Open source}.
-\newblock Serde.
-\newblock \url{https://serde.rs/}.
-\newblock [dostęp: 2 luty 2026].
+\bibitem{node.js}
+{OpenJS Foundation oraz kontrybutorzy Node.js}.
+\newblock Node.js.
+\newblock \url{https://nodejs.org/en}.
+\newblock [dostęp: 9 luty 2026].
 
 \bibitem{rumqttc}
 {Ravi Teja}.
@@ -90,6 +90,12 @@
 \newblock \url{https://rust-lang.org/}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{MessagePack}
+{Sadayuki Furuhashi}.
+\newblock Messagepack serialization format.
+\newblock \url{https://msgpack.org/}.
+\newblock [dostęp: 9 luty 2026].
+
 \bibitem{tungstenite}
 {Snapview GmbH}.
 \newblock tungstenite-rs.
@@ -102,6 +108,12 @@
 \newblock \url{https://nghttp2.org/documentation/h2load-howto.html#}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{tonic}
+{Team hyperium tonic}.
+\newblock Tonic framework.
+\newblock \url{https://crates.io/crates/tonic}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{actix}
 {@The Actix Team}.
 \newblock Actix-web.
@@ -109,7 +121,7 @@
 \newblock [dostęp: 2 luty 2026].
 
 \bibitem{avro}
-{The Apache Software Foundation }.
+{The Apache Software Foundation}.
 \newblock Apache avro.
 \newblock \url{https://avro.apache.org/docs/}.
 \newblock [dostęp: 2 luty 2026].
@@ -126,12 +138,24 @@ Webassembly.org.
 \newblock \url{https://webassembly.org/}.
 \newblock [dostęp: 21 stycznia 2026].
 
+\bibitem{BSON}
+{Wikipedia}.
+\newblock Bson.
+\newblock \url{https://en.wikipedia.org/wiki/BSON}.
+\newblock [dostęp: 2 luty 2026].
+
 \bibitem{deserialization_wiki}
 Wikipedia.
 \newblock Deserializacja.
 \newblock
   \url{https://en.wikipedia.org/wiki/Marshalling_(computer_science)#Unmarshalling}.
 \newblock [dostęp: 21 stycznia 2026].
+
+\bibitem{DOM}
+{Wikipedia}.
+\newblock Document object model.
+\newblock \url{https://pl.wikipedia.org/wiki/Obiektowy_model_dokumentu}.
+\newblock [dostęp: 2 luty 2026].
 
 \bibitem{XML}
 {Wikipedia}.
@@ -170,6 +194,24 @@ Wikipedia.
 \newblock \url{https://pl.wikipedia.org/wiki/JavaScript}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{JSON}
+{Wikipedia}.
+\newblock Javascript object notation.
+\newblock \url{https://en.wikipedia.org/wiki/JSON}.
+\newblock [dostęp: 9 luty 2026].
+
+\bibitem{event_driven_architecture}
+{Wikipedia}.
+\newblock Komunikacja zdarzeniowa.
+\newblock \url{https://en.wikipedia.org/wiki/Event-driven_architecture}.
+\newblock [dostęp: 9 luty 2026].
+
+\bibitem{Microservice}
+{Wikipedia}.
+\newblock Mikroserwisy.
+\newblock \url{https://en.wikipedia.org/wiki/Microservices}.
+\newblock [dostęp: 9 luty 2026].
+
 \bibitem{client_server_meaning}
 Wikipedia.
 \newblock Model klient serwer.
@@ -181,6 +223,12 @@ Wikipedia.
 \newblock Python.
 \newblock \url{https://en.wikipedia.org/wiki/Python_(programming_language)}.
 \newblock [dostęp: 2 luty 2026].
+
+\bibitem{RPC}
+Wikipedia.
+\newblock Remote procedure call.
+\newblock \url{https://en.wikipedia.org/wiki/Remote_procedure_call}.
+\newblock [dostęp: 09 lutego 2026].
 
 \bibitem{serialization_wiki}
 Wikipedia.
@@ -200,11 +248,23 @@ Wikipedia.
 \newblock \url{https://en.wikipedia.org/wiki/Stream_(computing)}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{Systemy_rozporszone}
+{Wikipedia}.
+\newblock Systemy rozproszone.
+\newblock \url{https://pl.wikipedia.org/wiki/System_rozproszony}.
+\newblock [dostęp: 9 luty 2026].
+
 \bibitem{tls}
 {Wikipedia}.
 \newblock Tls - transport layer security.
 \newblock \url{https://pl.wikipedia.org/wiki/Transport_Layer_Security}.
 \newblock [dostęp: 2 luty 2026].
+
+\bibitem{web_worker}
+{Wikipedia}.
+\newblock Web worker.
+\newblock \url{https://en.wikipedia.org/wiki/Web_worker}.
+\newblock [dostęp: 9 luty 2026].
 
 \bibitem{websocket_wiki}
 Wikipedia.

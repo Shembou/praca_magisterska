@@ -2,7 +2,7 @@
 
 \section{Rust}
 
-Rust jest nowoczesnym językiem programowania systemowego, który kładzie duży nacisk na bezpieczeństwo pamięci, wydajność oraz wielowątkowość. Dzięki mechanizmowi własności (ownership) oraz statycznej analizie błędów w czasie kompilacji, Rust minimalizuje ryzyko występowania błędów takich jak wycieki pamięci czy dereferencja pustych wskaźników. Rust zdobył popularność również dzięki nowoczesnemu systemowi typów i możliwości pisania kodu niskopoziomowego bez rezygnacji z bezpieczeństwa \cite{rust}.
+\textbf{Rust} jest nowoczesnym językiem programowania systemowego, który kładzie duży nacisk na bezpieczeństwo pamięci, wydajność oraz wielowątkowość. Dzięki mechanizmowi własności (ownership) oraz statycznej analizie błędów w czasie kompilacji, Rust minimalizuje ryzyko występowania błędów takich jak wycieki pamięci czy dereferencja pustych wskaźników. Rust zdobył popularność również dzięki nowoczesnemu systemowi typów i możliwości pisania kodu niskopoziomowego bez rezygnacji z bezpieczeństwa\cite{rust}.
 
 Wybór języka Rust był podyktowany potrzebą uzyskania niskich czasów odpowiedzi oraz stabilności działania aplikacji przy dużej liczbie równoległych zapytań. Dodatkowo paczki wykorzystane do badań nie posiadały zbędnych funkcjonalności, co umożliwiło skupienie się na analizie wyników i minimalnej implementacji rozwiązań.
 
@@ -10,7 +10,7 @@ Według Tiobe Index, Rust zyskał największą dotychczas popularność 1 styczn
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/rust_tiobe_index}
+	\includegraphics[width=0.8\textwidth]{images/rust_tiobe_index}
 	\caption{Pozycja języka Rust w rankingu Tiobe Index.}
 	\label{fig:rust_tiobe}
 \end{figure}
@@ -19,15 +19,15 @@ Jak widać na Rysunku~\ref{fig:rust_tiobe}, Rust zyskuje coraz większą popular
 
 \section{JavaScript}
 
-JavaScript jest językiem skryptowym powszechnie wykorzystywanym do tworzenia aplikacji webowych \cite{javascript}. W projekcie został użyty głównie jako punkt odniesienia dla tradycyjnych interfejsów użytkownika w porównaniu z technologią WebAssembly. Dzięki swojej uniwersalności i dużemu ekosystemowi bibliotek, JavaScript nadal pozostaje podstawowym językiem front-endowym.
+\textbf{JavaScript} jest językiem skryptowym powszechnie wykorzystywanym do tworzenia aplikacji webowych\cite{javascript}. W projekcie został użyty głównie jako punkt odniesienia dla tradycyjnych interfejsów użytkownika w porównaniu z technologią WebAssembly. Dzięki swojej uniwersalności i dużemu ekosystemowi bibliotek, JavaScript nadal pozostaje podstawowym językiem front-endowym.
 
 \section{TypeScript}
 
-TypeScript jest statycznie typowanym nadzbiorem języka JavaScript, rozwijanym przez firmę Microsoft. Rozszerza on JavaScript o system typów oraz mechanizmy weryfikacji poprawności kodu na etapie kompilacji, co znacząco ułatwia tworzenie, utrzymanie i rozwój większych aplikacji \cite{typesciript}.
+\textbf{TypeScript} jest statycznie typowanym nadzbiorem języka JavaScript, rozwijanym przez firmę Microsoft. Rozszerza on JavaScript o system typów oraz mechanizmy weryfikacji poprawności kodu na etapie kompilacji, co znacząco ułatwia tworzenie, utrzymanie i rozwój większych aplikacji \cite{typesciript}.
 
 \section{Framework Actix-web}
 
-Actix-web jest asynchronicznym frameworkiem webowym dla języka Rust, opartym na modelu aktorów. Charakteryzuje się wysoką wydajnością oraz niskim narzutem czasowym, co sprawia, że jest jedną z najszybszych opcji w ekosystemie Rust \cite{actix}.
+\textbf{Actix-web} jest asynchronicznym frameworkiem webowym dla języka Rust, opartym na modelu aktorów. Charakteryzuje się wysoką wydajnością oraz niskim narzutem czasowym, co sprawia, że jest jedną z najszybszych opcji w ekosystemie \cite{actix}.
 
 Framework Actix-web został wybrany ze względu na:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -38,7 +38,7 @@ Framework Actix-web został wybrany ze względu na:
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/rust_actix_web}
+	\includegraphics[width=0.9\textwidth]{images/rust_actix_web}
 	\caption{Framework Actix-web w porównaniu z innymi frameworkami.}
 	\label{fig:rust_actix_web}
 \end{figure}
@@ -47,7 +47,7 @@ Jak widać na Rysunku~\ref{fig:rust_actix_web}, Actix wypada bardzo korzystnie w
 
 \section{Framework Tonic}
 
-Tonic jest frameworkiem do implementacji gRPC w języku Rust, opartym na bibliotece \texttt{tokio} oraz protokole HTTP/2 \cite{tonic}. W projekcie został wykorzystany do:
+\textbf{Tonic} jest frameworkiem do implementacji gRPC w języku Rust, opartym na bibliotece \texttt{tokio} oraz protokole HTTP/2\cite{tonic}. W projekcie został wykorzystany do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item implementacji serwera gRPC,
 	\item definiowania kontraktów komunikacyjnych w postaci plików \texttt{.proto},
@@ -58,7 +58,7 @@ Framework Tonic umożliwił stworzenie stabilnej i szybkiej komunikacji typu RPC
 
 \section{tungstenite-rs}
 
-\texttt{tungstenite-rs} jest biblioteką w Rust umożliwiającą obsługę protokołu WebSocket. Została wykorzystana do \cite{tungstenite}:
+\textbf{tungstenite-rs} jest biblioteką w Rust umożliwiającą obsługę protokołu WebSocket. Została wykorzystana do\cite{tungstenite}:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item obsługi komunikacji w czasie rzeczywistym,
 	\item przesyłania danych bez konieczności inicjowania nowych połączeń HTTP,
@@ -67,7 +67,7 @@ Framework Tonic umożliwił stworzenie stabilnej i szybkiej komunikacji typu RPC
 
 \section{h2load}
 
-\texttt{h2load} jest narzędziem służącym do testowania wydajności aplikacji korzystających z protokołu HTTP/2 \cite{h2load}. W projekcie zostało wykorzystane do:
+\texttt{h2load} jest narzędziem służącym do testowania wydajności aplikacji korzystających z protokołu HTTP/2\cite{h2load}. W projekcie zostało wykorzystane do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item generowania dużej liczby równoległych zapytań,
 	\item pomiaru czasów odpowiedzi serwera,
@@ -76,25 +76,25 @@ Framework Tonic umożliwił stworzenie stabilnej i szybkiej komunikacji typu RPC
 
 \section{Python}
 
-Python jest językiem wysokiego poziomu, który w projekcie został użyty głównie pomocniczo, do:
+\textbf{Python} jest językiem wysokiego poziomu, który w projekcie został użyty głównie pomocniczo, do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item analizy wyników testów wydajnościowych,
 	\item generowania wykresów porównawczych,
 	\item przetwarzania danych pomiarowych.
 \end{itemize}
 
-Python pozostaje jednym z najpopularniejszych języków programowania \cite{python}, co obrazuje Rysunek~\ref{fig:python_tiobe}.
+Python pozostaje jednym z najpopularniejszych języków programowania\cite{python}, co obrazuje Rysunek~\ref{fig:python_tiobe}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{images/python_tiobe_index}
+	\includegraphics[width=0.8\textwidth]{images/python_tiobe_index}
 	\caption{Pozycja języka Python w rankingu Tiobe Index.}
 	\label{fig:python_tiobe}
 \end{figure}
 
 \section{GraphQL}
 
-GraphQL jest językiem zapytań do API, pozwalającym klientowi precyzyjnie określić, jakie dane są potrzebne \cite{gql}. W projekcie został wykorzystany do:
+\textbf{GraphQL} jest językiem zapytań do API, pozwalającym klientowi precyzyjnie określić, jakie dane są potrzebne. W projekcie został wykorzystany do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item realizacji zapytań o złożone struktury danych,
 	\item testów wydajnościowych i porównawczych.
@@ -102,15 +102,15 @@ GraphQL jest językiem zapytań do API, pozwalającym klientowi precyzyjnie okre
 
 \section{gRPC}
 
-gRPC jest mechanizmem komunikacji RPC opartym na protokole HTTP/2 oraz formacie binarnym Protocol Buffers. W projekcie zostało wykorzystane do:
+\textbf{gRPC} jest mechanizmem komunikacji RPC opartym na protokole HTTP/2 oraz formacie binarnym Protocol Buffers. W projekcie zostało wykorzystane do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item komunikacji między komponentami systemu,
-	\item przeprowadzania testów wydajnościowych,
+	\item przeprowadzania testów wydajnościowych.
 \end{itemize}
 
 \section{WebAssembly}
 
-WebAssembly (Wasm) jest binarnym formatem wykonywalnym, pozwalającym uruchamiać kod napisany w Rust bezpośrednio w przeglądarce. W projekcie zostało wykorzystane do:
+\textbf{WebAssembly} (Wasm) jest binarnym formatem wykonywalnym, pozwalającym uruchamiać kod napisany w Rust bezpośrednio w przeglądarce. W projekcie zostało wykorzystane do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
 	\item uruchamiania części logiki aplikacji po stronie klienta,
 	\item eksperymentalnego porównania wydajności z klasycznym JavaScriptem,
@@ -118,7 +118,7 @@ WebAssembly (Wasm) jest binarnym formatem wykonywalnym, pozwalającym uruchamia�
 \end{itemize}
 \section{rumqttc}
 
-\texttt{rumqttc} jest asynchroniczną biblioteką w języku Rust służącą do obsługi protokołu MQTT (Message Queuing Telemetry Transport). Umożliwia ona implementację klientów MQTT, oferując niskie opóźnienia oraz wysoką wydajność komunikacji \cite{rumqttc}.
+\textbf{rumqttc} jest asynchroniczną biblioteką w języku Rust służącą do obsługi protokołu MQTT (Message Queuing Telemetry Transport). Umożliwia ona implementację klientów MQTT, oferując niskie opóźnienia oraz wysoką wydajność komunikacji\cite{rumqttc}.
 
 W projekcie biblioteka \texttt{rumqttc} została wykorzystana do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -129,7 +129,7 @@ W projekcie biblioteka \texttt{rumqttc} została wykorzystana do:
 
 \section{wasm-pack}
 
-\texttt{wasm-pack} jest narzędziem wspierającym proces kompilacji projektów napisanych w języku Rust do formatu WebAssembly. Automatyzuje on generowanie pakietów WASM, integrację z ekosystemem JavaScript oraz publikację modułów.
+\textbf{wasm-pack} jest narzędziem wspierającym proces kompilacji projektów napisanych w języku Rust do formatu WebAssembly. Automatyzuje on generowanie pakietów WASM, integrację z ekosystemem JavaScript oraz publikację modułów.
 
 W projekcie \texttt{wasm-pack} został wykorzystany do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -140,7 +140,7 @@ W projekcie \texttt{wasm-pack} został wykorzystany do:
 
 \section{Juniper}
 
-\texttt{Juniper} jest biblioteką w języku Rust służącą do implementacji serwerów GraphQL. Umożliwia definiowanie schematów, zapytań oraz mutacji w sposób silnie typowany, zgodny z paradygmatami języka Rust \cite{juniper}.
+\textbf{Juniper} jest biblioteką w języku Rust służącą do implementacji serwerów GraphQL. Umożliwia definiowanie schematów, zapytań oraz mutacji w sposób silnie typowany, zgodny z paradygmatami języka Rust\cite{juniper}.
 
 W projekcie biblioteka \texttt{Juniper} została użyta do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -151,7 +151,7 @@ W projekcie biblioteka \texttt{Juniper} została użyta do:
 
 \section{Apache Avro}
 
-Apache Avro jest binarnym formatem serializacji danych opartym na schematach, wykorzystywanym głównie w systemach przetwarzania danych i architekturach rozproszonych. Zapewnia kompaktową reprezentację danych oraz możliwość ewolucji schematów \cite{avro}.
+\textbf{Apache} Avro jest binarnym formatem serializacji danych opartym na schematach, wykorzystywanym głównie w systemach przetwarzania danych i architekturach rozproszonych. Zapewnia kompaktową reprezentację danych oraz możliwość ewolucji schematów.
 
 W projekcie Apache Avro został wykorzystany do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -162,7 +162,7 @@ W projekcie Apache Avro został wykorzystany do:
 
 \section{BSON}
 
-BSON (Binary JSON) jest binarną reprezentacją formatu JSON, zaprojektowaną z myślą o efektywnej serializacji danych. Jest powszechnie stosowany m.in. w bazach danych MongoDB \cite{bson}.
+\textbf{BSON} (Binary JSON) jest binarną reprezentacją formatu JSON, zaprojektowaną z myślą o efektywnej serializacji danych. Jest powszechnie stosowany m.in. w bazach danych MongoDB.
 
 W projekcie format BSON został wykorzystany do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -173,7 +173,7 @@ W projekcie format BSON został wykorzystany do:
 
 \section{Serde}
 
-\texttt{Serde} jest biblioteką w języku Rust służącą do serializacji i deserializacji struktur danych \cite{serde}. Zapewnia zunifikowany interfejs obsługujący wiele formatów, takich jak JSON, BSON, XML czy MessagePack.
+\textbf{Serde} jest biblioteką w języku Rust służącą do serializacji i deserializacji struktur danych\cite{serde}. Zapewnia zunifikowany interfejs obsługujący wiele formatów, takich jak JSON, BSON, XML czy MessagePack.
 
 W projekcie \texttt{Serde} została wykorzystana jako:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -184,7 +184,7 @@ W projekcie \texttt{Serde} została wykorzystana jako:
 
 \section{Prost}
 
-\texttt{Prost} jest biblioteką w języku Rust służącą do obsługi formatu Protocol Buffers. Umożliwia generowanie kodu Rust na podstawie plików \texttt{.proto} oraz efektywną serializację danych binarnych \cite{prost}.
+\textbf{Prost} jest biblioteką w języku Rust służącą do obsługi formatu Protocol Buffers. Umożliwia generowanie kodu Rust na podstawie plików \texttt{.proto} oraz efektywną serializację danych binarnych\cite{prost}.
 
 W projekcie \texttt{Prost} została wykorzystana do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
@@ -195,7 +195,7 @@ W projekcie \texttt{Prost} została wykorzystana do:
 
 \section{quick-xml}
 
-\texttt{quick-xml} jest szybką biblioteką w języku Rust przeznaczoną do parsowania i generowania dokumentów XML. Charakteryzuje się niskim narzutem pamięciowym oraz wysoką wydajnością \cite{qXML}.
+\textbf{quick-xml} jest szybką biblioteką w języku Rust przeznaczoną do parsowania i generowania dokumentów XML. Charakteryzuje się niskim narzutem pamięciowym oraz wysoką wydajnością\cite{qXML}.
 
 W projekcie biblioteka \texttt{quick-xml} została użyta do:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]

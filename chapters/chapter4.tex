@@ -3,9 +3,9 @@ W niniejszym rozdziale przedstawiono kluczowe elementy środowiska testowego. W 
 
 \section{Struktura plików aplikacji}
 
-Rysunek~\ref{fig:file_structure} przedstawia architekturę przygotowanego środowiska testowego. Projekt składa się z pięciu głównych katalogów, z których każdy odpowiada za odrębny aspekt przeprowadzanych badań.
+Rysunek~\ref{fig:file_structure}, na str.~\pageref{fig:file_structure}, przedstawia architekturę przygotowanego środowiska testowego. Projekt składa się z pięciu głównych katalogów, z których każdy odpowiada za odrębny aspekt przeprowadzanych badań.
 
-\begin{figure}[H]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.55\textwidth]{images/file_structure}
 	\caption{Struktura plików i katalogów w aplikacji.}
@@ -54,10 +54,10 @@ Katalog zawiera narzędzia do wizualizacji wyników przeprowadzonych eksperyment
 Katalog target stanowi standardowy folder roboczy kompilatora Rust, zawierający pliki binarne, biblioteki oraz artefakty pośrednie powstałe w procesie budowania projektu. Zawartość tego katalogu jest automatycznie zarządzana przez narzędzie Cargo i nie wymaga ręcznej modyfikacji.
 
 \subsection{Katalog wasm}
-Katalog zawiera programy napisane w języku Rust, które są kompilowane do formatu WebAssembly (WASM). Powstałe moduły binarne są następnie wykorzystywane w środowisku przeglądarki internetowej, umożliwiając uruchomienie kodu o wysokiej wydajności po stronie klienta.
+Katalog zawiera programy napisane w języku \texttt{Rust}, które są kompilowane do formatu \texttt{WebAssembly} (WASM). Powstałe moduły binarne są następnie wykorzystywane w środowisku przeglądarki internetowej, umożliwiając uruchomienie kodu o wysokiej wydajności po stronie klienta.
 
 \subsection{Katalog wasm-showcase}
-Katalog wasm-showcase zawiera kompletną aplikację webową demonstrującą możliwości technologii WebAssembly. Struktura projektu obejmuje następujące elementy:
+Katalog wasm-showcase zawiera kompletną aplikację webową demonstrującą możliwości technologii \texttt{WebAssembly}. Struktura projektu obejmuje następujące elementy:
 \begin{itemize}
 	\item \textbf{image-processing} -- katalog zawierający skompilowane do WebAssembly moduły służące do przetwarzania obrazów. Pliki WASM oraz pomocnicze skrypty JavaScript pozwalają na wykonywanie operacji graficznych bezpośrednio w przeglądarce,
 	\item \textbf{particle-system} -- katalog z modułami WASM implementującymi system cząsteczek, wykorzystywany do demonstracji wydajności obliczeń graficznych w środowisku webowym,
@@ -77,7 +77,7 @@ Katalog wasm-showcase zawiera kompletną aplikację webową demonstrującą moż
 \end{itemize}
 
 \subsection{Plik .gitignore}
-Plik konfiguracyjny systemu kontroli wersji Git, zawierający listę plików i katalogów wykluczonych z repozytorium. Typowo obejmuje katalogi tymczasowe (target, node\_modules), pliki konfiguracyjne środowiska oraz artefakty kompilacji, które nie powinny być śledzone w historii zmian projektu.
+Plik konfiguracyjny systemu kontroli wersji \texttt{Git}, zawierający listę plików i katalogów wykluczonych z repozytorium. Typowo obejmuje katalogi tymczasowe (target, node\_modules), pliki konfiguracyjne środowiska oraz artefakty kompilacji, które nie powinny być śledzone w historii zmian projektu.
 
 \section{Testy wydajnościowe}
 
@@ -88,20 +88,20 @@ W ramach przygotowanego środowiska testowego przeprowadzono szereg eksperyment�
 Dla każdego zaimplementowanego protokołu komunikacji przeprowadzono cztery kategorie testów wydajnościowych, pozwalających na kompleksową ocenę charakterystyk przesyłania danych:
 
 \begin{enumerate}
-	\item \textbf{Transmisja małych pakietów danych} -- test polegający na cyklicznym odpytywaniu serwera o dane o rozmiarze 1~KB. Pomiar ten pozwala ocenić narzut protokołu oraz czas odpowiedzi dla typowych żądań zawierających niewielką ilość informacji.
+	\item \textbf{Transmisja małych pakietów danych} -- test polegający na cyklicznym odpytywaniu serwera o dane o rozmiarze \texttt{1~KB}. Pomiar ten pozwala ocenić narzut protokołu oraz czas odpowiedzi dla typowych żądań zawierających niewielką ilość informacji.
 	
-	\item \textbf{Transmisja dużych pakietów danych} -- test analogiczny do poprzedniego, z tą różnicą, że rozmiar przesyłanych danych wynosi 1~MB. Eksperyment ten umożliwia ocenę wydajności protokołów w scenariuszu transferu większych zasobów.
+	\item \textbf{Transmisja dużych pakietów danych} -- test analogiczny do poprzedniego, z tą różnicą, że rozmiar przesyłanych danych wynosi \texttt{1~MB}. Eksperyment ten umożliwia ocenę wydajności protokołów w scenariuszu transferu większych zasobów.
 	
-	\item \textbf{Head-of-Line Blocking} -- test weryfikujący występowanie zjawiska blokowania głowy kolejki, w którym opóźnienie w przetwarzaniu jednego żądania wpływa na obsługę kolejnych żądań w ramach tego samego połączenia. Testom został poodany tylko protokół HTTP1.1 oraz HTTP2.
+	\item \textbf{Head-of-Line Blocking} -- test weryfikujący występowanie zjawiska blokowania głowy kolejki, w którym opóźnienie w przetwarzaniu jednego żądania wpływa na obsługę kolejnych żądań w ramach tego samego połączenia. Testom został poodany tylko protokół \texttt{HTTP/1.1} oraz \texttt{HTTP/2}.
 	
-	\item \textbf{Strumieniowanie danych} -- test przeprowadzany wyłącznie dla protokołów wspierających tryb strumieniowy (streaming). Ocenie podlega efektywność przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletną odpowiedź serwera. Testom został poodany tylko protokół HTTP1.1 oraz HTTP2.
+	\item \textbf{Strumieniowanie danych} -- test przeprowadzany wyłącznie dla protokołów wspierających tryb strumieniowy (streaming). Ocenie podlega efektywność przesyłania danych w sposób ciągły, bez konieczności oczekiwania na kompletną odpowiedź serwera. Testom został poodany tylko protokół \texttt{HTTP/1.1} oraz \texttt{HTTP/2}.
 \end{enumerate}
 
 \subsection{Aplikacje zawarte w katalogu data-serialization-formats}
 
 Dla każdej z zaimplementowanych bibliotek serializacji danych przeprowadzono pomiary wydajności na podstawie ustandaryzowanej struktury danych. W celu zapewnienia porównywalności wyników, wszystkie testy wykorzystują identyczny zestaw danych testowych składający się z kolekcji 1000 obiektów użytkowników wraz z metadanymi.
 
-Struktura danych testowych jest generowana w następujący sposób:
+Struktura danych testowych jest generowana w sposób pokazany na listunku ~\ref{lst:user_struct}:
 
 \begin{lstlisting}[style=rustcode, caption={Struktura danych wykorzystana w testach serializacji.}, label={lst:user_struct}]
 	let count = 1000;
@@ -135,20 +135,20 @@ Każdy obiekt użytkownika zawiera kompletny zestaw atrybutów: identyfikator li
 Dla każdego formatu serializacji mierzono następujące parametry wydajnościowe:
 
 \begin{enumerate}
-	\item \textbf{Czas serializacji} -- czas potrzebny na przekształcenie struktury danych z reprezentacji obiektowej języka Rust do formatu serializowanego. Pomiar wyrażony w milisekundach (ms) i uśredniony na podstawie wielokrotnych iteracji.
+	\item \textbf{Czas serializacji} -- czas potrzebny na przekształcenie struktury danych z reprezentacji obiektowej języka Rust do formatu serializowanego. Pomiar wyrażony w milisekundach (\texttt{ms}) i uśredniony na podstawie wielokrotnych iteracji.
 	
-	\item \textbf{Czas deserializacji} -- czas wymagany do odtworzenia struktury obiektowej z danych w formacie serializowanym. Pomiar wyrażony w milisekundach (ms) i uśredniony na podstawie wielokrotnych iteracji.
+	\item \textbf{Czas deserializacji} -- czas wymagany do odtworzenia struktury obiektowej z danych w formacie serializowanym. Pomiar wyrażony w milisekundach (\texttt{ms}) i uśredniony na podstawie wielokrotnych iteracji.
 	
-	\item \textbf{Rozmiar zserializowanych danych} -- całkowita wielkość danych po procesie serializacji, wyrażona w bajtach (B). Parametr ten pozwala ocenić efektywność kompresji oraz narzut protokołu dla różnych formatów wymiany danych.
+	\item \textbf{Rozmiar zserializowanych danych} -- całkowita wielkość danych po procesie serializacji, wyrażona w bajtach (\texttt{B}). Parametr ten pozwala ocenić efektywność kompresji oraz narzut protokołu dla różnych formatów wymiany danych.
 \end{enumerate}
 
 Wykorzystanie identycznego zestawu danych testowych dla wszystkich formatów serializacji umożliwia obiektywne porównanie ich wydajności oraz charakterystyk w zakresie rozmiaru wynikowych struktur danych.
 
 \subsection{Aplikacje zawarte w katalogu wasm oraz wasm-showcase}
 
-Katalogi \textit{wasm} oraz \textit{wasm-showcase} obejmują zbiór aplikacji eksperymentalnych napisanych w języku Rust, które zostały skompilowane do formatu WebAssembly (WASM) z wykorzystaniem narzędzia \textit{wasm-pack}. Celem tych aplikacji jest analiza wpływu wykorzystania technologii WebAssembly na wydajność wykonywania obliczeń po stronie klienta w środowisku przeglądarki internetowej.
+Katalogi \textit{wasm} oraz \textit{wasm-showcase} obejmują zbiór aplikacji eksperymentalnych napisanych w języku \texttt{Rust}, które zostały skompilowane do formatu \texttt{WebAssembly} (WASM) z wykorzystaniem narzędzia \textit{wasm-pack}. Celem tych aplikacji jest analiza wpływu wykorzystania technologii WebAssembly na wydajność wykonywania obliczeń po stronie klienta w środowisku przeglądarki internetowej.
 
-W ramach przeprowadzonych eksperymentów porównywany jest czas wykonania wybranych operacji matematycznych realizowanych bezpośrednio w języku JavaScript oraz analogicznych operacji wykonywanych przez skompilowane moduły WebAssembly. Takie zestawienie umożliwia ocenę potencjalnych korzyści wynikających z wykorzystania kodu natywnego kompilowanego do WASM w kontekście obliczeń o zwiększonej złożoności.
+W ramach przeprowadzonych eksperymentów porównywany jest czas wykonania wybranych operacji matematycznych realizowanych bezpośrednio w języku JavaScript oraz analogicznych operacji wykonywanych przez skompilowane moduły \texttt{WebAssembly}. Takie zestawienie umożliwia ocenę potencjalnych korzyści wynikających z wykorzystania kodu natywnego kompilowanego do WASM w kontekście obliczeń o zwiększonej złożoności.
 
 Testy zostały przeprowadzone z wykorzystaniem dwóch interfejsów programistycznych dostępnych w środowisku webowym:
 \begin{itemize}
@@ -156,4 +156,4 @@ Testy zostały przeprowadzone z wykorzystaniem dwóch interfejsów programistycz
 	\item \textbf{Web Workers API} -- umożliwiającego uruchamianie modułów WebAssembly w osobnych wątkach roboczych, co pozwala na analizę wpływu przetwarzania równoległego na czas wykonania obliczeń oraz responsywność interfejsu użytkownika.
 \end{itemize}
 
-Zastosowanie zarówno Canvas API, jak i Web Workers pozwala na kompleksową ocenę wydajności modułów WebAssembly w różnych scenariuszach użycia, obejmujących zarówno obciążenie głównego wątku aplikacji, jak i przetwarzanie asynchroniczne. Wyniki uzyskane w ramach tych testów stanowią podstawę do dalszej analizy porównawczej przedstawionej w kolejnym rozdziale pracy.
+Zastosowanie zarówno \texttt{Canvas API}, jak i \texttt{Web Workers} pozwala na kompleksową ocenę wydajności modułów WebAssembly w różnych scenariuszach użycia, obejmujących zarówno obciążenie głównego wątku aplikacji, jak i przetwarzanie asynchroniczne. Wyniki uzyskane w ramach tych testów stanowią podstawę do dalszej analizy porównawczej przedstawionej w kolejnym rozdziale pracy.

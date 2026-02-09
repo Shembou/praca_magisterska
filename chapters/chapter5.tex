@@ -7,37 +7,38 @@ Niniejszy rozdział prezentuje metodologię przeprowadzonych badań eksperymenta
 Wszystkie eksperymenty zostały przeprowadzone z wykorzystaniem ujednoliconych parametrów testowych, dostosowanych do specyfiki każdego badanego protokołu:
 
 \begin{itemize}
-	\item Liczba współbieżnych operacji: 100
-	\item Liczba zapytań na wątek: 1000
-	\item Rozmiar standardowego ładunku danych: 1024 bajty (1~KB)
-	\item Rozmiar rozszerzonego ładunku danych: 1~048~576 bajtów (1~MB)
+	\item Liczba współbieżnych operacji: \texttt{100}
+	\item Liczba zapytań na wątek: \texttt{1000}
+	\item Rozmiar standardowego ładunku danych: 1024 bajty (\texttt{1~KB})
+	\item Rozmiar rozszerzonego ładunku danych: 1~048~576 bajtów (\texttt{1~MB})
 \end{itemize}
 
 \section{Architektura REST API}
 
-Implementacja architektury REST została zrealizowana przy użyciu biblioteki Actix-web -- jednej z najpopularniejszych wysokopoziomowych platform wspierających natywnie strumieniowanie danych oraz protokół HTTP/2 w połączeniu z certyfikatami TLS. W ramach analizy zbadano również problem blokowania na początku kolejki (ang. \textit{Head-of-Line blocking}, HOL) wraz z proponowanym rozwiązaniem.
+Implementacja architektury \texttt{REST} została zrealizowana przy użyciu biblioteki Actix-web -- jednej z najpopularniejszych wysokopoziomowych platform wspierających natywnie strumieniowanie danych oraz protokół \texttt{HTTP/2} w połączeniu z certyfikatami TLS. W ramach analizy zbadano również problem blokowania na początku kolejki (ang. \textit{Head-of-Line blocking}, HOL) wraz z proponowanym rozwiązaniem.
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
 
-Listing~\ref{lst:http_handlers_implementation} przedstawia implementację punktów końcowych (ang. \textit{endpoints}) obsługujących zapytania ze standardowym oraz rozszerzonym ładunkiem danych.
+Listing~\ref{lst:http_handlers_implementation} przedstawia implementację punktów końcowych (ang. \textit{endpoints}) obsługujących zapytania ze standardowym oraz rozszerzonym ładunkiem danych. Funkcja \texttt{test()} zwraca odpowiedź JSON zawierającą 1~KB danych (1024 znaki), natomiast \texttt{test\_high\_payload()} generuje ładunek o rozmiarze 1~MB (1~048~576 znaków). Obie implementacje wykorzystują asynchroniczny model przetwarzania oraz mechanizm serializacji \texttt{serde\_json}.
+
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja zapytań dla ładunków 1KB oraz 1MB dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_handlers_implementation}]
-	use actix_web::{get, HttpResponse};
+#[get("/test")]
+async fn test() -> HttpResponse {
+	HttpResponse::Ok().json(serde_json::json!({
+		"message": "x".repeat(1024)
+	}))
+}
 	
-	#[get("/test")]
-	async fn test() -> HttpResponse {
-		HttpResponse::Ok().json(serde_json::json!({
-			"message": "x".repeat(1024)
-		}))
-	}
-	
-	#[get("/test_high_payload")]
-	async fn test_high_payload() -> HttpResponse {
-		HttpResponse::Ok().json(serde_json::json!({
-			"message": "x".repeat(1024 * 1024)
-		}))
-	}
+#[get("/test_high_payload")]
+async fn test_high_payload() -> HttpResponse {
+	HttpResponse::Ok().json(serde_json::json!({
+		"message": "x".repeat(1024 * 1024)
+	}))
+}
 \end{lstlisting}
+
+
 
 \textbf{Wyniki pomiarów dla standardowego ładunku (1~KB):}
 Przepustowość wyniosła 764~076 żądań na sekundę, co stanowi najwyższą wartość spośród wszystkich testowanych konfiguracji dla małych pakietów danych.
@@ -46,57 +47,40 @@ Przepustowość wyniosła 764~076 żądań na sekundę, co stanowi najwyższą w
 Odnotowano przepustowość na poziomie 2~759 żądań na sekundę, co stanowi spadek o 99,6\% w porównaniu ze standardowym ładunkiem. Ta znacząca degradacja wynika z narzutu związanego z nawiązywaniem nowego połączenia TCP dla każdego żądania.
 
 \subsubsection{Transmisja strumieniowa}
+Listing~\ref{lst:http_stream_impl} przedstawia implementację strumieniowania danych, gdzie odpowiedź jest wysyłana w postaci sekwencji 100 fragmentów (ang. \textit{chunks}). Funkcja \texttt{stream\_handler()} wykorzystuje mechanizm \texttt{stream::unfold} do generowania kolejnych porcji danych w sposób asynchroniczny, eliminując konieczność przygotowania całej odpowiedzi w pamięci przed rozpoczęciem transmisji.
 
-Listing~\ref{lst:http_stream_impl} pokazuję implementację strumieniowania danych, gdzie odpowiedź jest wysyłana w postaci sekwencji fragmentów (ang. \textit{chunks}).
-
-\begin{lstlisting}[style=rustcode, caption={Implementacja strumienowania dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_stream_impl}]
-	use actix_web::{get, HttpResponse};
-	use futures_util::stream::{self};
-	use bytes::Bytes;
+\begin{lstlisting}[style=rustcode, caption={Implementacja strumieniowania dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_stream_impl}]	
+#[get("/stream")]
+async fn stream_handler() -> HttpResponse {
+	let response_stream = stream::unfold(0, |count| async move {
+		if count >= 100 {
+			None
+		} else {
+			let chunk = format!("chunk {}\n", count);
+			Some((Ok::<Bytes, actix_web::Error>(Bytes::from(chunk)), count + 1))
+		}
+	});
 	
-	#[get("/stream")]
-	async fn stream_handler() -> HttpResponse {
-		let response_stream = stream::unfold(0, |count| async move {
-			if count >= 100 {
-				None
-			} else {
-				let chunk = format!("chunk {}\n", count);
-				Some((Ok::<Bytes, actix_web::Error>(Bytes::from(chunk)), count + 1))
-			}
-		});
-		
-		HttpResponse::Ok()
-		.content_type("text/plain")
-		.streaming(response_stream)
-	}
+	HttpResponse::Ok()
+	.content_type("text/plain")
+	.streaming(response_stream)
+}
 \end{lstlisting}
 
 Transmisja strumieniowa składająca się ze 100 fragmentów osiągnęła przepustowość 239~056 żądań na sekundę, co stanowi wartość pośrednią między scenariuszami małych i dużych pakietów.
 
 \subsubsection{Problem Head-of-Line Blocking}
 
-Listing~\ref{lst:http_hol_impl} przedstawia implementację testową symulującą problem HOL, w którym opóźnienie jednego fragmentu danych blokuje całą kolejkę oczekujących pakietów.
+Listing~\ref{lst:http_hol_impl} przedstawia implementację testową symulującą problem HOL, w którym opóźnienie jednego żądania blokuje przetwarzanie kolejnych zapytań w ramach tego samego połączenia. Funkcja \texttt{hol()} wprowadza sztucznie opóźnienie 50~ms przed zwróceniem odpowiedzi, co pozwala zaobserwować wpływ zablokowanego żądania na całkowitą przepustowość systemu.
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja symulacji problemu HOL dla protokołu HTTP/1.1 oraz HTTP/2 dla architektury REST API}, label={lst:http_hol_impl}]
-	use actix_web::{get, HttpResponse};
-	use futures_util::stream::{self};
-	use bytes::Bytes;
-	
-	#[get("/stream")]
-	async fn stream_handler() -> HttpResponse {
-		let response_stream = stream::unfold(0, |count| async move {
-			if count >= 100 {
-				None
-			} else {
-				let chunk = format!("chunk {}\n", count);
-				Some((Ok::<Bytes, actix_web::Error>(Bytes::from(chunk)), count + 1))
-			}
-		});
-		
-		HttpResponse::Ok()
-		.content_type("text/plain")
-		.streaming(response_stream)
-	}
+#[get("/hol")]
+async fn hol() -> HttpResponse {
+	sleep(Duration::from_millis(50)).await;
+	HttpResponse::Ok()
+	.content_type("text/plain")
+	.body("ok")
+}
 \end{lstlisting}
 
 W warunkach występowania problemu Head-of-Line blocking zmierzono przepustowość wynoszącą 1~954 żądania na sekundę, demonstrując znaczącą degradację wydajności względem normalnego strumieniowania.
@@ -121,24 +105,24 @@ W scenariuszu testowym HOL blocking protokół HTTP/2 osiągnął przepustowoś�
 
 Implementację GraphQL zrealizowano przy użyciu biblioteki Juniper -- zaawansowanego frameworka wspierającego natywnie strumieniowanie oraz HTTP/2 z wykorzystaniem TLS.
 
-Listing~\ref{lst:http_gql_obj_impl} przedstawia implementację schematu GraphQL wraz z funkcjami resolver, które są wywoływane w celu uzyskania żądanych danych.
+Listing~\ref{lst:http_gql_obj_impl} przedstawia implementację schematu GraphQL wraz z funkcjami resolver, które są wywoływane w celu uzyskania żądanych danych. Funkcja \texttt{test\_payload()} zwraca obiekt zawierający 1~KB danych, natomiast \texttt{large\_payload()} generuje ładunek o rozmiarze 1~MB, umożliwiając porównanie wydajności GraphQL dla różnych rozmiarów przesyłanych danych.
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja zapytania GraphQL}, label={lst:http_gql_obj_impl}]
-	#[juniper::graphql_object]
-	impl Query {
-		fn test_payload() -> Payload {
-			Payload {
-				message: "x".repeat(1024),
-			}
-		}
-		
-		fn large_payload() -> Payload {
-			const PAYLOAD_SIZE: usize = 1024 * 1024;
-			Payload {
-				message: "x".repeat(PAYLOAD_SIZE),
-			}
+#[juniper::graphql_object]
+impl Query {
+	fn test_payload() -> Payload {
+		Payload {
+			message: "x".repeat(1024),
 		}
 	}
+	
+	fn large_payload() -> Payload {
+		const PAYLOAD_SIZE: usize = 1024 * 1024;
+		Payload {
+			message: "x".repeat(PAYLOAD_SIZE),
+		}
+	}
+}
 \end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
@@ -162,59 +146,52 @@ Implementacja gRPC została zrealizowana przy użyciu biblioteki Tonic -- wysoko
 Listing~\ref{lst:gprc_proto} przedstawia zawartość pliku definicji protokołu (ang. \textit{Protocol Buffers}), na podstawie którego generowany jest automatycznie kod oraz typy danych dla języka Rust.
 
 \begin{lstlisting}[style=rustcode, caption={Zawartość pliku .proto, do którego tworzony jest automatycznie kod oraz typy}, label={lst:gprc_proto}]
-	syntax = "proto3";
-	
-	package benchmark;
-	
-	service BenchmarkService {
-		rpc TestPayload (TestPayloadRequest) returns (TestPayloadResponse);
-		rpc TestHighPayload (TestHighPayloadRequest) returns (TestHighPayloadResponse);
-		rpc TestStreamPayload (TestStreamPayloadRequest) returns (stream TestStreamPayloadResponse);
-	}
-	
-	message TestPayloadRequest {}
-	
-	message TestPayloadResponse {
-		string message = 1;
-	}
-	
-	message TestHighPayloadRequest {}
-	
-	message TestHighPayloadResponse {
-		string message = 1;
-	}
-	
-	message TestStreamPayloadRequest {}
-	
-	message TestStreamPayloadResponse {
-		bytes chunk = 1;
-	}
+syntax = "proto3";
+
+package benchmark;
+
+service BenchmarkService {
+	rpc TestPayload (TestPayloadRequest) returns (TestPayloadResponse);
+	rpc TestHighPayload (TestHighPayloadRequest) returns (TestHighPayloadResponse);
+}
+
+message TestPayloadRequest {}
+
+message TestPayloadResponse {
+	string message = 1;
+}
+
+message TestHighPayloadRequest {}
+
+message TestHighPayloadResponse {
+	string message = 1;
+}
 \end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/2}
 
-Listing~\ref{lst:gprc_fn} pokazuję implementację funkcji obsługujących zapytania gRPC.
+Listing~\ref{lst:gprc_fn} przedstawia implementację funkcji obsługujących zapytania gRPC. Funkcja \texttt{test\_payload()} zwraca odpowiedź zawierającą 1~KB danych, natomiast \newline\texttt{test\_high\_payload()} generuje ładunek o rozmiarze 1~MB. Typy żądań i odpowiedzi zostały automatycznie wygenerowane z definicji Protocol Buffers, wymagając jedynie implementacji logiki zwracającej dane.
 
-\begin{lstlisting}[style=rustcode, caption={Funkcje wykorzystywane w testach}, label={lst:gprc_fn}]
-	async fn test_payload(
-	&self,
-	_request: Request<TestPayloadRequest>,
-	) -> Result<Response<TestPayloadResponse>, Status> {
-		let payload = "x".repeat(1024);
-		Ok(Response::new(TestPayloadResponse {
-			message: payload,
-		}))
-	}
-	
-	async fn test_high_payload(
-	&self,
-	_request: Request<TestHighPayloadRequest>,
-	) -> Result<Response<TestHighPayloadResponse>, Status> {
-		let payload = "x".repeat(1024 * 1024);
-		Ok(Response::new(TestHighPayloadResponse {
-			message: payload,
-		}))
-	}
+\begin{lstlisting}[style=rustcode, caption={Funkcje wykorzystywane w testach gRPC}, label={lst:gprc_fn}]
+async fn test_payload(
+&self,
+_request: Request<TestPayloadRequest>,
+) -> Result<Response<TestPayloadResponse>, Status> {
+	let payload = "x".repeat(1024);
+	Ok(Response::new(TestPayloadResponse {
+		message: payload,
+	}))
+}
+
+async fn test_high_payload(
+&self,
+_request: Request<TestHighPayloadRequest>,
+) -> Result<Response<TestHighPayloadResponse>, Status> {
+	let payload = "x".repeat(1024 * 1024);
+	Ok(Response::new(TestHighPayloadResponse {
+		message: payload,
+	}))
+}
 \end{lstlisting}
 
 \textbf{Wyniki pomiarów -- standardowy ładunek:}
@@ -227,98 +204,28 @@ Dla rozszerzonego ładunku zmierzono przepustowość 2~243 żądań na sekundę,
 
 Do implementacji architektury WebSocket wykorzystano bibliotekę \texttt{tungstenite-rs} -- popularny framework wysokiego poziomu dedykowany komunikacji dwukierunkowej w czasie rzeczywistym. 
 
-Listing~\ref{lst:ws_impl} przedstawia kompletną implementację serwera WebSocket obsługującego trzy typy zapytań: standardowy ładunek, rozszerzony ładunek oraz transmisję strumieniową.
+Listing~\ref{lst:ws_impl} przedstawia implementację logiki obsługi wiadomości w serwerze WebSocket. Kod znajduje się w głównej pętli obsługującej zdarzenia, gdzie na podstawie odebranej komendy tekstowej serwer zwraca odpowiedni typ odpowiedzi: standardowy ładunek (1~KB), rozszerzony ładunek (1~MB).
 
-\begin{lstlisting}[style=rustcode, caption={Implementacja serwera WebSocket}, label={lst:ws_impl}]
-	use tokio::net::TcpListener;
-	use tokio_tungstenite::accept_async;
-	use futures_util::{StreamExt, SinkExt};
-	use tungstenite::Message;
-	use std::sync::atomic::{AtomicUsize, Ordering};
-	use std::sync::Arc;
-	
-	const PAYLOAD_SIZE: usize = 1024;
-	const HIGH_PAYLOAD_SIZE: usize = 1024 * 1024;
-	
-	#[tokio::main]
-	async fn main() -> Result<(), Box<dyn std::error::Error>> {
-		let server = TcpListener::bind("127.0.0.1:9001").await?;
-		println!("WebSocket server listening on ws://127.0.0.1:9001");
-		
-		let connection_count = Arc::new(AtomicUsize::new(0));
-		
-		loop {
-			let (stream, _) = server.accept().await?;
-			let conn_id = connection_count.fetch_add(1, Ordering::SeqCst);
-			
-			tokio::spawn(async move {
-				let mut websocket = match accept_async(stream).await {
-					Ok(ws) => ws,
-					Err(e) => {
-						eprintln!("WebSocket handshake failed: {}", e);
-						return;
-					}
-				};
-				
-				println!("Connection {} established", conn_id);
-				
-				let mut request_count = 0;
-				
-				while let Some(msg) = websocket.next().await {
-					match msg {
-						Ok(Message::Text(text)) => {
-							request_count += 1;
-							
-							match text.as_str() {
-								"test" => {
-									let payload = "x".repeat(PAYLOAD_SIZE);
-									if let Err(e) = websocket.send(Message::Text(payload.into())).await {
-										eprintln!("Connection {} write error: {}", conn_id, e);
-										break;
-									}
-								}
-								"test_high_payload" => {
-									let payload = "x".repeat(HIGH_PAYLOAD_SIZE);
-									if let Err(e) = websocket.send(Message::Text(payload.into())).await {
-										eprintln!("Connection {} write error: {}", conn_id, e);
-										break;
-									}
-								}
-								"stream" => {
-									for count in 0..100 {
-										let chunk = format!("chunk {}\n", count);
-										if let Err(e) = websocket.send(Message::Text(chunk.into())).await {
-											eprintln!("Connection {} write error at chunk {}: {}", conn_id, count, e);
-											break;
-										}
-									}
-								}
-								_ => {
-									eprintln!("Connection {} unknown command: {}", conn_id, text);
-								}
-							}
-							
-							if request_count % 100 == 0 {
-								println!("Connection {} processed {} requests", conn_id, request_count);
-							}
-						}
-						Ok(Message::Close(_)) => {
-							println!("Connection {} closed gracefully after {} requests", conn_id, request_count);
-							let _ = websocket.send(Message::Close(None)).await;
-							break;
-						}
-						Err(e) => {
-							eprintln!("Connection {} error: {}", conn_id, e);
-							break;
-						}
-						_ => {}
-					}
-				}
-				
-				println!("Connection {} handler exiting", conn_id);
-			});
+\begin{lstlisting}[style=rustcode, caption={Implementacja obsługi wiadomości WebSocket}, label={lst:ws_impl}]
+match text.as_str() {
+	"test" => {
+		let payload = "x".repeat(PAYLOAD_SIZE);
+		if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+			eprintln!("Connection {} write error: {}", conn_id, e);
+			break;
 		}
 	}
+	"test_high_payload" => {
+		let payload = "x".repeat(HIGH_PAYLOAD_SIZE);
+		if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+			eprintln!("Connection {} write error: {}", conn_id, e);
+			break;
+		}
+	}
+	_ => {
+		eprintln!("Connection {} unknown command: {}", conn_id, text);
+	}
+}
 \end{lstlisting}
 
 \subsection{Wyniki dla protokołu WebSocket}
@@ -343,57 +250,55 @@ Dla rozszerzonego ładunku zmierzono przepustowość 2~932 żądań na sekundę,
 
 Implementacja protokołu SOAP została przetestowana w obu wersjach HTTP w celu porównania charakterystyk wydajnościowych. Implementacja opiera się na bibliotece Actix-web, identycznej jak w przypadku REST API.
 
-Listing~\ref{lst:soap_impl} przedstawia implementację punktów końcowych SOAP generujących odpowiedzi w formacie XML zgodnym ze specyfikacją SOAP 1.2.
+Listing~\ref{lst:soap_impl} przedstawia implementację punktów końcowych SOAP generujących odpowiedzi w formacie XML zgodnym ze specyfikacją SOAP 1.2. Funkcja \texttt{soap\_handler()} zwraca komunikat SOAP zawierający 1~KB danych, natomiast \texttt{soap\_large\_payload\_handler()} generuje ładunek o rozmiarze 1~MB. Obie funkcje konstruują pełną strukturę koperty SOAP (Envelope) z odpowiednią deklaracją przestrzeni nazw oraz zagnieżdżonym elementem Body zawierającym dane testowe.
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja endpointów SOAP}, label={lst:soap_impl}]
-	use actix_web::{HttpResponse, post};
+#[post("/test")]
+async fn soap_handler() -> HttpResponse {
+	let payload = "x".repeat(1024);
 	
-	#[post("/test")]
-	async fn soap_handler() -> HttpResponse {
-		let payload = "x".repeat(1024);
-		
-		let response = format!(
-		r#"
-		<?xml version="1.0" encoding="utf-8"?>
-		<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-		xmlns:test="urn:benchmark">
-		<soap:Body>
-		<test:TestPayloadResponse>
-		<test:message>{}</test:message>
-		</test:TestPayloadResponse>
-		</soap:Body>
-		</soap:Envelope>
-		"#,
-		payload
-		);
-		
-		HttpResponse::Ok()
-		.content_type("text/xml; charset=utf-8")
-		.body(response)
-	}
+	let response = format!(
+	r#"
+	<?xml version="1.0" encoding="utf-8"?>
+	<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:test="urn:benchmark">
+	<soap:Body>
+	<test:TestPayloadResponse>
+	<test:message>{}</test:message>
+	</test:TestPayloadResponse>
+	</soap:Body>
+	</soap:Envelope>
+	"#,
+	payload
+	);
 	
-	#[post("/test_large_payload")]
-	async fn soap_large_payload_handler() -> HttpResponse {
-		let payload = "x".repeat(1024 * 1024);
-		let response = format!(
-		r#"
-		<?xml version="1.0" encoding="utf-8"?>
-		<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-		xmlns:test="urn:benchmark">
-		<soap:Body>
-		<test:TestPayloadResponse>
-		<test:message>{}</test:message>
-		</test:TestPayloadResponse>
-		</soap:Body>
-		</soap:Envelope>
-		"#,
-		payload
-		);
-		
-		HttpResponse::Ok()
-		.content_type("text/xml; charset=utf-8")
-		.body(response)
-	}
+	HttpResponse::Ok()
+	.content_type("text/xml; charset=utf-8")
+	.body(response)
+}
+
+#[post("/test_large_payload")]
+async fn soap_large_payload_handler() -> HttpResponse {
+	let payload = "x".repeat(1024 * 1024);
+	let response = format!(
+	r#"
+	<?xml version="1.0" encoding="utf-8"?>
+	<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:test="urn:benchmark">
+	<soap:Body>
+	<test:TestPayloadResponse>
+	<test:message>{}</test:message>
+	</test:TestPayloadResponse>
+	</soap:Body>
+	</soap:Envelope>
+	"#,
+	payload
+	);
+	
+	HttpResponse::Ok()
+	.content_type("text/xml; charset=utf-8")
+	.body(response)
+}
 \end{lstlisting}
 
 \subsection{Wyniki dla protokołu HTTP/1.1}
@@ -420,144 +325,63 @@ MQTT (Message Queuing Telemetry Transport) to lekki protokół publikacji/subskr
 
 \subsection{Implementacja serwera}
 
-Listing~\ref{lst:mqtt-receiver} przedstawia główną pętlę zdarzeń (ang. \textit{event loop}) odbiorcy MQTT, która przetwarza przychodzące publikacje i wysyła odpowiedzi na dedykowane tematy.
+Listing~\ref{lst:mqtt-receiver} przedstawia główną pętlę zdarzeń (ang. \textit{event loop}) odbiorcy MQTT, która przetwarza przychodzące publikacje i wysyła odpowiedzi na dedykowane tematy. Pętla nasłuchuje na zdarzenia przy użyciu metody \texttt{poll()}, a po odebraniu wiadomości na temat \texttt{benchmark/request} lub \texttt{benchmark/high\_payload} publikuje otrzymany ładunek na odpowiadający temat odpowiedzi (\texttt{benchmark/response} lub \newline\textbf{benchmark/high\_payload\_response}). Komunikacja odbywa się z poziomem Quality of Service ustawionym na \texttt{AtLeastOnce}, zapewniając dostarczenie wiadomości co najmniej raz. Implementacja zawiera również podstawową obsługę błędów oraz logowanie liczby przetworzonych żądań co 1000 operacji.
 
 \begin{lstlisting}[style=rustcode, caption={Główna pętla zdarzeń odbiorcy MQTT}, label={lst:mqtt-receiver}]
-	loop {
-		match eventloop.poll().await {
-			Ok(Event::Incoming(Incoming::Publish(p))) => {
-				request_count += 1;
-				
-				let response_topic = match p.topic.as_str() {
-					"benchmark/request" => "benchmark/response",
-					"benchmark/high_payload" => "benchmark/high_payload_response",
-					_ => continue,
-				};
-				
-				if let Err(e) = client
-				.publish(
-				response_topic,
-				QoS::AtLeastOnce,
-				false,
-				p.payload,
-				)
-				.await
-				{
-					eprintln!("Failed to publish response: {:?}", e);
-				}
-				
-				if request_count % 1000 == 0 {
-					println!("Processed {} requests", request_count);
-				}
+loop {
+	match eventloop.poll().await {
+		Ok(Event::Incoming(Incoming::Publish(p))) => {
+			request_count += 1;
+			
+			let response_topic = match p.topic.as_str() {
+				"benchmark/request" => "benchmark/response",
+				"benchmark/high_payload" => "benchmark/high_payload_response",
+				_ => continue,
+			};
+			
+			if let Err(e) = client
+			.publish(
+			response_topic,
+			QoS::AtLeastOnce,
+			false,
+			p.payload,
+			)
+			.await
+			{
+				eprintln!("Failed to publish response: {:?}", e);
 			}
-			Ok(_) => {}
-			Err(e) => {
-				eprintln!("Server error: {:?}", e);
-				tokio::time::sleep(Duration::from_secs(1)).await;
+			
+			if request_count % 1000 == 0 {
+				println!("Processed {} requests", request_count);
 			}
 		}
+		Ok(_) => {}
+		Err(e) => {
+			eprintln!("Server error: {:?}", e);
+			tokio::time::sleep(Duration::from_secs(1)).await;
+		}
 	}
+}
 \end{lstlisting}
 
 \subsection{Implementacja klienta}
 
-Listing~\ref{lst:mqtt-sender} pokazuję implementację klienta MQTT wykorzystywanego w testach wydajnościowych, obsługującego publikację wiadomości oraz odbieranie odpowiedzi z mechanizmem timeout.
+Listing~\ref{lst:mqtt-sender} przedstawia logikę generowania ładunku danych w kliencie MQTT wykorzystywanym w testach wydajnościowych. W zależności od parametru konfiguracyjnego \newline\texttt{high\_payload()}, funkcja tworzy obiekt JSON zawierający identyfikator wątku roboczego oraz dane testowe o rozmiarze 1~MB (dla \texttt{high\_payload = true}) lub o rozmiarze zdefiniowanym w konfiguracji (dla \texttt{high\_payload = false}). Wygenerowana struktura jest następnie serializowana do formatu tekstowego JSON i przesyłana jako payload wiadomości MQTT.
 
-\begin{lstlisting}[style=rustcode, caption={Implementacja klienta MQTT dla testów wydajnościowych}, label={lst:mqtt-sender}]
-	let mut latencies = Vec::with_capacity(config.requests_per_worker);
-	
-	// Create unique client ID for this worker
-	let client_id = format!("benchmark_worker_{}", worker_id);
-	let mut opts = MqttOptions::new(client_id, "127.0.0.1", 1883);
-	opts.set_keep_alive(Duration::from_secs(30));
-	
-	// Increase max packet size to handle 1MB+ payloads
-	opts.set_max_packet_size(10 * 1024 * 1024, 10 * 1024 * 1024); // 10 MB max
-	
-	let (client, mut eventloop) = AsyncClient::new(opts, 1000);
-	
-	let (response_tx, mut response_rx) = mpsc::unbounded_channel();
-	
-	// Spawn event loop handler
-	let response_topic = if config.high_payload {
-		"benchmark/high_payload_response"
-	} else {
-		"benchmark/response"
-	};
-	
-	tokio::spawn(async move {
-		loop {
-			match eventloop.poll().await {
-				Ok(Event::Incoming(Incoming::Publish(p))) => {
-					if p.topic == response_topic {
-						let _ = response_tx.send(());
-					}
-				}
-				Ok(_) => {}
-				Err(e) => {
-					eprintln!("Worker {} eventloop error: {:?}", worker_id, e);
-					break;
-				}
-			}
-		}
-	});
-	
-	// Subscribe to response topic
-	client
-	.subscribe(response_topic, QoS::AtLeastOnce)
-	.await?;
-	
-	// Wait a bit for subscription to be established
-	tokio::time::sleep(Duration::from_millis(100)).await;
-	
-	let request_topic = if config.high_payload {
-		"benchmark/high_payload"
-	} else {
-		"benchmark/request"
-	};
-	
-	let payload = if config.high_payload {
-		serde_json::json!({
-			"id": format!("worker_{}", worker_id),
-			"payload": "x".repeat(1024 * 1024) // 1 MB payload
-		})
-		.to_string()
-	} else {
-		serde_json::json!({
-			"id": format!("worker_{}", worker_id),
-			"payload": "x".repeat(config.payload_size)
-		})
-		.to_string()
-	};
-	
-	for i in 0..config.requests_per_worker {
-		// Acquire semaphore permit to control concurrency
-		let _permit = semaphore.acquire().await?;
-		
-		let start = Instant::now();
-		
-		// Send request
-		client
-		.publish(request_topic, QoS::AtLeastOnce, false, payload.clone())
-		.await?;
-		
-		// Wait for response with timeout
-		match timeout(Duration::from_secs(10), response_rx.recv()).await {
-			Ok(Some(_)) => {
-				let latency = start.elapsed();
-				latencies.push(latency);
-			}
-			Ok(None) => {
-				eprintln!("Worker {} request {}: Channel closed", worker_id, i);
-				break;
-			}
-			Err(_) => {
-				eprintln!("Worker {} request {}: Timeout", worker_id, i);
-			}
-		}
-		
-		drop(_permit);
-	}
+\begin{lstlisting}[style=rustcode, caption={Logika generowania ładunku danych w kliencie MQTT}, label={lst:mqtt-sender}]
+let payload = if config.high_payload {
+	serde_json::json!({
+		"id": format!("worker_{}", worker_id),
+		"payload": "x".repeat(1024 * 1024)
+	})
+	.to_string()
+} else {
+	serde_json::json!({
+		"id": format!("worker_{}", worker_id),
+		"payload": "x".repeat(config.payload_size)
+	})
+	.to_string()
+};
 \end{lstlisting}
 
 \subsection{Wyniki pomiarów}
@@ -699,7 +523,7 @@ Przeprowadzono testy wydajnościowe dla sześciu popularnych formatów serializa
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png}
 	\caption{Metryki wydajności Apache Avro.}
 	\label{fig:avro}
 \end{figure}
@@ -710,7 +534,7 @@ Apache Avro uzyskał czas serializacji 7,396~ms, deserializacji 5,988~ms przy ro
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png}
 	\caption{Metryki wydajności Binary JSON.}
 	\label{fig:bson}
 \end{figure}
@@ -721,7 +545,7 @@ Format BSON wykazał czas serializacji 2,073~ms, deserializacji 4,842~ms, generu
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png}
 	\caption{Metryki wydajności JSON.}
 	\label{fig:json}
 \end{figure}
@@ -732,7 +556,7 @@ Standardowy JSON osiągnął czas serializacji 1,294~ms oraz deserializacji 3,56
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metrics.png}
 	\caption{Metryki wydajności MessagePack.}
 	\label{fig:message-pack}
 \end{figure}
@@ -743,7 +567,7 @@ MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748~ms i 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.png}
 	\caption{Metryki wydajności Protocol Buffers.}
 	\label{fig:protobuf}
 \end{figure}
@@ -754,7 +578,7 @@ Protocol Buffers osiągnął czas serializacji 1,648~ms, deserializacji 4,724~ms
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.55\textwidth]{images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png}
+	\includegraphics[width=0.8\textwidth]{images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png}
 	\caption{Metryki wydajności XML.}
 	\label{fig:xml}
 \end{figure}
@@ -785,21 +609,21 @@ Kompleksowa analiza wydajności formatów serializacji wymaga uwzględnienia trz
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.85\textwidth]{images/serialization_time_comparison.png}
+	\includegraphics[width=0.7\textwidth]{images/serialization_time_comparison.png}
 	\caption{Porównanie czasu serializacji różnych formatów.}
 	\label{fig:serialization_time}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.85\textwidth]{images/deserialization_time_comparison.png}
+	\includegraphics[width=0.7\textwidth]{images/deserialization_time_comparison.png}
 	\caption{Porównanie czasu deserializacji formatowania danych.}
 	\label{fig:deserialization_time}
 \end{figure}
 
 \subsubsection{Wydajność czasowa}
 
-MessagePack wykazał najlepszą wydajność czasową we wszystkich kategoriach:
+\texttt{MessagePack} wykazał najlepszą wydajność czasową we wszystkich kategoriach:
 
 \begin{itemize}
 	\item Najszybsza serializacja: 0,748~ms (6,0× szybciej niż XML, 9,9× szybciej niż Apache Avro)
@@ -807,13 +631,13 @@ MessagePack wykazał najlepszą wydajność czasową we wszystkich kategoriach:
 	\item Najniższy całkowity czas przetwarzania: 2,995~ms
 \end{itemize}
 
-JSON i Protocol Buffers osiągnęły porównywalne wyniki czasowe (odpowiednio 4,859~ms i 6,372~ms łącznie), oferując dobry kompromis między wydajnością a czytelnością (JSON) lub efektywnością kompresji (Protobuf).
+\texttt{JSON} i texttt{Protocol Buffers} osiągnęły porównywalne wyniki czasowe (odpowiednio 4,859~ms i 6,372~ms łącznie), oferując dobry kompromis między wydajnością a czytelnością (JSON) lub efektywnością kompresji (Protobuf).
 
-XML wykazał najgorsze charakterystyki czasowe z deserializacją trwającą 18,078~ms -- ponad 8× dłużej niż najbliższy konkurent (Apache Avro). Ta degradacja wynika z parsowania tekstowej struktury hierarchicznej oraz narzutu związanego z walidacją schematu.
+\texttt{XML} wykazał najgorsze charakterystyki czasowe z deserializacją trwającą 18,078~ms -- ponad 8× dłużej niż najbliższy konkurent (Apache Avro). Ta degradacja wynika z parsowania tekstowej struktury hierarchicznej oraz narzutu związanego z walidacją schematu.
 
 \subsubsection{Efektywność kompresji}
 
-Apache Avro osiągnął najlepszą kompresję danych z rozmiarem 521~727 bajtów (509,5~KB), co stanowi:
+\texttt{Apache Avro} osiągnął najlepszą kompresję danych z rozmiarem 521~727 bajtów (509,5~KB), co stanowi:
 
 \begin{itemize}
 	\item 2,2× mniejszy rozmiar niż JSON
@@ -821,7 +645,7 @@ Apache Avro osiągnął najlepszą kompresję danych z rozmiarem 521~727 bajtów
 	\item 3,4× mniejszy rozmiar niż XML
 \end{itemize}
 
-MessagePack wykazał rozmiar 527~431 bajtów (515,1~KB) -- zaledwie 1,1\% większy niż Avro, co w połączeniu z najlepszą wydajnością czasową czyni go najbardziej zrównoważonym formatem.
+\texttt{MessagePack} wykazał rozmiar 527~431 bajtów (515,1~KB) -- zaledwie 1,1\% większy niż Avro, co w połączeniu z najlepszą wydajnością czasową czyni go najbardziej zrównoważonym formatem.
 
 \begin{figure}[H]
 	\centering
@@ -830,7 +654,7 @@ MessagePack wykazał rozmiar 527~431 bajtów (515,1~KB) -- zaledwie 1,1\% więks
 	\label{fig:serialization_size}
 \end{figure}
 
-XML i BSON wykazały najbardziej nieefektywną kompresję, przekraczając 1,4~MB dla tego samego zestawu danych. W przypadku XML nadmiarowy rozmiar wynika z tagów otwierających i zamykających oraz metadanych, podczas gdy BSON przechowuje dodatkowe informacje typów dla każdego pola.
+\texttt{XML} i \texttt{BSON} wykazały najbardziej nieefektywną kompresję, przekraczając 1,4~MB dla tego samego zestawu danych. W przypadku XML nadmiarowy rozmiar wynika z tagów otwierających i zamykających oraz metadanych, podczas gdy BSON przechowuje dodatkowe informacje typów dla każdego pola.
 
 \subsubsection{Charakterystyki formatów i rekomendacje}
 
@@ -906,97 +730,89 @@ Technologia Web Workers umożliwia przerzucenie części kodu, który wykonuje s
 
 \subsubsection{Implementacja workerów o niskim obciążeniu obliczeniowym}
 
-Listing~\ref{lst:web_worker_low_compute} przedstawia implementację Web Workera wykonującego podstawowe operacje matematyczne na tablicy liczb zmiennoprzecinkowych. Worker oblicza sumę pierwiastków kwadratowych pomnożonych przez logarytmy naturalne dla każdego elementu tablicy.
+Listing~\ref{lst:web_worker_low_compute} przedstawia implementację Web Workera w środowisku WebAssembly z wykorzystaniem biblioteki wasm-bindgen. Funkcja \texttt{worker\_entry()} stanowi punkt wejścia workera i inicjalizuje obsługę komunikatów przychodzących z głównego wątku. Odebrane dane są interpretowane jako tablica liczb zmiennoprzecinkowych typu Float64Array, na której wykonywane są operacje obliczeniowe polegające na sumowaniu iloczynów pierwiastków kwadratowych oraz logarytmów naturalnych kolejnych elementów. Czas wykonania obliczeń mierzony jest przy użyciu interfejsu Performance, a uzyskany wynik czasowy przesyłany jest z powrotem do głównego wątku za pomocą mechanizmu postMessage, co umożliwia ocenę kosztu obliczeń realizowanych w osobnym wątku.
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja Web Workera z prostymi operacjami obliczeniowymi}, label={lst:web_worker_low_compute}]
-	use wasm_bindgen::prelude::*;
-	use js_sys::Float64Array;
-	use web_sys::DedicatedWorkerGlobalScope;
+#[wasm_bindgen(start)]
+pub fn worker_entry() {
+	let global: DedicatedWorkerGlobalScope =
+	js_sys::global().unchecked_into();
 	
-	#[wasm_bindgen(start)]
-	pub fn worker_entry() {
-		let global: DedicatedWorkerGlobalScope =
-		js_sys::global().unchecked_into();
+	let global_for_closure = global.clone();
+	
+	let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
+		let buffer = event.data();
+		let data = Float64Array::new(&buffer);
 		
-		let global_for_closure = global.clone();
+		let performance = global_for_closure.performance().unwrap();
+		let t0 = performance.now();
 		
-		let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
-			let buffer = event.data();
-			let data = Float64Array::new(&buffer);
-			
-			let performance = global_for_closure.performance().unwrap();
-			let t0 = performance.now();
-			
-			let mut sum = 0.0;
-			for i in 0..data.length() {
-				let x = data.get_index(i);
-				sum += x.sqrt() * (x + 1.0).ln();
-			}
-			
-			let t1 = performance.now();
-			
-			let response = js_sys::Object::new();
-			js_sys::Reflect::set(&response, &"time".into(), &(t1 - t0).into()).unwrap();
-			
-			global_for_closure.post_message(&response).unwrap();
-		});
+		let mut sum = 0.0;
+		for i in 0..data.length() {
+			let x = data.get_index(i);
+			sum += x.sqrt() * (x + 1.0).ln();
+		}
 		
-		global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
-		onmessage.forget();
-	}
+		let t1 = performance.now();
+		
+		let response = js_sys::Object::new();
+		js_sys::Reflect::set(&response, &"time".into(), &(t1 - t0).into()).unwrap();
+		
+		global_for_closure.post_message(&response).unwrap();
+	});
+	
+	global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
+	onmessage.forget();
+}
 \end{lstlisting}
 
 \subsubsection{Implementacja workerów o wysokim obciążeniu obliczeniowym}
 
-Listing~\ref{lst:web_worker_high_compute} pokazuję implementację Web Workera wykonującego złożone operacje obliczeniowe z wykorzystaniem mapy chaotycznej (ang. \textit{chaotic map}). Algorytm ten symuluje zachowanie chaotyczne poprzez iteracyjne obliczenia wykorzystujące mapowanie logistyczne.
+Listing~\ref{lst:web_worker_high_compute} pokazuję implementację Web Workera wykonanego w bardzo podobny sposób do poprzedniej implementacji (Listing~\ref{lst:web_worker_low_compute}), z tym żę wykonuje złożone operacje obliczeniowe z wykorzystaniem mapy chaotycznej (ang. \textit{chaotic map}). Algorytm ten symuluje zachowanie chaotyczne poprzez iteracyjne obliczenia wykorzystujące mapowanie logistyczne.
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja Web Workera z zaawansowanymi operacjami obliczeniowymi}, label={lst:web_worker_high_compute}]
-	use wasm_bindgen::prelude::*;
-	use js_sys::Float64Array;
-	use web_sys::DedicatedWorkerGlobalScope;
+#[wasm_bindgen(start)]
+pub fn worker_entry() {
+	let global: DedicatedWorkerGlobalScope =
+	js_sys::global().unchecked_into();
 	
-	#[wasm_bindgen(start)]
-	pub fn worker_entry() {
-		let global: DedicatedWorkerGlobalScope =
-		js_sys::global().unchecked_into();
+	let global_for_closure = global.clone();
+	
+	let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
+		let buffer = event.data();
+		let data = Float64Array::new(&buffer);
 		
-		let global_for_closure = global.clone();
+		let perf = global_for_closure.performance().unwrap();
+		let t0 = perf.now();
 		
-		let onmessage = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MessageEvent| {
-			let buffer = event.data();
-			let data = Float64Array::new(&buffer);
-			
-			let perf = global_for_closure.performance().unwrap();
-			let t0 = perf.now();
-			
-			let mut acc = 0.0;
-			let mut seed = 0.123456789_f64;
-			
-			for i in 0..data.length() {
-				let v = data.get_index(i);
-				
-				// Mapowanie chaotyczne (logistic map)
-				seed = seed * 3.999999 - seed * seed;
-				let x = seed + v;
-				
-				seed = seed * 3.999999 - seed * seed;
-				let y = seed + v;
-				
-				acc += (x * x + y * y).sqrt().ln();
-			}
-			
-			let t1 = perf.now();
-			
-			let result = js_sys::Object::new();
-			js_sys::Reflect::set(&result, &"value".into(), &acc.into()).unwrap();
-			js_sys::Reflect::set(&result, &"time".into(), &(t1 - t0).into()).unwrap();
-			
-			global_for_closure.post_message(&result).unwrap();
-		});
+		let mut acc = 0.0;
+		let mut seed = 0.123456789_f64;
 		
-		global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
-		onmessage.forget();
-	}
+		for i in 0..data.length() {
+			let v = data.get_index(i);
+			
+			// Mapowanie chaotyczne (logistic map)
+			seed = seed * 3.999999 - seed * seed;
+			let x = seed + v;
+			
+			seed = seed * 3.999999 - seed * seed;
+			let y = seed + v;
+			
+			acc += (x * x + y * y).sqrt().ln();
+		}
+		
+		let t1 = perf.now();
+		
+		let result = js_sys::Object::new();
+		js_sys::Reflect::set(&result, &"value".into(), &acc.into()).unwrap();
+		js_sys::Reflect::set(&result, &"time".into(), &(t1 - t0).into()).unwrap();
+		
+		global_for_closure.post_message(&result).unwrap();
+	});
+	
+	global.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
+	onmessage.forget();
+}
 \end{lstlisting}
 
 \subsubsection{Wyniki pomiarów -- Web Workers}
@@ -1028,82 +844,80 @@ Drugi zestaw testów dotyczył operacji przetwarzania obrazu na elemencie Canvas
 Listing~\ref{lst:canvas_filters} zawiera implementację czterech podstawowych operacji przetwarzania obrazu: konwersji do skali szarości, regulacji jasności, kontrastu oraz rozmycia (blur).
 
 \begin{lstlisting}[style=rustcode, caption={Implementacja filtrów graficznych dla operacji Canvas}, label={lst:canvas_filters}]
-	use wasm_bindgen::prelude::*;
-	
-	#[wasm_bindgen]
-	pub fn grayscale(data: &mut [u8]) {
-		for i in (0..data.len()).step_by(4) {
-			let r = data[i] as u32;
-			let g = data[i + 1] as u32;
-			let b = data[i + 2] as u32;
-			// Wzor uwzgledniajacy percepcje ludzkiego oka
-			let gray = ((299 * r + 587 * g + 114 * b) / 1000) as u8;
-			data[i] = gray;
-			data[i + 1] = gray;
-			data[i + 2] = gray;
-		}
+#[wasm_bindgen]
+pub fn grayscale(data: &overmut [u8]) {
+	for i in (0..data.len()).step_by(4) {
+		let r = data[i] as u32;
+		let g = data[i + 1] as u32;
+		let b = data[i + 2] as u32;
+		// Wzor uwzgledniajacy percepcje ludzkiego oka
+		let gray = ((299 * r + 587 * g + 114 * b) / 1000) as u8;
+		data[i] = gray;
+		data[i + 1] = gray;
+		data[i + 2] = gray;
 	}
-	
-	#[wasm_bindgen]
-	pub fn brightness(data: &mut [u8], amount: i32) {
-		for i in (0..data.len()).step_by(4) {
-			data[i] = (data[i] as i32 + amount).clamp(0, 255) as u8;
-			data[i + 1] = (data[i + 1] as i32 + amount).clamp(0, 255) as u8;
-			data[i + 2] = (data[i + 2] as i32 + amount).clamp(0, 255) as u8;
-		}
+}
+
+#[wasm_bindgen]
+pub fn brightness(data: &mut [u8], amount: i32) {
+	for i in (0..data.len()).step_by(4) {
+		data[i] = (data[i] as i32 + amount).clamp(0, 255) as u8;
+		data[i + 1] = (data[i + 1] as i32 + amount).clamp(0, 255) as u8;
+		data[i + 2] = (data[i + 2] as i32 + amount).clamp(0, 255) as u8;
 	}
-	
-	#[wasm_bindgen]
-	pub fn contrast(data: &mut [u8], factor: f32) {
-		let f = (259.0 * (factor + 255.0)) / (255.0 * (259.0 - factor));
-		for i in (0..data.len()).step_by(4) {
-			data[i] = (f * (data[i] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
-			data[i + 1] = (f * (data[i + 1] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
-			data[i + 2] = (f * (data[i + 2] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
-		}
+}
+
+#[wasm_bindgen]
+pub fn contrast(data: &mut [u8], factor: f32) {
+	let f = (259.0 * (factor + 255.0)) / (255.0 * (259.0 - factor));
+	for i in (0..data.len()).step_by(4) {
+		data[i] = (f * (data[i] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
+		data[i + 1] = (f * (data[i + 1] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
+		data[i + 2] = (f * (data[i + 2] as f32 - 128.0) + 128.0).clamp(0.0, 255.0) as u8;
 	}
+}
+
+#[wasm_bindgen]
+pub fn blur(data: &mut [u8], width: usize, height: usize, radius: usize) {
+	let temp = data.to_vec();
+	let radius_i = radius as i32;
 	
-	#[wasm_bindgen]
-	pub fn blur(data: &mut [u8], width: usize, height: usize, radius: usize) {
-		let temp = data.to_vec();
-		let radius_i = radius as i32;
-		
-		for y in 0..height {
-			for x in 0..width {
-				let mut r_sum = 0u32;
-				let mut g_sum = 0u32;
-				let mut b_sum = 0u32;
-				let mut count = 0u32;
-				
-				let y_start = (y as i32 - radius_i).max(0) as usize;
-				let y_end = (y + radius + 1).min(height);
-				let x_start = (x as i32 - radius_i).max(0) as usize;
-				let x_end = (x + radius + 1).min(width);
-				
-				for ny in y_start..y_end {
-					for nx in x_start..x_end {
-						let idx = (ny * width + nx) * 4;
-						r_sum += temp[idx] as u32;
-						g_sum += temp[idx + 1] as u32;
-						b_sum += temp[idx + 2] as u32;
-						count += 1;
-					}
+	for y in 0..height {
+		for x in 0..width {
+			let mut r_sum = 0u32;
+			let mut g_sum = 0u32;
+			let mut b_sum = 0u32;
+			let mut count = 0u32;
+			
+			let y_start = (y as i32 - radius_i).max(0) as usize;
+			let y_end = (y + radius + 1).min(height);
+			let x_start = (x as i32 - radius_i).max(0) as usize;
+			let x_end = (x + radius + 1).min(width);
+			
+			for ny in y_start..y_end {
+				for nx in x_start..x_end {
+					let idx = (ny * width + nx) * 4;
+					r_sum += temp[idx] as u32;
+					g_sum += temp[idx + 1] as u32;
+					b_sum += temp[idx + 2] as u32;
+					count += 1;
 				}
-				
-				let idx = (y * width + x) * 4;
-				data[idx] = (r_sum / count) as u8;
-				data[idx + 1] = (g_sum / count) as u8;
-				data[idx + 2] = (b_sum / count) as u8;
 			}
+			
+			let idx = (y * width + x) * 4;
+			data[idx] = (r_sum / count) as u8;
+			data[idx + 1] = (g_sum / count) as u8;
+			data[idx + 2] = (b_sum / count) as u8;
 		}
 	}
+}
 \end{lstlisting}
 
 \subsubsection{Wyniki pomiarów -- operacje Canvas}
 
 Tabela~\ref{tab:canvas_results} przedstawia szczegółowe porównanie czasów wykonania dla każdej z czterech operacji graficznych, wraz z wyliczonym współczynnikiem przyspieszenia.
 
-\begin{table}[ht]
+\begin{table}[h]
 	\centering
 	\caption{Porównanie wydajności operacji Canvas -- JavaScript vs. WebAssembly}
 	\label{tab:canvas_results}

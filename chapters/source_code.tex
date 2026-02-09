@@ -1,0 +1,266 @@
+\chapter{Dodatkowy kod źródłowy}
+
+Poniżej znajduje się autorski kod wykorzystany w badaniach.
+
+\section{Konfiguracja TLS 1.3}
+
+\begin{lstlisting}[
+	style=rustcode,
+	caption={Konfiguracja serwera TLS 1.3 z wykorzystaniem biblioteki rustls},
+	label={lst:tls_config}
+	]
+use std::{fs::File, io::BufReader};
+
+use rustls::ServerConfig;
+
+pub fn tls_config() -> ServerConfig {
+	rustls::crypto::aws_lc_rs::default_provider()
+	.install_default()
+	.unwrap();
+	
+	let mut certs_file = BufReader::new(File::open("cert.pem").unwrap());
+	let mut key_file = BufReader::new(File::open("key.pem").unwrap());
+	
+	let tls_certs = rustls_pemfile::certs(&mut certs_file)
+	.collect::<Result<Vec<_>, _>>()
+	.unwrap();
+	let tls_key = rustls_pemfile::pkcs8_private_keys(&mut key_file)
+	.next()
+	.unwrap()
+	.unwrap();
+	
+	rustls::ServerConfig::builder()
+	.with_no_client_auth()
+	.with_single_cert(
+	tls_certs,
+	rustls::pki_types::PrivateKeyDer::Pkcs8(tls_key),
+	)
+	.unwrap()
+}
+\end{lstlisting}
+
+\section{Implementacja funkcji, która wykonywała zapytania do brokera MQTT}
+\begin{lstlisting}[
+	style=rustcode,
+	caption={Funkcja, która wykonywała zapytania do brokera MQTT},
+	label={lst:mqtt}
+	]
+async fn run_worker(
+worker_id: usize,
+config: BenchmarkConfig,
+semaphore: Arc<Semaphore>,
+) -> Result<Vec<Duration>, Box<dyn std::error::Error + Send + Sync>> {
+	let mut latencies = Vec::with_capacity(config.requests_per_worker);
+	
+	// Create unique client ID for this worker
+	let client_id = format!("benchmark_worker_{}", worker_id);
+	let mut opts = MqttOptions::new(client_id, "127.0.0.1", 1883);
+	opts.set_keep_alive(Duration::from_secs(30));
+	
+	// Increase max packet size to handle 1MB+ payloads
+	opts.set_max_packet_size(10 * 1024 * 1024, 10 * 1024 * 1024); // 10 MB max
+	
+	let (client, mut eventloop) = AsyncClient::new(opts, 1000);
+	
+	let (response_tx, mut response_rx) = mpsc::unbounded_channel();
+	
+	// Spawn event loop handler
+	let response_topic = if config.high_payload {
+		"benchmark/high_payload_response"
+	} else {
+		"benchmark/response"
+	};
+	
+	tokio::spawn(async move {
+		loop {
+			match eventloop.poll().await {
+				Ok(Event::Incoming(Incoming::Publish(p))) => {
+					if p.topic == response_topic {
+						let _ = response_tx.send(());
+					}
+				}
+				Ok(_) => {}
+				Err(e) => {
+					eprintln!("Worker {} eventloop error: {:?}", worker_id, e);
+					break;
+				}
+			}
+		}
+	});
+	
+	// Subscribe to response topic
+	client
+	.subscribe(response_topic, QoS::AtLeastOnce)
+	.await?;
+	
+	// Wait a bit for subscription to be established
+	tokio::time::sleep(Duration::from_millis(100)).await;
+	
+	let request_topic = if config.high_payload {
+		"benchmark/high_payload"
+	} else {
+		"benchmark/request"
+	};
+	
+	let payload = if config.high_payload {
+		serde_json::json!({
+			"id": format!("worker_{}", worker_id),
+			"payload": "x".repeat(1024 * 1024) // 1 MB payload
+		})
+		.to_string()
+	} else {
+		serde_json::json!({
+			"id": format!("worker_{}", worker_id),
+			"payload": "x".repeat(config.payload_size)
+		})
+		.to_string()
+	};
+	
+	for i in 0..config.requests_per_worker {
+		// Acquire semaphore permit to control concurrency
+		let _permit = semaphore.acquire().await?;
+		
+		let start = Instant::now();
+		
+		// Send request
+		client
+		.publish(request_topic, QoS::AtLeastOnce, false, payload.clone())
+		.await?;
+		
+		// Wait for response with timeout
+		match timeout(Duration::from_secs(10), response_rx.recv()).await {
+			Ok(Some(_)) => {
+				let latency = start.elapsed();
+				latencies.push(latency);
+			}
+			Ok(None) => {
+				eprintln!("Worker {} request {}: Channel closed", worker_id, i);
+				break;
+			}
+			Err(_) => {
+				eprintln!("Worker {} request {}: Timeout", worker_id, i);
+			}
+		}
+		
+		drop(_permit);
+	}
+	
+	Ok(latencies)
+}
+\end{lstlisting}
+
+\section{Implementacja serwera websocket}
+\begin{lstlisting}[
+	style=rustcode,
+	caption={Implementacja serwera websocket},
+	label={lst:websocket}
+	]
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+	let server = TcpListener::bind("127.0.0.1:9001").await?;
+	println!("WebSocket server listening on ws://127.0.0.1:9001");
+	
+	let connection_count = Arc::new(AtomicUsize::new(0));
+	
+	loop {
+		let (stream, _) = server.accept().await?;
+		let conn_id = connection_count.fetch_add(1, Ordering::SeqCst);
+		
+		tokio::spawn(async move {
+			let mut websocket = match accept_async(stream).await {
+				Ok(ws) => ws,
+				Err(e) => {
+					eprintln!("WebSocket handshake failed: {}", e);
+					return;
+				}
+			};
+			
+			println!("Connection {} established", conn_id);
+			
+			let mut request_count = 0;
+			
+			while let Some(msg) = websocket.next().await {
+				match msg {
+					Ok(Message::Text(text)) => {
+						request_count += 1;
+						
+						match text.as_str() {
+							"test" => {
+								let payload = "x".repeat(PAYLOAD_SIZE);
+								if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+									eprintln!("Connection {} write error: {}", conn_id, e);
+									break;
+								}
+							}
+							"test_high_payload" => {
+								let payload = "x".repeat(HIGH_PAYLOAD_SIZE);
+								if let Err(e) = websocket.send(Message::Text(payload.into())).await {
+									eprintln!("Connection {} write error: {}", conn_id, e);
+									break;
+								}
+							}
+							"stream" => {
+								for count in 0..100 {
+									let chunk = format!("chunk {}\n", count);
+									if let Err(e) = websocket.send(Message::Text(chunk.into())).await {
+										eprintln!("Connection {} write error at chunk {}: {}", conn_id, count, e);
+										break;
+									}
+								}
+							}
+							_ => {
+								eprintln!("Connection {} unknown command: {}", conn_id, text);
+							}
+						}
+						
+						if request_count % 100 == 0 {
+							println!("Connection {} processed {} requests", conn_id, request_count);
+						}
+					}
+					Ok(Message::Close(_)) => {
+						println!("Connection {} closed gracefully after {} requests", conn_id, request_count);
+						let _ = websocket.send(Message::Close(None)).await;
+						break;
+					}
+					Err(e) => {
+						eprintln!("Connection {} error: {}", conn_id, e);
+						break;
+					}
+					_ => {}
+				}
+			}
+			
+			println!("Connection {} handler exiting", conn_id);
+		});
+	}
+}
+\end{lstlisting}
+
+\section{Implementacja funkcji do testowania rozmiaru, czasu serializacji oraz deserializacji formatu JSON}
+\begin{lstlisting}[
+	style=rustcode,
+	caption={Implementacja funkcji do testowania rozmiaru, czasu serializacji oraz deserializacji formatu JSON},
+	label={lst:json}
+	]
+	#[tokio::main]
+fn benchmark_json(data: &UserCollection) {
+	let start = Instant::now();
+	let serialized = serialize_json(data).expect("Serialization failed");
+	let serialize_time = start.elapsed();
+	
+	let size_bytes = serialized.len();
+	
+	let start = Instant::now();
+	let deserialized = deserialize_json(&serialized).expect("Deserialization failed");
+	let deserialize_time = start.elapsed();
+	
+	println!("\n{:-^80}", " Summary ");
+	println!("Records:          {}", data.users.len());
+	println!("Serialize time:   {:.4} ms", serialize_time.as_secs_f64() * 1000.0);
+	println!("Deserialize time: {:.4} ms", deserialize_time.as_secs_f64() * 1000.0);
+	println!("Total time:       {:.4} ms", (serialize_time + deserialize_time).as_secs_f64() * 1000.0);
+	println!("Size:             {} bytes ({:.2} KB)", size_bytes, size_bytes as f64 / 1024.0);
+	println!("Bytes per record: {:.2}", size_bytes as f64 / data.users.len() as f64);
+}
+
+\end{lstlisting}
