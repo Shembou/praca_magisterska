@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2026.1.21)  9 FEB 2026 16:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2026.1.21)  10 FEB 2026 14:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -217,9 +217,6 @@ File: listings.cfg 2023/02/27 1.9 listings configuration
 ))
 Package: listings 2023/02/27 1.9 (Carsten Heinz)
 
-(/usr/share/texlive/texmf-dist/tex/latex/bera/beramono.sty
-Package: beramono 2004/01/31 (WaS)
-)
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 
@@ -417,24 +414,24 @@ File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 (./magisterska.aux (./stronatytulowa.aux))
 \openout1 = `magisterska.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 55.
+LaTeX Font Info:    ... okay on input line 55.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -493,7 +490,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \c@lstlisting=\count307
-Package hyperref Info: Link coloring OFF on input line 56.
+Package hyperref Info: Link coloring OFF on input line 55.
 
 (./magisterska.out) (./magisterska.out)
 \@outlinefile=\write3
@@ -530,13 +527,13 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.78 \end{abstract}
+l.77 \end{abstract}
                     [1] (./magisterska.toc
 pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.38 ....1.4}Katalog target}{20}{subsection.4.1.4}
+l.38 ....1.4}Katalog target}{21}{subsection.4.1.4}
                                                   % [2
 
 ] [3])
@@ -590,20 +587,20 @@ File: images/rust_actix_web.png Graphic file (type png)
 <use images/rust_actix_web.png>
 Package pdftex.def Info: images/rust_actix_web.png  used on input line 41.
 (pdftex.def)             Requested size: 435.32422pt x 198.86539pt.
-LaTeX Font Info:    Trying to load font information for T1+fvm on input line 50
-.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 5
+0.
 
-(/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
-File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2022/07/10 v2.5l Standard LaTeX font definitions
 ) [11{/usr/share/texlive/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2.2}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.58 
-     {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc} <./images/rust
-_actix_web.png>]
-<images/python_tiobe_index.png, id=598, 1356.06625pt x 456.70625pt>
+l.54 	\item r
+             ealizacji wydajnej komunikacji klient‚Äìserwer. <./images/rust_act
+ix_web.png>]
+<images/python_tiobe_index.png, id=600, 1356.06625pt x 456.70625pt>
 File: images/python_tiobe_index.png Graphic file (type png)
 <use images/python_tiobe_index.png>
 Package pdftex.def Info: images/python_tiobe_index.png  used on input line 90.
@@ -613,31 +610,31 @@ pdfTeX warning (ext4): destination with the same identifier (name{figure.2.3})
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.100 	\item t
-              est√≥w wydajno≈õciowych i por√≥wnawczych. <./images/python_tiobe_
-index.png>] [13]
-Overfull \hbox (14.33826pt too wide) in paragraph at lines 198--199
+l.99 	\item r
+             ealizacji zapyta≈Ñ o z≈Ço≈ºone struktury danych, <./images/python_
+tiobe_index.png>] [13] [14]
+Overfull \hbox (14.33826pt too wide) in paragraph at lines 200--201
 \T1/cmr/m/n/12 do-ku-men-tÛw XML. Cha-rak-te-ry-zu-je si¶ ni-skim na-rzu-tem pa
 -mi¶-cio-wym oraz wy-so-k° wydajno±ci°[[]]. 
  []
 
-[14]) (./chapters/chapter3.tex [15]
+) (./chapters/chapter3.tex [15]
 Rozdzia\PlPrIeC {\l } 3.
 [16
 
 ]
-Overfull \hbox (22.71806pt too wide) in paragraph at lines 20--21
+Overfull \hbox (1.70793pt too wide) in paragraph at lines 20--21
 []\T1/cmr/bx/n/12 Bun \T1/cmr/m/n/12 jest no-wo-cze-snym ±ro-do-wi-skiem uru-ch
-o-mie-nio-wym dla j¶-zy-ka \T1/fvm/m/n/12 JavaScript\T1/cmr/m/n/12 , \T1/fvm/m/
-n/12 TypeScript
+o-mie-nio-wym dla j¶-zy-ka \T1/cmtt/m/n/12 JavaScript\T1/cmr/m/n/12 , \T1/cmtt/
+m/n/12 TypeScript
  []
 
 ) (./chapters/chapter4.tex [17]
 Rozdzia\PlPrIeC {\l } 4.
-<images/file_structure.png, id=654, 399.4925pt x 858.20625pt>
+<images/file_structure.png, id=659, 399.4925pt x 858.20625pt>
 File: images/file_structure.png Graphic file (type png)
 <use images/file_structure.png>
-Package pdftex.def Info: images/file_structure.png  used on input line 10.
+Package pdftex.def Info: images/file_structure.png  used on input line 11.
 (pdftex.def)             Requested size: 266.03474pt x 571.53809pt.
 [18
 
@@ -650,8 +647,8 @@ has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.31 	\item \textbf
-                   {websocket\_secure} -- implementacja protoko≈Çu WebSocket...
- <./images/file_structure.png>] [20] [21]
+                   {websocket} -- implementacja serwera WebSocket umo≈ºliwia...
+ <./images/file_structure.png>] [20] [21] [22]
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
@@ -660,37 +657,41 @@ File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
-) [22]
+)
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 106.
+nput line 107.
  [23])
 (./chapters/chapter5.tex [24]
 Rozdzia\PlPrIeC {\l } 5.
+LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 26.
 [25
 
-] [26] [27] [28] [29] [30] [31] [32] [33] [34]
-<images/protocol_comparison_grouped.png, id=990, 1139.2161pt x 561.5379pt>
+] [26] [27] [28] [29] [30] [31] [32] [33]
+Underfull \vbox (badness 1281) has occurred while \output is active []
+
+ [34]
+<images/protocol_comparison_grouped.png, id=998, 1139.2161pt x 561.5379pt>
 File: images/protocol_comparison_grouped.png Graphic file (type png)
 <use images/protocol_comparison_grouped.png>
 Package pdftex.def Info: images/protocol_comparison_grouped.png  used on input 
 line 427.
 (pdftex.def)             Requested size: 411.14528pt x 202.65901pt.
- [35
+
+[35
 pdfTeX warning (ext4): destination with the same identifier (name{table.5.1}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.439 	\item \textbf
-                    {Czas inicjalizacji:} TLS handshake typowo dodaje 50--10...
-
+l.433 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.1}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.439 	\item \textbf
-                    {Czas inicjalizacji:} TLS handshake typowo dodaje 50--10...
- <./images/protocol_comparison_grouped.png>]
-<images/protocol_degradation.png, id=1000, 995.6397pt x 561.5379pt>
+l.433 
+       <./images/protocol_comparison_grouped.png>]
+<images/protocol_degradation.png, id=1008, 995.6397pt x 561.5379pt>
 File: images/protocol_degradation.png Graphic file (type png)
 <use images/protocol_degradation.png>
 Package pdftex.def Info: images/protocol_degradation.png  used on input line 44
@@ -701,11 +702,11 @@ pdfTeX warning (ext4): destination with the same identifier (name{figure.5.2})
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.470 		\item K
-               ompromis: $\sim$1--2\% ni≈ºsza wydajno≈õƒá ni≈º REST przy zna...
- <./images/protocol_degradation.png>] [37]
+l.468 		\item Z
+               astosowanie: Frontend-heavy aplikacje, z≈Ço≈ºone modele danych <
+./images/protocol_degradation.png>] [37]
 <images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.png,
- id=1023, 722.7pt x 361.35pt>
+ id=1029, 722.7pt x 361.35pt>
 File: images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics
 .png Graphic file (type png)
 <use images/data-serializations/avro-2026-01-29_15-45-46/serialization_metrics.
@@ -714,278 +715,264 @@ Package pdftex.def Info: images/data-serializations/avro-2026-01-29_15-45-46/se
 rialization_metrics.png  used on input line 526.
 (pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
 <images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.png,
- id=1024, 722.7pt x 361.35pt>
+ id=1031, 722.7pt x 361.35pt>
 File: images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics
 .png Graphic file (type png)
 <use images/data-serializations/bson-2026-01-29_15-48-49/serialization_metrics.
 png>
 Package pdftex.def Info: images/data-serializations/bson-2026-01-29_15-48-49/se
-rialization_metrics.png  used on input line 537.
+rialization_metrics.png  used on input line 538.
 (pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
-<images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png,
- id=1025, 722.7pt x 361.35pt>
-File: images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics
-.png Graphic file (type png)
-<use images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.
-png>
-Package pdftex.def Info: images/data-serializations/json-2026-01-29_16-15-15/se
-rialization_metrics.png  used on input line 548.
-(pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [38
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.3}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.552 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{figure.5.4}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.552 
+l.542 
        <./images/data-serializations/avro-2026-01-29_15-45-46/serialization_met
-rics.png> <./images/data-serializations/bson-2026-01-29_15-48-49/serialization_
-metrics.png>]
+rics.png>]
+<images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.png,
+ id=1041, 722.7pt x 361.35pt>
+File: images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics
+.png Graphic file (type png)
+<use images/data-serializations/json-2026-01-29_16-15-15/serialization_metrics.
+png>
+Package pdftex.def Info: images/data-serializations/json-2026-01-29_16-15-15/se
+rialization_metrics.png  used on input line 549.
+(pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
+
+Overfull \hbox (3.83315pt too wide) in paragraph at lines 554--555
+[]\T1/cmr/m/n/12 Metryki za-war-te na Ry-sun-ku []5.5[] wy-ka-zu-j°, ªe for-mat
+ JSON osi°-gn°™ czas se-ria-li-za-cji 1,294 ms
+ []
+
 <images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_metr
-ics.png, id=1034, 722.7pt x 361.35pt>
+ics.png, id=1043, 722.7pt x 361.35pt>
 File: images/data-serializations/message_pack-2026-01-29_16-21-25/serialization
 _metrics.png Graphic file (type png)
 <use images/data-serializations/message_pack-2026-01-29_16-21-25/serialization_
 metrics.png>
 Package pdftex.def Info: images/data-serializations/message_pack-2026-01-29_16-
-21-25/serialization_metrics.png  used on input line 559.
+21-25/serialization_metrics.png  used on input line 560.
 (pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
+[39
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5.4}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.564 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5.5}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.564 
+       <./images/data-serializations/bson-2026-01-29_15-48-49/serialization_met
+rics.png> <./images/data-serializations/json-2026-01-29_16-15-15/serialization_
+metrics.png>]
 <images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metrics.
-png, id=1035, 722.7pt x 361.35pt>
+png, id=1054, 722.7pt x 361.35pt>
 File: images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_met
 rics.png Graphic file (type png)
 <use images/data-serializations/protobuf-2026-01-29_16-23-15/serialization_metr
 ics.png>
 Package pdftex.def Info: images/data-serializations/protobuf-2026-01-29_16-23-1
-5/serialization_metrics.png  used on input line 570.
+5/serialization_metrics.png  used on input line 571.
 (pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
-
-Underfull \vbox (badness 1629) has occurred while \output is active []
-
- [39
-pdfTeX warning (ext4): destination with the same identifier (name{figure.5.5}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.574 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{figure.5.6}) 
-has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.574 
-       <./images/data-serializations/json-2026-01-29_16-15-15/serialization_met
-rics.png> <./images/data-serializations/message_pack-2026-01-29_16-21-25/serial
-ization_metrics.png>]
 <images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.png, 
-id=1045, 722.7pt x 361.35pt>
+id=1056, 722.7pt x 361.35pt>
 File: images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.
 png Graphic file (type png)
 <use images/data-serializations/xml-2026-01-29_16-24-52/serialization_metrics.p
 ng>
 Package pdftex.def Info: images/data-serializations/xml-2026-01-29_16-24-52/ser
-ialization_metrics.png  used on input line 581.
+ialization_metrics.png  used on input line 582.
 (pdftex.def)             Requested size: 386.95897pt x 193.47748pt.
+
+Underfull \vbox (badness 1629) has occurred while \output is active []
+
  [40
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5.6}) 
+has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.586 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.7}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.609 
-      
+l.586 
+       <./images/data-serializations/message_pack-2026-01-29_16-21-25/serializa
+tion_metrics.png> <./images/data-serializations/protobuf-2026-01-29_16-23-15/se
+rialization_metrics.png>]
+<images/serialization_time_comparison.png, id=1066, 850.6179pt x 563.2242pt>
+File: images/serialization_time_comparison.png Graphic file (type png)
+<use images/serialization_time_comparison.png>
+Package pdftex.def Info: images/serialization_time_comparison.png  used on inpu
+t line 613.
+(pdftex.def)             Requested size: 338.58632pt x 224.19423pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [41
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.8}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.609 
-       <./images/data-serializations/protobuf-2026-01-29_16-23-15/serialization
-_metrics.png> <./images/data-serializations/xml-2026-01-29_16-24-52/serializati
-on_metrics.png>]
-<images/serialization_time_comparison.png, id=1054, 850.6179pt x 563.2242pt>
-File: images/serialization_time_comparison.png Graphic file (type png)
-<use images/serialization_time_comparison.png>
-Package pdftex.def Info: images/serialization_time_comparison.png  used on inpu
-t line 612.
-(pdftex.def)             Requested size: 338.58632pt x 224.19423pt.
-<images/deserialization_time_comparison.png, id=1055, 850.6179pt x 562.0197pt>
-File: images/deserialization_time_comparison.png Graphic file (type png)
-<use images/deserialization_time_comparison.png>
-Package pdftex.def Info: images/deserialization_time_comparison.png  used on in
-put line 619.
-(pdftex.def)             Requested size: 338.58632pt x 223.71478pt.
- [41
+l.617 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{table.5.2}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.629 	\item N
-              ajszybsza serializacja: 0,748~ms (6,0√ó szybciej ni≈º XML, 9,9...
+l.617 
+       <./images/data-serializations/xml-2026-01-29_16-24-52/serialization_metr
+ics.png>]
+<images/deserialization_time_comparison.png, id=1075, 850.6179pt x 562.0197pt>
+File: images/deserialization_time_comparison.png Graphic file (type png)
+<use images/deserialization_time_comparison.png>
+Package pdftex.def Info: images/deserialization_time_comparison.png  used on in
+put line 620.
+(pdftex.def)             Requested size: 338.58632pt x 223.71478pt.
 
+Overfull \hbox (1.71158pt too wide) in paragraph at lines 635--636
+[]\T1/cmtt/m/n/12 JSON \T1/cmr/m/n/12 i te-xtt-t-Pro-to-col Buf-fers osi°-gn¶-™
+y po-rÛw-ny-wal-ne wy-ni-ki cza-so-we (od-po-wied-nio 4,859 ms
+ []
+
+[42
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.9}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.629 	\item N
-              ajszybsza serializacja: 0,748~ms (6,0√ó szybciej ni≈º XML, 9,9...
-
+l.638 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.10})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.629 	\item N
-              ajszybsza serializacja: 0,748~ms (6,0√ó szybciej ni≈º XML, 9,9...
- <./images/serialization_time_comparison.png> <./images/deserialization_time_co
-mparison.png>]
-Overfull \hbox (5.9136pt too wide) in paragraph at lines 634--635
-[]\T1/fvm/m/n/12 JSON \T1/cmr/m/n/12 i te-xtt-t-Pro-to-col Buf-fers osi°-gn¶-™y
- po-rÛw-ny-wal-ne wy-ni-ki cza-so-we (od-po-wied-nio 4,859 ms
- []
-
-
-Overfull \hbox (5.6746pt too wide) in paragraph at lines 640--641
-[]\T1/fvm/m/n/12 Apache Avro \T1/cmr/m/n/12 osi°-gn°™ naj-lep-sz° kom-pre-sj¶ d
-a-nych z roz-mia-rem 521 727 baj-tÛw (509,5 KB),
- []
-
-<images/serialization_size_comparison.png, id=1066, 849.4134pt x 561.5379pt>
+l.638 
+       <./images/serialization_time_comparison.png> <./images/deserialization_t
+ime_comparison.png>]
+<images/serialization_size_comparison.png, id=1085, 849.4134pt x 561.5379pt>
 File: images/serialization_size_comparison.png Graphic file (type png)
 <use images/serialization_size_comparison.png>
 Package pdftex.def Info: images/serialization_size_comparison.png  used on inpu
-t line 652.
+t line 653.
 (pdftex.def)             Requested size: 362.77264pt x 239.82002pt.
-[42
+ [43
 pdfTeX warning (ext4): destination with the same identifier (name{figure.5.11})
  has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.658 
-       <./images/serialization_size_comparison.png>] [43] [44] [45]
-Underfull \vbox (badness 7273) has occurred while \output is active []
-
- [46]
-[47
+l.666 	\item I
+              dealne zastosowanie: real-time gaming, high-frequency trading,...
+ <./images/serialization_size_comparison.png>] [44] [45] [46] [47
 pdfTeX warning (ext4): destination with the same identifier (name{table.5.3}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.872 	let 
-           f = (259.0 * (factor + 255.0)) / (255.0 * (259.0 - factor));]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [48])
-[49
+l.842 
+      ] [48] [49
 pdfTeX warning (ext4): destination with the same identifier (name{table.5.4}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.101 \chapter
-              *{Zako≈Ñczenie}] [50
+l.939 \subsection
+                 {Wnioski}]) [50] [51
 
-] [51] (./magisterska.bbl [52]
-Underfull \hbox (badness 10000) in paragraph at lines 100--104
-[]\T1/cmr/m/n/12 Snapview GmbH.  tungstenite-rs.  []$\T1/fvm/m/n/12 https : / /
- github . com / snapview /
- []
-
-
-Underfull \hbox (badness 8170) in paragraph at lines 106--110
-[]\T1/cmr/m/n/12 Tatsuhiro Tsu-ji-ka-wa.  h2load.  []$\T1/fvm/m/n/12 https : / 
-/ nghttp2 . org / documentation /
- []
-
-[53
+] [52] (./magisterska.bbl [53] [54
 
 ]
-Underfull \hbox (badness 3333) in paragraph at lines 155--159
-[]\T1/cmr/m/n/12 Wikipedia.  Do-cu-ment ob-ject mo-del.  []$\T1/fvm/m/n/12 http
-s : / / pl . wikipedia . org / wiki /
+Underfull \hbox (badness 1082) in paragraph at lines 210--215
+[]\T1/cmr/m/n/12 Wikipedia.  In-ter-fejs pro-gra-mo-wa-nia apli-ka-cji.  []$\T1
+/cmtt/m/n/12 https : / / pl . wikipedia . org / wiki /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 173--177
-[]\T1/cmr/m/n/12 Wikipedia.  Head-of-line-blocking.  []$\T1/fvm/m/n/12 https : 
-/ / en . wikipedia . org / wiki /
+Underfull \hbox (badness 10000) in paragraph at lines 229--233
+[]\T1/cmr/m/n/12 Wikipedia.  Ko-mu-ni-ka-cja zda-rze-nio-wa.  []$\T1/cmtt/m/n/1
+2 https : / / en . wikipedia . org / wiki /
+ []
+
+[55]
+Underfull \hbox (badness 5245) in paragraph at lines 247--251
+[]\T1/cmr/m/n/12 Wikipedia.  Py-thon.  []$\T1/cmtt/m/n/12 https : / / en . wiki
+pedia . org / wiki / Python _ (programming _
  []
 
 
-Underfull \hbox (badness 2689) in paragraph at lines 204--208
-[]\T1/cmr/m/n/12 Wikipedia.  Ko-mu-ni-ka-cja zda-rze-nio-wa.  []$\T1/fvm/m/n/12
- https : / / en . wikipedia . org / wiki /
+Underfull \hbox (badness 2617) in paragraph at lines 253--257
+[]\T1/cmr/m/n/12 Wikipedia.  Re-mo-te pro-ce-du-re call.  []$\T1/cmtt/m/n/12 ht
+tps : / / en . wikipedia . org / wiki / Remote _
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 222--226
-[]\T1/cmr/m/n/12 Wikipedia.  Py-thon.  []$\T1/fvm/m/n/12 https : / / en . wikip
-edia . org / wiki / Python _
+Underfull \hbox (badness 6493) in paragraph at lines 277--281
+[]\T1/cmr/m/n/12 Wikipedia.  Sys-te-my roz-pro-szo-ne.  []$\T1/cmtt/m/n/12 http
+s : / / pl . wikipedia . org / wiki / System _
  []
 
-[54]
-Underfull \hbox (badness 3428) in paragraph at lines 246--250
-[]\T1/cmr/m/n/12 Wikipedia.  Stru-mie-nio-wa-nie.  []$\T1/fvm/m/n/12 https : / 
-/ en . wikipedia . org / wiki / Stream _
- []
-
-) [55] (./magisterska.lof)
+) [56] (./magisterska.lof)
 \tf@lof=\write5
 \openout5 = `magisterska.lof'.
 
- [56
+ [57
 
 ] (./magisterska.lol)
 \tf@lol=\write6
 \openout6 = `magisterska.lol'.
 
- (./chapters/source_code.tex [57
+ (./chapters/source_code.tex [58
 
 ]
 Dodatek A.
-[58
+[59
 
 ]
 Underfull \vbox (badness 5274) has occurred while \output is active []
 
- [59]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
  [60]
-[61]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [62])
-[63] (./magisterska.aux (./stronatytulowa.aux))
+ [61]
+[62]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [63])
+[64] (./magisterska.aux (./stronatytulowa.aux))
 Package rerunfilecheck Info: File `magisterska.out' has not changed.
 (rerunfilecheck)             Checksum: FE1F837C9F17D7D808D03457454EEC1F;15934.
  ) 
 Here is how much of TeX's memory you used:
- 15117 strings out of 477950
- 231686 string characters out of 5838504
- 2265388 words of memory out of 6000000
- 34177 multiletter control sequences out of 15000+600000
- 528221 words of font info for 69 fonts, out of 8000000 for 9000
+ 15089 strings out of 477950
+ 231355 string characters out of 5838504
+ 2241388 words of memory out of 6000000
+ 34152 multiletter control sequences out of 15000+600000
+ 526988 words of font info for 65 fonts, out of 8000000 for 9000
  34 hyphenation exceptions out of 8191
  75i,9n,76p,917b,2124s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/bera/fvmb8a.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/public/bera/fvmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/c
-m-super/sfbi1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super
-/sfbx1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sfbx14
-40.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/cm-super/sfti1200.pfb>
-Output written on magisterska.pdf (65 pages, 1895632 bytes).
+-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/public/cm-super/sfbx1200.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/cm-super/sfbx1440.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/cm-super/sfbx1728.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-
+super/sfbx2488.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/s
+frm0600.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sfrm1200
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb>
+Output written on magisterska.pdf (66 pages, 1975612 bytes).
 PDF statistics:
- 1927 PDF objects out of 2073 (max. 8388607)
- 1781 compressed objects within 18 object streams
- 877 named destinations out of 1000 (max. 500000)
+ 1940 PDF objects out of 2073 (max. 8388607)
+ 1793 compressed objects within 18 object streams
+ 882 named destinations out of 1000 (max. 500000)
  793 words of extra memory for PDF output out of 10000 (max. 10000000)
 

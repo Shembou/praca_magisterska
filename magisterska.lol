@@ -11,8 +11,8 @@
 \contentsline {lstlisting}{\numberline {5.10}Logika generowania ładunku danych w kliencie MQTT}{34}{lstlisting.5.10}%
 \contentsline {lstlisting}{\numberline {5.11}Implementacja Web Workera z prostymi operacjami obliczeniowymi}{45}{lstlisting.5.11}%
 \contentsline {lstlisting}{\numberline {5.12}Implementacja Web Workera z zaawansowanymi operacjami obliczeniowymi}{46}{lstlisting.5.12}%
-\contentsline {lstlisting}{\numberline {5.13}Implementacja filtrów graficznych dla operacji Canvas}{47}{lstlisting.5.13}%
-\contentsline {lstlisting}{\numberline {A.1}Konfiguracja serwera TLS 1.3 z wykorzystaniem biblioteki rustls}{58}{lstlisting.A.1}%
-\contentsline {lstlisting}{\numberline {A.2}Funkcja, która wykonywała zapytania do brokera MQTT}{59}{lstlisting.A.2}%
-\contentsline {lstlisting}{\numberline {A.3}Implementacja serwera websocket}{61}{lstlisting.A.3}%
-\contentsline {lstlisting}{\numberline {A.4}Implementacja funkcji do testowania rozmiaru, czasu serializacji oraz deserializacji formatu JSON}{63}{lstlisting.A.4}%
+\contentsline {lstlisting}{\numberline {5.13}Implementacja filtrów graficznych dla operacji Canvas}{48}{lstlisting.5.13}%
+\contentsline {lstlisting}{\numberline {A.1}Konfiguracja serwera TLS 1.3 z wykorzystaniem biblioteki rustls}{59}{lstlisting.A.1}%
+\contentsline {lstlisting}{\numberline {A.2}Funkcja, która wykonywała zapytania do brokera MQTT}{60}{lstlisting.A.2}%
+\contentsline {lstlisting}{\numberline {A.3}Implementacja serwera websocket}{62}{lstlisting.A.3}%
+\contentsline {lstlisting}{\numberline {A.4}Implementacja funkcji do testowania rozmiaru, czasu serializacji oraz deserializacji formatu JSON}{64}{lstlisting.A.4}%

@@ -43,7 +43,7 @@ Framework Actix-web został wybrany ze względu na:
 	\label{fig:rust_actix_web}
 \end{figure}
 
-Jak widać na Rysunku~\ref{fig:rust_actix_web}, Actix wypada bardzo korzystnie w kontekście wydajności i obsługi dużego ruchu, co jest istotne dla aplikacji wymagających niskich czasów odpowiedzi.
+Rysunek~\ref{fig:rust_actix_web} ilustruje doskonałe wyniki wydajnościowe frameworka Actix w zakresie obsługi intensywnego ruchu – cecha szczególnie istotna w aplikacjach wymagających minimalnych czasów odpowiedzi. REST API zaimplementowano zgodnie z nowoczesnymi wzorcami programowania opisanymi przez Luca Palmieriego\cite{zero_to_prod}.
 
 \section{Framework Tonic}
 
@@ -109,13 +109,15 @@ Python pozostaje jednym z najpopularniejszych języków programowania\cite{pytho
 \end{itemize}
 
 \section{WebAssembly}
+\textbf{WebAssembly} (Wasm) to binarny format wykonywalny, który umożliwia natywne uruchamianie kodu Rust bezpośrednio w przeglądarce internetowej. Proces integracji WebAssembly z JavaScriptem został przeprowadzony zgodnie z metodologią przedstawioną w publikacji\cite{wasm_book}. 
 
-\textbf{WebAssembly} (Wasm) jest binarnym formatem wykonywalnym, pozwalającym uruchamiać kod napisany w Rust bezpośrednio w przeglądarce. W projekcie zostało wykorzystane do:
+Technologia ta została wykorzystana w projekcie do realizacji następujących celów:
 \begin{itemize}[itemsep=0.2em, parsep=0pt, topsep=0pt]
-	\item uruchamiania części logiki aplikacji po stronie klienta,
-	\item eksperymentalnego porównania wydajności z klasycznym JavaScriptem,
-	\item zwiększenia wydajności aplikacji webowej.
+	\item delegowania wybranych elementów logiki aplikacyjnej do wykonania po stronie klienta,
+	\item przeprowadzenia eksperymentalnej analizy komparatywnej wydajności w odniesieniu do tradycyjnego JavaScriptu,
+	\item optymalizacji parametrów wydajnościowych aplikacji webowej.
 \end{itemize}
+
 \section{rumqttc}
 
 \textbf{rumqttc} jest asynchroniczną biblioteką w języku Rust służącą do obsługi protokołu MQTT (Message Queuing Telemetry Transport). Umożliwia ona implementację klientów MQTT, oferując niskie opóźnienia oraz wysoką wydajność komunikacji\cite{rumqttc}.

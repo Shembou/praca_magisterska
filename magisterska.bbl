@@ -36,6 +36,12 @@
 \newblock \url{https://protobuf.dev/}.
 \newblock [dostęp: 2 luty 2026].
 
+\bibitem{wasm_book}
+Kevin Hoffman.
+\newblock {\em Programming WebAssembly with Rust, Unified Development for Web,
+  Mobile, and Embedded Applications}.
+\newblock Pragmatic Bookshelf, 2019.
+
 \bibitem{qXML}
 {Johann Tuffe, Daniel Alley, Mingun}.
 \newblock quck-xml.
@@ -47,6 +53,12 @@
 \newblock Juniper graphql server library for rust.
 \newblock \url{https://crates.io/crates/juniper}.
 \newblock [dostęp: 2 luty 2026].
+
+\bibitem{designing_data_intensive_applications}
+Martin Kleppmann.
+\newblock {\em Designing Data-Intensive Applications. The Big Ideas Behind
+  Reliable, Scalable, and Maintainable Systems}.
+\newblock O'Reilly Media, 2017.
 
 \bibitem{typesciript}
 {Microsoft}.
@@ -72,11 +84,24 @@
 \newblock \url{https://nodejs.org/en}.
 \newblock [dostęp: 9 luty 2026].
 
+\bibitem{zero_to_prod}
+Luca Palmieri.
+\newblock {\em Zero to Production In Rust: An introduction to backend
+  development in Rust}.
+\newblock 2022.
+
 \bibitem{rumqttc}
 {Ravi Teja}.
 \newblock rumqttc.
 \newblock \url{https://crates.io/crates/rumqttc}.
 \newblock [dostęp: 2 luty 2026].
+
+\bibitem{react_18_design_patterns}
+Carlos~Santana Roldán.
+\newblock {\em React 18 Design Patterns and Best Practices. Design, build, and
+  deploy production-ready web applications with React by leveraging
+  industry-best practices - Fourth Edition}.
+\newblock Packt Publishing, 2023.
 
 \bibitem{cargo}
 {Rust Project}.

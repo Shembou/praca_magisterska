@@ -3,7 +3,8 @@ W niniejszym rozdziale przedstawiono kluczowe elementy środowiska testowego. W 
 
 \section{Struktura plików aplikacji}
 
-Rysunek~\ref{fig:file_structure}, na str.~\pageref{fig:file_structure}, przedstawia architekturę przygotowanego środowiska testowego. Projekt składa się z pięciu głównych katalogów, z których każdy odpowiada za odrębny aspekt przeprowadzanych badań.
+Architektura przygotowanego środowiska testowego została zobrazowana na Rysunku~\ref{fig:file_structure} (str.~\pageref{fig:file_structure}). Struktura projektu obejmuje pięć głównych katalogów, z których każdy jest dedykowany do realizacji odrębnego zakresu badań. Architektura projektowa aplikacji została zaprojektowana w oparciu o koncepcje systemów rozproszonych i organizacji aplikacji opisane w publikacji
+Martina Kleppmanna\cite{designing_data_intensive_applications}.
 
 \begin{figure}[!htb]
 	\centering
@@ -56,8 +57,8 @@ Katalog target stanowi standardowy folder roboczy kompilatora Rust, zawierający
 \subsection{Katalog wasm}
 Katalog zawiera programy napisane w języku \texttt{Rust}, które są kompilowane do formatu \texttt{WebAssembly} (WASM). Powstałe moduły binarne są następnie wykorzystywane w środowisku przeglądarki internetowej, umożliwiając uruchomienie kodu o wysokiej wydajności po stronie klienta.
 
-\subsection{Katalog wasm-showcase}
-Katalog wasm-showcase zawiera kompletną aplikację webową demonstrującą możliwości technologii \texttt{WebAssembly}. Struktura projektu obejmuje następujące elementy:
+latex\subsection{Katalog wasm-showcase}
+Katalog \texttt{wasm-showcase} reprezentuje w pełni funkcjonalną aplikację webową o charakterze demonstracyjnym, ilustrującą możliwości oraz zalety technologii \texttt{WebAssembly}. Fundamenty architektoniczne oraz implementowane wzorce programistyczne czerpią z koncepcji zaprezentowanych w publikacji\cite{react_18_design_patterns}. Organizacja projektu opiera się na następujących elementach składowych:
 \begin{itemize}
 	\item \textbf{image-processing} -- katalog zawierający skompilowane do WebAssembly moduły służące do przetwarzania obrazów. Pliki WASM oraz pomocnicze skrypty JavaScript pozwalają na wykonywanie operacji graficznych bezpośrednio w przeglądarce,
 	\item \textbf{particle-system} -- katalog z modułami WASM implementującymi system cząsteczek, wykorzystywany do demonstracji wydajności obliczeń graficznych w środowisku webowym,

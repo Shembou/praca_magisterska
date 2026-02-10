@@ -4,44 +4,46 @@ The top-level auxiliary file: magisterska.aux
 A level-1 auxiliary file: stronatytulowa.aux
 The style file: plain.bst
 Database file #1: literatura.bib
-You've used 46 entries,
+Warning--empty publisher in zero_to_prod
+You've used 50 entries,
             2118 wiz_defined-function locations,
-            674 strings with 7739 characters,
-and the built_in function-call counts, 9820 in all, are:
-= -- 966
-> -- 322
+            693 strings with 8395 characters,
+and the built_in function-call counts, 10681 in all, are:
+= -- 1041
+> -- 350
 < -- 0
-+ -- 138
-- -- 92
-* -- 232
-:= -- 1667
-add.period$ -- 184
-call.type$ -- 46
-change.case$ -- 184
++ -- 150
+- -- 100
+* -- 266
+:= -- 1818
+add.period$ -- 196
+call.type$ -- 50
+change.case$ -- 196
 chr.to.int$ -- 0
-cite$ -- 46
-duplicate$ -- 322
-empty$ -- 1013
-format.name$ -- 92
-if$ -- 2163
+cite$ -- 51
+duplicate$ -- 370
+empty$ -- 1101
+format.name$ -- 100
+if$ -- 2346
 int.to.chr$ -- 0
-int.to.str$ -- 46
-missing$ -- 0
-newline$ -- 279
-num.names$ -- 92
-pop$ -- 460
+int.to.str$ -- 50
+missing$ -- 8
+newline$ -- 299
+num.names$ -- 100
+pop$ -- 493
 preamble$ -- 1
-purify$ -- 138
+purify$ -- 150
 quote$ -- 0
-skip$ -- 229
+skip$ -- 253
 stack$ -- 0
-substring$ -- 230
-swap$ -- 46
+substring$ -- 250
+swap$ -- 50
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 184
-warning$ -- 0
-while$ -- 92
-width$ -- 48
-write$ -- 508
+type$ -- 192
+warning$ -- 1
+while$ -- 100
+width$ -- 52
+write$ -- 547
+(There was 1 warning)

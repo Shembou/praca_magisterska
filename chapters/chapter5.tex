@@ -528,7 +528,8 @@ Przeprowadzono testy wydajnościowe dla sześciu popularnych formatów serializa
 	\label{fig:avro}
 \end{figure}
 
-Apache Avro uzyskał czas serializacji 7,396~ms, deserializacji 5,988~ms przy rozmiarze danych wynoszącym 521~727 bajtów (509,5~KB).
+Analiza metryk przedstawionych na Rysunku~\ref{fig:avro} wskazuje, że Apache Avro osiągnął czas serializacji na poziomie 7,396~ms oraz deserializacji wynoszący 5,988~ms, generując przy tym dane o rozmiarze 521~727 bajtów (509,5~KB).
+
 
 \subsection{Binary JSON (BSON)}
 
@@ -539,7 +540,7 @@ Apache Avro uzyskał czas serializacji 7,396~ms, deserializacji 5,988~ms przy ro
 	\label{fig:bson}
 \end{figure}
 
-Format BSON wykazał czas serializacji 2,073~ms, deserializacji 4,842~ms, generując dane o rozmiarze 1~426~779 bajtów (1~393,3~KB) -- największym spośród testowanych formatów.
+Analiza metryk przedstawionych na Rysunku~\ref{fig:bson} wskazuje, że Format BSON wykazał czas serializacji 2,073~ms, deserializacji 4,842~ms, generując dane o rozmiarze 1~426~779 bajtów (1~393,3~KB) -- największym spośród testowanych formatów.
 
 \subsection{JSON}
 
@@ -550,7 +551,7 @@ Format BSON wykazał czas serializacji 2,073~ms, deserializacji 4,842~ms, generu
 	\label{fig:json}
 \end{figure}
 
-Standardowy JSON osiągnął czas serializacji 1,294~ms oraz deserializacji 3,565~ms przy rozmiarze 1~181~768 bajtów (1~154,1~KB), oferując najszybszą deserializację wśród formatów tekstowych.
+Metryki zawarte na Rysunku~\ref{fig:json} wykazują, że format JSON osiągnął czas serializacji 1,294~ms oraz deserializacji 3,565~ms przy rozmiarze 1~181~768 bajtów (1~154,1~KB), oferując najszybszą deserializację wśród formatów tekstowych.
 
 \subsection{MessagePack}
 
@@ -561,7 +562,7 @@ Standardowy JSON osiągnął czas serializacji 1,294~ms oraz deserializacji 3,56
 	\label{fig:message-pack}
 \end{figure}
 
-MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748~ms i deserializacją 2,247~ms, przy kompaktowym rozmiarze 527~431 bajtów (515,1~KB).
+Metryki zawarte na Rysunku~\ref{fig:message-pack} wykazują, że format MessagePack osiągnął najlepszą wydajność czasową z serializacją 0,748~ms i deserializacją 2,247~ms, przy kompaktowym rozmiarze 527~431 bajtów (515,1~KB).
 
 \subsection{Protocol Buffers}
 
@@ -572,7 +573,7 @@ MessagePack wykazał najlepszą wydajność czasową z serializacją 0,748~ms i 
 	\label{fig:protobuf}
 \end{figure}
 
-Protocol Buffers osiągnął czas serializacji 1,648~ms, deserializacji 4,724~ms, generując dane o rozmiarze 587~684 bajtów (573,9~KB).
+Metryki zawarte na Rysunku~\ref{fig:protobuf} wykazują, że format Protocol Buffers osiągnął czas serializacji 1,648~ms, deserializacji 4,724~ms, generując dane o rozmiarze 587~684 bajtów (573,9~KB).
 
 \subsection{XML}
 
@@ -583,7 +584,7 @@ Protocol Buffers osiągnął czas serializacji 1,648~ms, deserializacji 4,724~ms
 	\label{fig:xml}
 \end{figure}
 
-Format XML wykazał najdłuższe czasy przetwarzania -- serializację 5,273~ms i deserializację 18,078~ms -- przy największym rozmiarze danych 1~761~825 bajtów (1~720,5~KB), co stanowi 3,4-krotność najbardziej efektywnych formatów binarnych.
+Metryki zawarte na Rysunku~\ref{fig:xml} wykazuje, że format XML wykazał najdłuższe czasy przetwarzania -- serializację 5,273~ms i deserializację 18,078~ms -- przy największym rozmiarze danych 1~761~825 bajtów (1~720,5~KB), co stanowi 3,4-krotność najbardziej efektywnych formatów binarnych.
 
 \subsection{Analiza porównawcza formatów serializacji}
 
